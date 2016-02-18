@@ -4,8 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import br.com.jvoliveira.arq.controller.AbstractArqController;
-
 /**
  * Controller de acesso para as paginas de login
  * @author Joao Victor
@@ -13,7 +11,7 @@ import br.com.jvoliveira.arq.controller.AbstractArqController;
  */
 
 @Controller
-public class LoginController extends AbstractArqController {
+public class LoginController{
 
 	@RequestMapping(value = {"/","/login"}, method = RequestMethod.GET)
 	public String loginPage(){

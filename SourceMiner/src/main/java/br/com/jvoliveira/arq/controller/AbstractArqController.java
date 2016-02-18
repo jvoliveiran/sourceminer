@@ -5,6 +5,7 @@ package br.com.jvoliveira.arq.controller;
 
 import java.lang.reflect.ParameterizedType;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.service.AbstractArqService;
+import br.com.jvoliveira.security.domain.User;
 
 
 /**
@@ -39,6 +41,11 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 		this.typeClass = (Class<T>) (
 	               (ParameterizedType) getClass().getGenericSuperclass())
 	              .getActualTypeArguments()[0];
+	}
+	
+	@ModelAttribute("userLogged")
+	public User getUsuarioLogado(){
+		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
 	@RequestMapping("/index")

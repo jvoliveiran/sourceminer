@@ -37,7 +37,7 @@ public class UserService extends AbstractArqService<User> implements UserDetails
 		if(userDetails == null)
 			throw new UsernameNotFoundException("Usuario não encontrado!");
 		
-		return userDetails;
+		return (User) userDetails;
 	}
 	
 	public List<Role> getAllRoles(){
