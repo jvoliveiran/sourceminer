@@ -1,6 +1,7 @@
 package br.com.jvoliveira.security.domain;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -53,6 +56,14 @@ public class User implements UserDetails, ObjectDB{
 			inverseJoinColumns = {@JoinColumn(name="id_role")}
 			)
 	private Set<Role> roles = new HashSet<Role>();
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="create_at")
+	private Date createAt;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="update_at")
+	private Date updateAt;
 
 	@Override
 	@Transient
@@ -144,5 +155,25 @@ public class User implements UserDetails, ObjectDB{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public void setCreateAt(Date date) {
+		this.createAt = date;
+	}
+
+	@Override
+	public Date getCreateAt() {
+		return this.createAt;
+	}
+
+	@Override
+	public void setUpdateAt(Date date) {
+		this.updateAt = date;
+	}
+
+	@Override
+	public Date getUpdateAt() {
+		return this.updateAt;
 	}
 }

@@ -1,6 +1,7 @@
 package br.com.jvoliveira.security.domain;
 
 import java.beans.Transient;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +39,14 @@ public class Permission implements GrantedAuthority, ObjectDB{
 	
 	@Column(name = "ativo")
 	private Boolean ativo = true;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="create_at")
+	private Date createAt;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="update_at")
+	private Date updateAt;
 
 	@Override
 	@Transient
@@ -67,6 +78,26 @@ public class Permission implements GrantedAuthority, ObjectDB{
 
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
+	}
+
+	@Override
+	public void setCreateAt(Date date) {
+		this.createAt = date;
+	}
+
+	@Override
+	public Date getCreateAt() {
+		return this.createAt;
+	}
+
+	@Override
+	public void setUpdateAt(Date date) {
+		this.updateAt = date;
+	}
+
+	@Override
+	public Date getUpdateAt() {
+		return this.updateAt;
 	}
 	
 }

@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.security.domain.User;
@@ -51,6 +55,14 @@ public class RepositoryConnector implements ObjectDB {
 	@Enumerated(EnumType.STRING)
     @Column(name="version_manager")
 	private RepositoryVersionManager versionManager;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="create_at")
+	private Date createAt;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="update_at")
+	private Date updateAt;
 
 	@Override
 	public void setId(Long id) {
@@ -124,5 +136,25 @@ public class RepositoryConnector implements ObjectDB {
 
 	public void setVersionManager(RepositoryVersionManager versionManager) {
 		this.versionManager = versionManager;
+	}
+
+	@Override
+	public void setCreateAt(Date date) {
+		this.createAt = date;
+	}
+
+	@Override
+	public Date getCreateAt() {
+		return this.createAt;
+	}
+
+	@Override
+	public void setUpdateAt(Date date) {
+		this.updateAt = date;
+	}
+
+	@Override
+	public Date getUpdateAt() {
+		return this.updateAt;
 	}
 }
