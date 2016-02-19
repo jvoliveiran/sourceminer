@@ -41,6 +41,12 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 		this.typeClass = (Class<T>) (
 	               (ParameterizedType) getClass().getGenericSuperclass())
 	              .getActualTypeArguments()[0];
+		
+		try {
+			obj = typeClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@ModelAttribute("userLogged")
@@ -48,7 +54,7 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
-	@RequestMapping("/index")
+	@RequestMapping(value = {"","/index"})
 	public String getIndex(Model model){
 		model.addAttribute("list",service.getAll());
 		return forward("index");
@@ -82,7 +88,7 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 			return forward("form");
 		}
 		
-		service.create(obj);
+		service.persist(obj);
 		
 		return redirect("index");
 	}
