@@ -1,0 +1,80 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="content">
+		<h3><span th:text="${controllerTitle}"/> > Lista</h3>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<a class="btn btn-primary" th:href="@{/repository_connector/create}">
+					Novo <span th:text="${controllerTitle}"/>
+				</a>
+			</div>
+		</div>
+		
+		<hr />
+		
+		<div th:if="${#lists.isEmpty(list)}">
+			<i>Nenhum repositório localizado.</i>
+		</div>
+		
+		<!-- Bloco -->
+		<div class="row" th:if="!${#lists.isEmpty(list)}">
+			<!-- Item Default-->
+			<div class="col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Repositório Nome</h3>
+					</div>
+					<div class="panel-body">
+						<!-- Dados -->
+						<div class="row">
+							<div class="col-md-6">
+								User<br /> 
+								Created At
+							</div>
+							<div class="col-md-6">
+								URL<br /> 
+								Location<br /> 
+								Version Manager
+							</div>
+						</div>
+				
+						<hr />
+			
+						<div class="row">
+							<div class="col-md-12">
+								Descrição
+							</div>
+						</div>
+						
+						<hr />
+						
+						<div class="row">
+							<div class="col-md-4">
+								<a class="btn btn-success btn-sm">
+									Conectar
+								</a>
+							</div>
+							<div class="col-md-4">
+								<a class="btn btn-default btn-sm">
+									Editar
+								</a>
+							</div>
+							<div class="col-md-4">
+								<a class="btn btn-danger btn-sm">
+									Desconectar
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+</div>
+
+</html>
