@@ -1,4 +1,4 @@
-package br.com.jvoliveira.arq.dao.impl;
+package br.com.jvoliveira.arq.dao;
 
 import java.util.List;
 
@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.jvoliveira.arq.dao.GenericDAO;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
 /**
