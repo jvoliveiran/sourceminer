@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.arq.service;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import br.com.jvoliveira.arq.dao.GenericDAO;
 import br.com.jvoliveira.arq.domain.ObjectDB;
+import br.com.jvoliveira.arq.utils.DateUtils;
 
 /**
  * @author Joao Victor
@@ -48,8 +50,51 @@ public class AbstractArqService<T extends ObjectDB> {
 	 * @param obj
 	 * @return
 	 */
-	public T create(T obj){
-		repository.save(obj);
+	public T persist(T obj){
+		
+		if(obj.getId() != null)
+			obj = createObject(obj);
+		else
+			obj = updateObject(obj);
+		
+		return obj;
+	}
+
+	private T updateObject(T obj) {
+		obj = beforeUpdate(obj);
+		obj.setUpdateAt(DateUtils.now());
+		obj = repository.save(obj);
+		obj = afterUpdate(obj);
+		
+		return obj;
+	}
+
+	public T afterUpdate(T obj) {
+		// TODO Auto-generated method stub
+		return obj;
+	}
+
+	private T beforeUpdate(T obj) {
+		// TODO Auto-generated method stub
+		return obj;
+	}
+
+	private T createObject(T obj) {
+		obj = beforeCreate(obj);
+		obj.setCreateAt(DateUtils.now());
+		obj = repository.save(obj);
+		obj = afterCreate(obj);
+		
+		return obj;
+	}
+
+	private T afterCreate(T obj) {
+		// TODO Auto-generated method stub
+		return obj;
+	}
+
+	private T beforeCreate(T obj) {
+		// TODO Auto-generated method stub
 		return obj;
 	}
 
