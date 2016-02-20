@@ -3,15 +3,18 @@
  */
 package br.com.jvoliveira.sourceminer.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Joao Victor
  *
  */
 public enum RepositoryVersionManager {
 
-	GIT("git"),
-	SVN("svn"),
-	CVS("cvs");
+	GIT("GIT"),
+	SVN("SVN"),
+	CVS("CVS");
 	
 	private String versionManager;
 	
@@ -34,4 +37,9 @@ public enum RepositoryVersionManager {
 	public boolean isSVNManager(RepositoryVersionManager manager){
 		return manager == SVN;
 	}
+	
+	public static List<RepositoryVersionManager> getValues(){
+		return Arrays.asList(RepositoryVersionManager.values());
+	}
+	
 }

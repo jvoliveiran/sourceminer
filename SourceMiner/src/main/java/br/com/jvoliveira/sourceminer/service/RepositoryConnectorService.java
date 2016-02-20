@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +25,19 @@ public class RepositoryConnectorService
 		this.repository = repository;
 	}
 	
+	public List<RepositoryConnector> getAllByUser(){
+		return ((RepositoryConnectorRepository) repository).findByUser(getUsuarioLogado());
+	}
+	
+	@Override
+	protected RepositoryConnector beforeCreate(RepositoryConnector obj) {
+		obj.setUser(getUsuarioLogado());
+		return obj;
+	}
+	
+	@Override
+	protected RepositoryConnector beforeUpdate(RepositoryConnector obj) {
+		obj.setUser(getUsuarioLogado());
+		return obj;
+	}
 }

@@ -100,11 +100,21 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 		return redirect("index");
 	}
 	
-	private String forward(String page){
+	@RequestMapping("/cancel")
+	public String cancelOperation(){
+		try {
+			this.obj = typeClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {			
+			e.printStackTrace();
+		}
+		return redirect("index");
+	}
+	
+	protected String forward(String page){
 		return path+"/"+page;
 	}
 	
-	private String redirect(String action){
+	protected String redirect(String action){
 		return "redirect:/" + path + "/" + action;
 	}
 	

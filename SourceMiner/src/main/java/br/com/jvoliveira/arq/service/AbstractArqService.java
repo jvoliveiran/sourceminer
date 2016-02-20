@@ -8,10 +8,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import br.com.jvoliveira.arq.dao.GenericDAO;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.utils.DateUtils;
+import br.com.jvoliveira.security.domain.User;
 
 /**
  * @author Joao Victor
@@ -52,7 +54,7 @@ public class AbstractArqService<T extends ObjectDB> {
 	 */
 	public T persist(T obj){
 		
-		if(obj.getId() != null)
+		if(obj.getId() == null)
 			obj = createObject(obj);
 		else
 			obj = updateObject(obj);
@@ -69,12 +71,12 @@ public class AbstractArqService<T extends ObjectDB> {
 		return obj;
 	}
 
-	public T afterUpdate(T obj) {
+	protected T afterUpdate(T obj) {
 		// TODO Auto-generated method stub
 		return obj;
 	}
 
-	private T beforeUpdate(T obj) {
+	protected T beforeUpdate(T obj) {
 		// TODO Auto-generated method stub
 		return obj;
 	}
@@ -88,12 +90,12 @@ public class AbstractArqService<T extends ObjectDB> {
 		return obj;
 	}
 
-	private T afterCreate(T obj) {
+	protected T afterCreate(T obj) {
 		// TODO Auto-generated method stub
 		return obj;
 	}
 
-	private T beforeCreate(T obj) {
+	protected T beforeCreate(T obj) {
 		// TODO Auto-generated method stub
 		return obj;
 	}
@@ -105,6 +107,10 @@ public class AbstractArqService<T extends ObjectDB> {
 	public void remove(Long id) {
 		repository.delete(id);
 		
+	}
+	
+	protected User getUsuarioLogado(){
+		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 	
 }

@@ -3,13 +3,16 @@
  */
 package br.com.jvoliveira.sourceminer.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Joao Victor
  *
  */
 public enum RepositoryLocation {
 
-	LOCAL("local"), REMOTE("remote");
+	LOCAL("Local"), REMOTE("Remoto");
 	
 	private String location;
 	
@@ -28,4 +31,9 @@ public enum RepositoryLocation {
 	public boolean isLocal(RepositoryLocation location){
 		return location == LOCAL;
 	}
+	
+	public static List<RepositoryLocation> getValues(){
+		return Arrays.asList(RepositoryLocation.values());
+	}
+	
 }

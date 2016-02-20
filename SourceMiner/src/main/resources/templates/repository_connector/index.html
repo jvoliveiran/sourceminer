@@ -22,31 +22,58 @@
 		
 		<!-- Bloco -->
 		<div class="row" th:if="!${#lists.isEmpty(list)}">
+			<!-- TODO: Thymeleaf proccess -->
+		
 			<!-- Item Default-->
-			<div class="col-md-4">
+			<div class="col-md-4" th:each="repositorio : ${list}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">Repositório Nome</h3>
+						<h3 class="panel-title">Repositório
+							<span th:text="${repositorio.name}">Nome</span>
+						</h3>
 					</div>
 					<div class="panel-body">
 						<!-- Dados -->
 						<div class="row">
-							<div class="col-md-6">
-								User<br /> 
-								Created At
-							</div>
-							<div class="col-md-6">
-								URL<br /> 
-								Location<br /> 
-								Version Manager
+							<div class="col-md-4"><b>Usuário: </b></div>
+							<div class="col-md-8">
+								<span th:text="${repositorio.username}">Usuário</span>
 							</div>
 						</div>
+						
+						<div class="row">
+							<div class="col-md-4"><b>Criado em: </b></div>
+							<div class="col-md-8">
+								<span th:text="${repositorio.createAt}">Criado em</span>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-4"><b>URL: </b></div>
+							<div class="col-md-8">
+								<span th:text="${repositorio.url}">URL</span>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-4"><b>Localização: </b></div>
+							<div class="col-md-8">
+								<span th:text="${repositorio.location.location}">Localização</span>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-4"><b>Version: </b></div>
+							<div class="col-md-8">
+								<span th:text="${repositorio.versionManager.versionManager}">Versionamento</span>
+							</div>
+						</div>	
 				
 						<hr />
 			
 						<div class="row">
 							<div class="col-md-12">
-								Descrição
+								<span th:text="${repositorio.description}">Descrição</span><br />
 							</div>
 						</div>
 						

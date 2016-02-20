@@ -12,6 +12,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,13 +38,17 @@ public class RepositoryConnector implements ObjectDB {
 	@Column(name="name")
 	private String name;
 	
+	@Column(name="description")
+	private String description;
+	
 	@Column(name="username")
 	private String username;
 	
 	@Column(name="password")
 	private String password;
 	
-	@Column(name="user")
+	@ManyToOne
+	@JoinColumn(name="id_user")
 	private User user;
 	
 	@Column(name="url")
@@ -156,5 +162,13 @@ public class RepositoryConnector implements ObjectDB {
 	@Override
 	public Date getUpdateAt() {
 		return this.updateAt;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
