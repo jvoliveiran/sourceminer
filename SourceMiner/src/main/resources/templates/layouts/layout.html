@@ -40,6 +40,10 @@
 	    		Usuário: <span th:text="${userLogged.username}" /> <br />
 				<a th:href="@{/logout}">Sair</a>
 	    	</p>
+	    	<p th:if="${repositoryConnetionSession.connectionOpened}">
+	    		<span th:text="${repositoryConnetionSession.connectionName}">Conexão Aberta</span>
+	    		(<a th:href="@{/repository_connector/close_connection}">Desconectar</a>)
+	    	</p>
 		</div>
  	</div>
  </div>

@@ -5,6 +5,7 @@ package br.com.jvoliveira.arq.controller;
 
 import java.lang.reflect.ParameterizedType;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.security.domain.User;
+import br.com.jvoliveira.sourceminer.component.RepositoryConnectionSession;
 
 
 /**
@@ -35,6 +37,8 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 	protected AbstractArqService<T> service;
 	
 	protected Class<T> typeClass;
+	
+	protected RepositoryConnectionSession repositoryConnetionSession;
 	
 	@SuppressWarnings("unchecked")
 	public AbstractArqController(){
@@ -121,5 +125,15 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 	@ModelAttribute("controllerTitle")
 	public String getTitle(){
 		return this.title;
+	}
+	
+	@Autowired
+	public void setRepositoryConnectionSession(RepositoryConnectionSession repositoryConnectionSession){
+		this.repositoryConnetionSession = repositoryConnectionSession;
+	}
+	
+	@ModelAttribute("repositoryConnetionSession")
+	public RepositoryConnectionSession getRepositoryConnectionSession(){
+		return this.repositoryConnetionSession;
 	}
 }

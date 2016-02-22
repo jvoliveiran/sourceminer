@@ -26,16 +26,16 @@ public enum RepositoryVersionManager {
 		return this.versionManager;
 	}
 	
-	public boolean isGITManager(RepositoryVersionManager manager){
-		return manager == GIT;
+	public boolean isGITManager(){
+		return this == GIT;
 	}
 	
-	public boolean isCVSManager(RepositoryVersionManager manager){
-		return manager == CVS;
+	public boolean isCVSManager(){
+		return this == CVS;
 	}
 	
-	public boolean isSVNManager(RepositoryVersionManager manager){
-		return manager == SVN;
+	public boolean isSVNManager(){
+		return this == SVN;
 	}
 	
 	public static List<RepositoryVersionManager> getValues(){
