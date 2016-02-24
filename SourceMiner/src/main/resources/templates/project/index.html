@@ -1,0 +1,53 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="content">
+		<h3><span th:text="${controllerTitle}"/> > Lista</h3>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<a class="btn btn-primary" th:href="@{/project/create}">
+					Novo <span th:text="${controllerTitle}"/>
+				</a>
+			</div>
+		</div>
+		
+		<hr />
+		
+		<div th:if="${#lists.isEmpty(list)}">
+			<i>Nenhum projeto localizado.</i>
+		</div>
+		
+		<!-- Bloco -->
+		<div class="row" th:if="!${#lists.isEmpty(list)}">
+			<div class="col-md-12">
+				<table class="table table-striped">
+					<tr>
+						<th>Nome</th>
+						<th>Caminho</th>
+						<th>Visualizar</th>
+						<th>Editar</th>
+						<th>Remover</th>
+					</tr>
+					<tr th:each="item : ${list}">
+						<td th:text="${item.name}"></td>
+						<td th:text="${item.path}"></td>
+						<td>
+							<a class="btn btn-default btn-xs">View</a>
+						</td>
+						<td>
+							<a class="btn btn-warning btn-xs">Edit</a>
+						</td>
+						<td>
+							<a class="btn btn-danger btn-xs">Remove</a>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+</div>
+
+</html>
