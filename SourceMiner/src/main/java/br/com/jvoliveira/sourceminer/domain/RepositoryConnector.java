@@ -171,4 +171,8 @@ public class RepositoryConnector implements ObjectDB {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public boolean isAnonymousConnection(){
+		return this.username == null && this.password == null;
+	}
 }

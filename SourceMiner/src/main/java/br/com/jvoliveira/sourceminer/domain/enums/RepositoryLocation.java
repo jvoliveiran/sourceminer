@@ -24,12 +24,12 @@ public enum RepositoryLocation {
 		return this.location;
 	}
 	
-	public boolean isRemote(RepositoryLocation location){
-		return location == REMOTE;
+	public boolean isRemote(){
+		return this == REMOTE;
 	}
 	
-	public boolean isLocal(RepositoryLocation location){
-		return location == LOCAL;
+	public boolean isLocal(){
+		return this == LOCAL;
 	}
 	
 	public static List<RepositoryLocation> getValues(){

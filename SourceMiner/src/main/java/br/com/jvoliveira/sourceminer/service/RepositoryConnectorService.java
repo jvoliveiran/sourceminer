@@ -37,6 +37,14 @@ public class RepositoryConnectorService
 	
 	@Override
 	protected RepositoryConnector beforeCreate(RepositoryConnector obj) {
+		String url =  obj.getUrl();
+		if(obj.getLocation().isLocal())
+			url = "file://" + url; 
+		else if(obj.getLocation().isRemote())
+			url = "https://" + url; 
+		
+		obj.setUrl(url);
+		
 		obj.setUser(getUsuarioLogado());
 		return obj;
 	}

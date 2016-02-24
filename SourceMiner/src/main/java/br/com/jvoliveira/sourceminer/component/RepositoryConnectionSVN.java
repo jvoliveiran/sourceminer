@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.component;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
+import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
@@ -42,12 +43,19 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	
 	@Override
 	public void openConnection() {
-		// TODO: refatorar para identificar repositório local e remoto
 		try {
-			//Repositório em arquivo local
-			FSRepositoryFactory.setup();
+			if(connector.getLocation().isLocal())
+				FSRepositoryFactory.setup();
+			else if(connector.getLocation().isRemote())
+				DAVRepositoryFactory.setup();
+			
 			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(this.connector.getUrl()));
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager();
+			ISVNAuthenticationManager authManager;
+			if(connector.isAnonymousConnection())
+				authManager = SVNWCUtil.createDefaultAuthenticationManager();
+			else
+				authManager = SVNWCUtil.createDefaultAuthenticationManager(connector.getUsername(), connector.getPassword().toCharArray());
+			
 			repository.setAuthenticationManager(authManager);
 			
 		} catch (SVNException e) {
@@ -66,10 +74,6 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 
 	@Override
 	public Boolean isConnectionOpened() {
-		//TODO: Remover. Saída gerada apenas para testes 
-		if(this.repository != null)
-			System.out.println(repository.getLocation().getPath());
-		
 		return this.repository != null;
 	}
 	
