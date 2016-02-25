@@ -1,0 +1,105 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="content">
+		<h3><span th:text="${controllerTitle}"/> - Dash Board</h3>
+		
+		<!-- Primeira linha -->
+		<div class="row">
+			<div class="col-md-12">
+			
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Informações do Projeto</h3>
+				  </div>
+				  <div class="panel-body">
+				  
+				  	<div class="row">
+					    <div class="col-md-2">
+					    	<b>Repositório:</b>
+					    </div>
+					    <div class="col-md-10">
+					    	<span th:text="${repositoryConnetionSession.connectionName}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-md-2">
+					    	<b>Projeto:</b>
+					    </div>
+					    <div class="col-md-10">
+					    	<span th:text="${project.name}"></span>
+					    </div>
+				    </div>
+				    
+				  </div>
+				</div>
+				
+			</div>
+		</div>
+		
+		<hr />
+		
+		<!-- Segunda linha -->
+		<div class="row">
+			<div class="col-md-6">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Últimos Commits</h3>
+				  </div>
+				  <div class="panel-body">
+				    
+				    <div th:if="${#lists.isEmpty(revisions)}">
+						<i>Nenhum commit localizado.</i>
+					</div>
+					
+					<div th:if="!${#lists.isEmpty(revisions)}">
+						<div th:each="revision : ${revisions}">
+							<div class="row">
+								<div class="col-md-12">
+									<span th:text="${revision.getFullDescription()}"></span>
+								</div>
+							</div>
+							<hr/>
+						</div>
+					</div>
+				    
+				  </div>
+				</div>
+			</div>
+			
+  			<div class="col-md-6">
+  				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Arquivos</h3>
+				  </div>
+				  <div class="panel-body">
+				    <div th:if="${#lists.isEmpty(itens)}">
+						<i>Nenhum arquivo localizado.</i>
+					</div>
+					
+					<div th:if="!${#lists.isEmpty(itens)}">
+						<div th:each="item : ${itens}">
+							<div class="row">
+								<div class="col-md-12">
+									<span th:text="${item.name}"></span>
+								</div>
+							</div>
+							<hr/>
+						</div>
+					</div>
+					
+				  </div>
+				</div>
+  			</div>  			
+  			
+		</div>
+		
+		<hr />
+		
+	</div>
+	
+
+</html>

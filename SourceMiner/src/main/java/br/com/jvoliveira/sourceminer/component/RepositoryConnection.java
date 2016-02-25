@@ -3,7 +3,12 @@
  */
 package br.com.jvoliveira.sourceminer.component;
 
+import java.util.List;
+
+import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 
 /**
  * @author Joao Victor
@@ -28,5 +33,9 @@ public interface RepositoryConnection {
 	Boolean isCVS();
 	
 	//TODO: Implementar as demais operações de repositório
+	
+	List<RepositoryItem> getAllProjectItens(Project project);
+	
+	List<RepositoryRevision> getAllProjectRevision(Project project);
 	
 }

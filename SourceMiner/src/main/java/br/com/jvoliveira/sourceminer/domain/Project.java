@@ -91,7 +91,7 @@ public class Project implements ObjectDB{
 	public String getPath() {
 		return path;
 	}
-
+	
 	public void setPath(String path) {
 		this.path = path;
 	}
