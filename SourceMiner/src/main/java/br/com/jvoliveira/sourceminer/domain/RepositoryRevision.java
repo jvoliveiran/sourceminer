@@ -16,7 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,9 +34,6 @@ public class RepositoryRevision implements ObjectDB{
 	@Column(name="id_repository_revision")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	
-	@Column(name="name")
-	private String name;
 	
 	@Column(name="revision", unique=true)
 	private Long revision;
@@ -100,14 +96,6 @@ public class RepositoryRevision implements ObjectDB{
 		return this.updateAt;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public Long getRevision() {
 		return revision;
 	}
@@ -146,5 +134,9 @@ public class RepositoryRevision implements ObjectDB{
 
 	public void setRepositoryItens(List<RepositoryItem> repositoryItens) {
 		this.repositoryItens = repositoryItens;
+	}
+	
+	public String getFullDescription(){
+		return this.revision.toString() + " - " + this.comment;
 	}
 }
