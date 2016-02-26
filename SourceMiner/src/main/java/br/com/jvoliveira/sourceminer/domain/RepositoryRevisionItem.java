@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
+import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
 
 /**
  * @author Joao Victor
@@ -42,6 +44,10 @@ public class RepositoryRevisionItem implements ObjectDB{
 	@ManyToOne
 	@JoinColumn(name="id_repository_revision")
 	private RepositoryRevision repositoryRevision;
+	
+	@Enumerated
+	@Column(name="commit_type")
+	private CommitType commitType;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -105,5 +111,16 @@ public class RepositoryRevisionItem implements ObjectDB{
 		this.repositoryRevision = repositoryRevision;
 	}
 
+	public CommitType getCommitType() {
+		return commitType;
+	}
+
+	public String getCommitTypeDescription(){
+		return this.commitType.getDescription();
+	}
+	
+	public void setCommitType(CommitType commitType) {
+		this.commitType = commitType;
+	}
 }
 

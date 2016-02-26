@@ -27,6 +27,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
+import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
 
 /**
  * @author Joao Victor
@@ -145,6 +146,11 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 						 
 	                	 RepositoryItem item = parse.parseToRepositoryItem(entryPath);
 	                	 revisionItemLog.setRepositoryItem(item);
+	                	 
+	                	 if(entryPath.getType() == 'A')
+	                		 revisionItemLog.setCommitType(CommitType.ADD);
+	                	 else if(entryPath.getType() == 'M')
+	                		 revisionItemLog.setCommitType(CommitType.MOD);
 	                	 
 	                	 revisionItemLogs.add(revisionItemLog);
 	                 }

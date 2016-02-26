@@ -26,6 +26,7 @@ public class RepositoryParseSVN implements RepositoryParse{
 		
 		repositoryItem.setName(StringUtils.getFileNameInPath(logEntryPath.getPath(), "/"));
 		repositoryItem.setPath(logEntryPath.getPath());
+		repositoryItem.setExtension("java");
 		
 		return repositoryItem;
 	}

@@ -129,6 +129,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		syncLogRepository.save(lastSyncLog);
 	}
 	
+	public RepositoryRevision getRevisionById(Long id){
+		return revisionRepository.findOne(id);
+	}
+	
 	@Autowired
 	public void setSyncLogRepository(RepositorySyncLogRepository syncLogRepository){
 		this.syncLogRepository = syncLogRepository;

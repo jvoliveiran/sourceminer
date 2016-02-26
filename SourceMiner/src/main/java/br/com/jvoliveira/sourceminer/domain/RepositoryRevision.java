@@ -3,20 +3,17 @@
  */
 package br.com.jvoliveira.sourceminer.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,13 +46,8 @@ public class RepositoryRevision implements ObjectDB{
 	@Column(name="date_revision")
 	private Date dateRevision;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "repository_revision_item",
-			joinColumns = { @JoinColumn(name = "id_repository_revision") },
-			inverseJoinColumns = { @JoinColumn(name = "id_repository_item") }
-			)
-	private List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
+	@OneToMany(mappedBy="repositoryRevision")
+	private List<RepositoryRevisionItem> revisionItem;
 	
 	@ManyToOne
 	@JoinColumn(name="id_project")
@@ -132,14 +124,6 @@ public class RepositoryRevision implements ObjectDB{
 	public void setDateRevision(Date dateRevision) {
 		this.dateRevision = dateRevision;
 	}
-
-	public List<RepositoryItem> getRepositoryItens() {
-		return repositoryItens;
-	}
-
-	public void setRepositoryItens(List<RepositoryItem> repositoryItens) {
-		this.repositoryItens = repositoryItens;
-	}
 	
 	public String getFullDescription(){
 		return this.revision.toString() + " - " + this.comment;
@@ -151,5 +135,13 @@ public class RepositoryRevision implements ObjectDB{
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+
+	public List<RepositoryRevisionItem> getRevisionItem() {
+		return revisionItem;
+	}
+
+	public void setRevisionItem(List<RepositoryRevisionItem> revisionItem) {
+		this.revisionItem = revisionItem;
 	}
 }

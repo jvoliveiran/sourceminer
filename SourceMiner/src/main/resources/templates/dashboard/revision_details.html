@@ -1,0 +1,123 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="content">
+		<h3>Dashboard - Detalhes revisão</h3>
+		
+		<!-- Primeira linha -->
+		<div class="row">
+			<div class="col-md-12">
+			
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Informações do Projeto</h3>
+				  </div>
+				  <div class="panel-body">
+				  
+				  	<div class="row">
+					    <div class="col-md-2">
+					    	<b>Repositório:</b>
+					    </div>
+					    <div class="col-md-10">
+					    	<span th:text="${repositoryConnetionSession.connectionName}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-md-2">
+					    	<b>Projeto:</b>
+					    </div>
+					    <div class="col-md-10">
+					    	<span th:text="${project.name}"></span>
+					    </div>
+				    </div>
+				    
+				  </div>
+				</div>
+				
+			</div>
+		</div>
+		
+		<hr />
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Detalhes da revisão</h3>
+				  </div>
+				  
+				  <div class="panel-body">
+				  	<div class="row">
+				  		<div class="col-md-2">
+				  			<b>Revisão:</b>
+				  		</div>
+				  		<div class="col-md-10">
+				  			<span th:text="${revision.revision}" />
+				  		</div>
+				  	</div>
+				  	
+				  	<div class="row">
+				  		<div class="col-md-2">
+				  			<b>Mensagem:</b>
+				  		</div>
+				  		<div class="col-md-10">
+				  			<span th:text="${revision.comment}" />
+				  		</div>
+				  	</div>
+				  	
+				  	<div class="row">
+				  		<div class="col-md-2">
+				  			<b>Autor:</b>
+				  		</div>
+				  		<div class="col-md-10">
+				  			<span th:text="${revision.author}" />
+				  		</div>
+				  	</div>
+				  	
+				  	<div class="row">
+				  		<div class="col-md-2">
+				  			<b>Data:</b>
+				  		</div>
+				  		<div class="col-md-10">
+				  			<span th:text="${revision.dateRevision}" />
+				  		</div>
+				  	</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+		
+		<hr />
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Classes Modificadas</h3>
+				  </div>
+				  
+				  <div class="panel-body">
+				  	<table class="table table-striped">
+				  		<thead>
+				  			<th>Tipo</th>
+				  			<th>Caminho</th>
+				  			<th>Arquivo</th>
+				  		</thead>
+				  		<tr th:each="revisionItem : ${revision.revisionItem}">
+				  			<td th:text="${revisionItem.commitType.initial}"></td>
+				  			<td th:text="${revisionItem.repositoryItem.getFullPath()}"></td>
+				  			<td>Classe</td>
+				  		</tr>
+				  	</table>
+				  </div> 
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	
+
+</html>

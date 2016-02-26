@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -46,13 +47,8 @@ public class RepositoryItem implements ObjectDB{
 	@Column(name="extension")
 	private String extension;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "repository_revision_item",
-			joinColumns = { @JoinColumn(name = "id_repository_item") },
-			inverseJoinColumns = { @JoinColumn(name = "id_repository_revision") }
-			)
-	private List<RepositoryRevision> repositoryRevision = new ArrayList<RepositoryRevision>();
+	@OneToMany(mappedBy="repositoryItem")
+	private List<RepositoryRevisionItem> revisionItem;
 	
 	@ManyToOne
 	@JoinColumn(name="id_project")
@@ -120,20 +116,24 @@ public class RepositoryItem implements ObjectDB{
 		this.extension = extension;
 	}
 
-	public List<RepositoryRevision> getRepositoryRevision() {
-		return repositoryRevision;
-	}
-
-	public void setRepositoryRevision(List<RepositoryRevision> repositoryRevision) {
-		this.repositoryRevision = repositoryRevision;
-	}
-
 	public Project getProject() {
 		return project;
 	}
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+	
+	public String getFullPath(){
+		return this.path + "/" + this.name;
+	}
+
+	public List<RepositoryRevisionItem> getRevisionItem() {
+		return revisionItem;
+	}
+
+	public void setRevisionItem(List<RepositoryRevisionItem> revisionItem) {
+		this.revisionItem = revisionItem;
 	}
 	
 }
