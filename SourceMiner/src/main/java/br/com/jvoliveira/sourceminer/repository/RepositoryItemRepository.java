@@ -19,4 +19,6 @@ public interface RepositoryItemRepository extends CrudRepository<RepositoryItem,
 	List<RepositoryItem> findByProject(Project project);
 	
 	List<RepositoryItem> findTop10ByProjectOrderByIdDesc(Project project);
+	
+	RepositoryItem findByPathAndName(String path, String name);
 }

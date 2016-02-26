@@ -9,6 +9,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 
 /**
  * @author Joao Victor
@@ -39,6 +40,8 @@ public interface RepositoryConnection {
 	List<RepositoryItem> getAllProjectItens(Project project);
 	
 	List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision);
+	
+	List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, Integer startRevision, Integer endRevision);
 	
 	List<RepositoryRevision> getAllProjectRevision(Project project);
 	

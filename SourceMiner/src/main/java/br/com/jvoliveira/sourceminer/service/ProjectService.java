@@ -3,7 +3,6 @@
  */
 package br.com.jvoliveira.sourceminer.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,11 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
+import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
 
@@ -34,6 +35,7 @@ public class ProjectService extends AbstractArqService<Project>{
 	private RepositorySyncLogRepository syncLogRepository;
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
+	private RepositoryRevisionItemRepository revisionItemRepository;
 	
 	@Autowired
 	public ProjectService(ProjectRepository repository, RepositoryConnectionSession connection){
@@ -84,30 +86,49 @@ public class ProjectService extends AbstractArqService<Project>{
 				return;
 		}
 		
-		sincronyzeRevisionsDatabase(project,revisionStartSync,revisionEndSync);
-		sincronyzeFilesDatabase(project,revisionStartSync,revisionLastCommit.intValue());
+		sincronyzeRepositoryDatabase(project,revisionStartSync,revisionEndSync);
 		refreshSyncLog(lastSyncLog, project);
 	}
-
-	private void sincronyzeRevisionsDatabase(Project project, Integer revisionStartSync, Integer revisionEndSync){
-		List<RepositoryRevision> repositoryRevisions = connection.getConnection().
-												getRevisionsInRange(project, revisionStartSync, revisionEndSync);
+	
+	private void sincronyzeRepositoryDatabase(Project project, Integer revisionStartSync, Integer revisionEndSync) {
+		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
+				getRevisionItensInProjectRange(project, revisionStartSync, revisionEndSync);
 		
-		for(RepositoryRevision revision : repositoryRevisions){
-			revision.setCreateAt(DateUtils.now());
-			revision.setProject(project);
-			this.revisionRepository.save(revision);
+		for(RepositoryRevisionItem item : repositoryItens){
+			item.setCreateAt(DateUtils.now());
+			item.setProject(project);
+			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
+			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
+			revisionItemRepository.save(item);
 		}
 	}
 	
-	private void sincronyzeFilesDatabase(Project project, Integer revisionStartSync, Integer revisionEndSync) {
-		List<RepositoryItem> repositoryItens = connection.getConnection().
-				getItensInRevision(project, revisionStartSync, revisionEndSync);
+	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
+		Long revisionNumber = revision.getRevision();
+		RepositoryRevision revisionFromDB = revisionRepository.findByProjectAndRevision(project,revisionNumber);
 		
-		for(RepositoryItem item : repositoryItens){
-			item.setCreateAt(DateUtils.now());
+		if(revisionFromDB != null)
+			return revisionFromDB;
+		else{
+			revision.setProject(project);
+			revision.setCreateAt(DateUtils.now());
+			revision = revisionRepository.save(revision);
+			return revision;
+		}
+	}
+	
+	private RepositoryItem getSyncItem(Project project, RepositoryItem item){
+		String itemPath = item.getPath();
+		String itemName = item.getName();
+		RepositoryItem itemFromDB = itemRepository.findByPathAndName(itemPath, itemName);
+		
+		if(itemFromDB != null)
+			return itemFromDB;
+		else{
 			item.setProject(project);
-			itemRepository.save(item);
+			item.setCreateAt(DateUtils.now());
+			item = itemRepository.save(item);
+			return item;
 		}
 	}
 	
@@ -134,4 +155,10 @@ public class ProjectService extends AbstractArqService<Project>{
 	public void setItemRepository(RepositoryItemRepository itemRepository){
 		this.itemRepository = itemRepository;
 	}
+	
+	@Autowired
+	public void setRevisionItemRepository(RepositoryRevisionItemRepository revisionItemRepository){
+		this.revisionItemRepository = revisionItemRepository;
+	}
+	
 }

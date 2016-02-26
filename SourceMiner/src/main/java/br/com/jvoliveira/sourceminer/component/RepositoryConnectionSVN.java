@@ -26,6 +26,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 
 /**
  * @author Joao Victor
@@ -122,8 +123,8 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 	
 	@Override
-	public List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision){
-		List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
+	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, Integer startRevision, Integer endRevision){
+		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<RepositoryRevisionItem>();
 		
 		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), startRevision, endRevision);
 		
@@ -136,34 +137,34 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 				
 				 for ( Iterator changedPaths = changedPathsSet.iterator( ); changedPaths.hasNext( ); ) {
 					 SVNLogEntryPath entryPath = ( SVNLogEntryPath ) revisionLog.getChangedPaths( ).get( changedPaths.next( ) );
-	                 if(isNewJavaFile(entryPath)){
+					 
+					 if(isNewJavaFile(entryPath) || isUpdateJavaFile(entryPath)){
+						 RepositoryRevisionItem revisionItemLog = new RepositoryRevisionItem();
+						 
+						 revisionItemLog.setRepositoryRevision(parse.parseToRepositoryRevision(revisionLog));
+						 
 	                	 RepositoryItem item = parse.parseToRepositoryItem(entryPath);
-	                	 repositoryItens.add(item);
+	                	 revisionItemLog.setRepositoryItem(item);
 	                	 
-	                	 //TODO: Refatorar
-	                	 /*
-	                	  * Criar um pojo com a classe RepositoryRevisionItem
-	                	  * Adicionar a classe RepositoryItem que será salva
-	                	  * Criar pojo com RepositoryRevision setando o número da revisão que será recuperado no service
-	                	  */
-	                	 
-	                	 /*
-	                	  * Criar else para o método isUpdateJavaFile.
-	                	  * Será criado um atributo transient em RepositoryItem que será verificado
-	                	  * no service, para buscar o item correspondente.
-	                	  */
+	                	 revisionItemLogs.add(revisionItemLog);
 	                 }
 				 }
 			}
 		}
 		
-		return repositoryItens;
+		return revisionItemLogs;
 	}
 	
 	private boolean isNewJavaFile(SVNLogEntryPath entryPath){
 		return entryPath.getKind() == SVNNodeKind.FILE 
        		 && entryPath.getPath().contains(".java")
        		 && entryPath.getType() == 'A';
+	}
+	
+	private boolean isUpdateJavaFile(SVNLogEntryPath entryPath){
+		return entryPath.getKind() == SVNNodeKind.FILE 
+	       		 && entryPath.getPath().contains(".java")
+	       		 && entryPath.getType() == 'M';
 	}
 	
 	@Override
@@ -246,6 +247,13 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public Boolean isCVS() {
 		return false;
+	}
+
+	@Override
+	public List<RepositoryItem> getItensInRevision(Project project,
+			Integer startRevision, Integer endRevision) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 	
 }
