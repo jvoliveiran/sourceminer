@@ -4,9 +4,8 @@
 	</head>
 	
 	<div layout:fragment="content">
-		<div class="row">
-			<div class="col-md-10">
-				<h3>Dashboard - Detalhes revisão</h3>
+		<div class="col-md-10">
+				<h3>Dashboard - Detalhes arquivo</h3>
 			</div>
 			<div class="col-md-2">
 				<form action="#" th:action="@{/dashboard/project_dashboard}" method="post">
@@ -14,8 +13,6 @@
 					<input type="submit" class="btn btn-primary" value="Dashboard" />
 				</form>
 			</div>
-		</div>
-		
 		
 		<!-- Primeira linha -->
 		<div class="row">
@@ -57,45 +54,37 @@
 			<div class="col-md-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				  	<h3 class="panel-title">Detalhes da revisão</h3>
+				  	<h3 class="panel-title">Detalhes do arquivo</h3>
 				  </div>
 				  
 				  <div class="panel-body">
 				  	<div class="row">
 				  		<div class="col-md-2">
-				  			<b>Revisão:</b>
+				  			<b>Nome:</b>
 				  		</div>
 				  		<div class="col-md-10">
-				  			<span th:text="${revision.revision}" />
+				  			<span th:text="${item.name}" />
 				  		</div>
 				  	</div>
 				  	
 				  	<div class="row">
 				  		<div class="col-md-2">
-				  			<b>Mensagem:</b>
+				  			<b>Path:</b>
 				  		</div>
 				  		<div class="col-md-10">
-				  			<span th:text="${revision.comment}" />
+				  			<span th:text="${item.getFullPath()}" />
 				  		</div>
 				  	</div>
 				  	
 				  	<div class="row">
 				  		<div class="col-md-2">
-				  			<b>Autor:</b>
+				  			<b>Projeto:</b>
 				  		</div>
 				  		<div class="col-md-10">
-				  			<span th:text="${revision.author}" />
+				  			<span th:text="${project.name}" />
 				  		</div>
 				  	</div>
 				  	
-				  	<div class="row">
-				  		<div class="col-md-2">
-				  			<b>Data:</b>
-				  		</div>
-				  		<div class="col-md-10">
-				  			<span th:text="${revision.dateRevision}" />
-				  		</div>
-				  	</div>
 				  </div>
 				</div>
 			</div>
@@ -103,26 +92,34 @@
 		
 		<hr />
 		
+		<h3>Conteúdo do arquivo</h3>
+		
+		<hr />
+		
 		<div class="row">
 			<div class="col-md-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				  	<h3 class="panel-title">Classes Modificadas</h3>
+				  	<h3 class="panel-title">Revisões</h3>
 				  </div>
 				  
 				  <div class="panel-body">
 				  	<table class="table table-striped">
 				  		<thead>
-				  			<th>Tipo</th>
-				  			<th>Caminho</th>
+				  			<th>Revisão</th>
+				  			<th>Comentário</th>
+				  			<th>Autor</th>
+				  			<th>Data</th>
 				  			<th>Detalhes</th>
 				  		</thead>
-				  		<tr th:each="revisionItem : ${revision.revisionItem}">
-				  			<td th:text="${revisionItem.commitType.initial}"></td>
-				  			<td th:text="${revisionItem.repositoryItem.getFullPath()}"></td>
+				  		<tr th:each="revisionItem : ${item.revisionItem}">
+				  			<td th:text="${revisionItem.repositoryRevision.revision}"></td>
+				  			<td th:text="${revisionItem.repositoryRevision.comment}"></td>
+				  			<td th:text="${revisionItem.repositoryRevision.author}"></td>
+				  			<td th:text="${revisionItem.repositoryRevision.dateRevision}"></td>
 				  			<td>
-				  				<form action="#" th:action="@{/dashboard/item_details}" method="post">
-				  					<input type="hidden" name="idItem" th:value="${revisionItem.repositoryItem.id}" />
+				  				<form action="#" th:action="@{/dashboard/revision_details}" method="post">
+				  					<input type="hidden" name="idRevision" th:value="${revisionItem.repositoryRevision.id}" />
 				  					<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 				  				</form>
 				  			</td>

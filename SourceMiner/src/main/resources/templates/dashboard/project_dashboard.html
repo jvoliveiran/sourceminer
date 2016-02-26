@@ -89,6 +89,10 @@
 							<div class="row">
 								<div class="col-md-12">
 									<span th:text="${item.name}"></span>
+									<form action="#" th:action="@{/dashboard/item_details}" method="post" >
+										<input type="hidden" name="idItem" th:value="${item.id}" />
+			    						<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
+									</form>
 								</div>
 							</div>
 							<hr/>

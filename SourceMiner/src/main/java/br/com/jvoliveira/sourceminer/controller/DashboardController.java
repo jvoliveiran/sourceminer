@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
+import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.service.DashboardService;
 
@@ -51,5 +52,16 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("project", revision.getProject());
 		
 		return forward("revision_details");
+	}
+	
+	@RequestMapping(value = "/item_details", method = RequestMethod.POST)
+	public String itemDetails(@RequestParam Long idItem, Model model){
+		
+		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
+		
+		model.addAttribute("item", item);
+		model.addAttribute("project", item.getProject());
+		
+		return forward("item_details");
 	}
 }
