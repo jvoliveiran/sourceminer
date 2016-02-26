@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -52,6 +53,10 @@ public class RepositoryItem implements ObjectDB{
 			inverseJoinColumns = { @JoinColumn(name = "id_repository_revision") }
 			)
 	private List<RepositoryRevision> repositoryRevision = new ArrayList<RepositoryRevision>();
+	
+	@ManyToOne
+	@JoinColumn(name="id_project")
+	private Project project;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -121,6 +126,14 @@ public class RepositoryItem implements ObjectDB{
 
 	public void setRepositoryRevision(List<RepositoryRevision> repositoryRevision) {
 		this.repositoryRevision = repositoryRevision;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
 	}
 	
 }

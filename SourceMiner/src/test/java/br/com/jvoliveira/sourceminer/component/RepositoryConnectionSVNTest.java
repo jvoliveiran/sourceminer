@@ -42,6 +42,8 @@ public class RepositoryConnectionSVNTest {
 		project = new Project();
 		project.setRepositoryConnector(connector);
 		project.setPath("/jgitcomponent");
+		
+		testOpenConnection();
 	}
 	
 	@After
@@ -57,15 +59,21 @@ public class RepositoryConnectionSVNTest {
 	
 	@Test
 	public void testGetAllRepositoryItens(){
-		testOpenConnection();
 		List<RepositoryItem> repositoryItens = connection.getAllProjectItens(project);
 		Assert.assertNotNull(repositoryItens);
 	}
 	
 	@Test
 	public void testGetAllProjectRevisions(){
-		testOpenConnection();
 		List<RepositoryRevision> repositoryRevision = connection.getAllProjectRevision(project);
 		Assert.assertNotNull(repositoryRevision);
+	}
+	
+	@Test
+	public void testGetLastProjectRevision(){
+		List<RepositoryRevision> repositoryRevision = connection.getRevisionsInRange(project, -1, -1);
+		Long lastRevision = repositoryRevision.get(0).getRevision();
+		Assert.assertNotNull(repositoryRevision);
+		Assert.assertEquals((new Long(15)).longValue(), lastRevision.longValue());
 	}
 }

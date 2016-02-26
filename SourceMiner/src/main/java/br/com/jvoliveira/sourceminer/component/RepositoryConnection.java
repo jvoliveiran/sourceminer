@@ -36,6 +36,12 @@ public interface RepositoryConnection {
 	
 	List<RepositoryItem> getAllProjectItens(Project project);
 	
+	List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision);
+	
 	List<RepositoryRevision> getAllProjectRevision(Project project);
+	
+	List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end);
+	
+	Long getLastRevisionNumber(Project project);
 	
 }

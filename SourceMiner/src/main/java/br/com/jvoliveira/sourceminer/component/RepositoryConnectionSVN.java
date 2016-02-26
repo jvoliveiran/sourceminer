@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
+import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
@@ -20,6 +22,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import br.com.jvoliveira.arq.utils.StringUtils;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
@@ -70,6 +73,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			repository.setAuthenticationManager(authManager);
 			
 		} catch (SVNException e) {
+			//TODO: Tratar exceção
 			e.printStackTrace();
 			System.err.println("Não foi possível estabelecer conexão com o repositório");
 		}
@@ -110,6 +114,15 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return repositoryItem;
 	}
 	
+	private RepositoryItem parseEntryPathToRepositoryItem(SVNLogEntryPath logEntryPath){
+		RepositoryItem repositoryItem = new RepositoryItem();
+		
+		repositoryItem.setName(StringUtils.getFileNameInPath(logEntryPath.getPath(), "/"));
+		repositoryItem.setPath(logEntryPath.getPath());
+		
+		return repositoryItem;
+	}
+	
 	private RepositoryRevision parseLogEntryToRepositoryRevision(SVNLogEntry logEntry){
 		RepositoryRevision repositoryRevision = new RepositoryRevision();
 		
@@ -131,9 +144,68 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return repositoryItens;
 	}
 	
+	public List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision){
+		List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
+		
+		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), startRevision, endRevision);
+		
+		Iterator<SVNLogEntry> iteratorEntries = entries.iterator();
+		
+		while(iteratorEntries.hasNext()){
+			SVNLogEntry revisionLog = iteratorEntries.next();
+			if ( revisionLog.getChangedPaths( ).size( ) > 0 ) {
+				Set<String> changedPathsSet = revisionLog.getChangedPaths( ).keySet( );
+				
+				 for ( Iterator changedPaths = changedPathsSet.iterator( ); changedPaths.hasNext( ); ) {
+					 SVNLogEntryPath entryPath = ( SVNLogEntryPath ) revisionLog.getChangedPaths( ).get( changedPaths.next( ) );
+	                 if(isNewJavaFile(entryPath)){
+	                	 RepositoryItem item = parseEntryPathToRepositoryItem(entryPath);
+	                	 repositoryItens.add(item);
+	                	 
+	                	 //TODO: Refatorar
+	                	 /*
+	                	  * Criar um pojo com a classe RepositoryRevisionItem
+	                	  * Adicionar a classe RepositoryItem que será salva
+	                	  * Criar pojo com RepositoryRevision setando o número da revisão que será recuperado no service
+	                	  */
+	                	 
+	                	 /*
+	                	  * Criar else para o método isUpdateJavaFile.
+	                	  * Será criado um atributo transient em RepositoryItem que será verificado
+	                	  * no service, para buscar o item correspondente.
+	                	  */
+	                 }
+				 }
+			}
+		}
+		
+		return repositoryItens;
+	}
+	
+	private boolean isNewJavaFile(SVNLogEntryPath entryPath){
+		return entryPath.getKind() == SVNNodeKind.FILE 
+       		 && entryPath.getPath().contains(".java")
+       		 && entryPath.getType() == 'A';
+	}
+	
 	private List<RepositoryRevision> listRevisions(String path, Integer startRevision, Integer endRevision) {
-		Collection<SVNLogEntry> revisions = null;
 		List<RepositoryRevision> repositoryRevisions = new ArrayList<RepositoryRevision>();
+		Collection<SVNLogEntry> revisions = getSVNLogEntryByRevision(path, startRevision, endRevision);
+		
+		Iterator<SVNLogEntry> iteratorRevisions = revisions.iterator();
+		
+		while(iteratorRevisions.hasNext()){
+			SVNLogEntry revision = iteratorRevisions.next();
+			RepositoryRevision repositoryRevision = parseLogEntryToRepositoryRevision(revision);
+			repositoryRevisions.add(repositoryRevision);
+		}
+		
+		return repositoryRevisions;
+	}
+
+	private Collection<SVNLogEntry> getSVNLogEntryByRevision(String path, Integer startRevision,
+			Integer endRevision) {
+		Collection<SVNLogEntry> revisions = new ArrayList<SVNLogEntry>();
 		try {
 			revisions = repository.log(new String[]{path}, null, startRevision, endRevision, true, true);
 			
@@ -141,8 +213,8 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			while(iteratorRevisions.hasNext()){
 				SVNLogEntry revision = iteratorRevisions.next();
 				
-				RepositoryRevision repositoryRevision = parseLogEntryToRepositoryRevision(revision);
-				repositoryRevisions.add(repositoryRevision);
+				if(!revisions.contains(revision))
+					revisions.add(revision);
 			}
 			
 		} catch (SVNException e) {
@@ -150,13 +222,23 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			System.err.println("Não foi possível recuperar as revisões no repositório");
 		}
 		
-		return repositoryRevisions;
+		return revisions;
 	}
 	
 	@Override
 	public List<RepositoryRevision> getAllProjectRevision(Project project) {
 		return listRevisions(project.getPath(), 1, -1);
-	}	
+	}
+	
+	public List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end) {
+		return listRevisions(project.getPath(), start, end);
+	}
+	
+	public Long getLastRevisionNumber(Project project){
+		List<RepositoryRevision> repositoryRevision = getRevisionsInRange(project,-1,-1);
+		Long lastRevision = repositoryRevision.get(0).getRevision();
+		return lastRevision;
+	}
 	
 	@Override
 	public void closeConnection() {
