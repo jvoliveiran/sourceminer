@@ -16,3 +16,10 @@ INSERT INTO permission(id_permission,name,ativo) VALUES (1,'permission_read',tru
 INSERT INTO permission(id_permission,name,ativo) VALUES (2,'permission_create',true);
 INSERT INTO permission(id_permission,name,ativo) VALUES (3,'permission_update',true);
 INSERT INTO permission(id_permission,name,ativo) VALUES (4,'permission_delete',false);
+
+INSERT INTO repository_connector(id_repository_connector,name,description, username, password, id_user, url, location, version_manager)
+VALUES(1,'SourceMiner SVN', 'Repositório SVN para teste do SourceMiner',null,null,2,'file:///Users/MacBook/Documents/SVNRepo',
+'LOCAL','SVN');
+
+INSERT INTO project(id_project,name,path,id_repository_connector)
+VALUES(1,'JGITComponent','/jgitcomponent',1);
