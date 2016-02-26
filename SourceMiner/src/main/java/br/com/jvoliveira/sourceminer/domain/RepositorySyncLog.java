@@ -76,4 +76,20 @@ public class RepositorySyncLog implements ObjectDB{
 				+ "para essa classe de domínio");
 	}
 
+	public Long getHeadRevision() {
+		return headRevision;
+	}
+
+	public void setHeadRevision(Long headRevision) {
+		this.headRevision = headRevision;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
 }
