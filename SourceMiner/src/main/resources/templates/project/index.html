@@ -35,7 +35,7 @@
 						<td th:text="${item.name}"></td>
 						<td th:text="${item.path}"></td>
 						<td>
-							<form action="#" th:action="@{/project/project_dashboard}" method="post" >
+							<form action="#" th:action="@{/dashboard/project_dashboard}" method="post" >
 			    				<input type="hidden" name="idProject" th:value="${item.id}" />
 			    				<input type="submit" class="btn btn-default btn-xs" value="Dashboard" />
 			    			</form>
