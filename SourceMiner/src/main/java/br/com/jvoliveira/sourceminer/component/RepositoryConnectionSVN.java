@@ -22,7 +22,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import br.com.jvoliveira.arq.utils.StringUtils;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
@@ -36,6 +35,8 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 
 	private RepositoryConnector connector;
 	private SVNRepository repository;
+	
+	private RepositoryParseSVN parse = new RepositoryParseSVN();
 	
 	public RepositoryConnectionSVN(){
 		
@@ -53,6 +54,11 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public void setConnector(RepositoryConnector connector) {
 		this.connector = connector;
+	}
+	
+	@Override
+	public RepositoryParse getParse() {
+		return this.parse;
 	}
 	
 	@Override
@@ -78,6 +84,16 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			System.err.println("Não foi possível estabelecer conexão com o repositório");
 		}
 	}
+
+	@Override
+	public List<RepositoryItem> getAllProjectItens(Project project) {
+		String path = project.getPath();
+		List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
+		
+		listEntries(path,repositoryItens);
+		
+		return repositoryItens;
+	}
 	
 	private void listEntries(String path, List<RepositoryItem> listEntries) {
 		Collection<SVNDirEntry> entries;
@@ -92,7 +108,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 				if ( entry.getKind() == SVNNodeKind.DIR ) {
 					listEntries( ( path.equals( "" ) ) ? entry.getName( ) : path + "/" + entry.getName( ), listEntries );
 				}else if(entry.getKind() == SVNNodeKind.FILE && entry.getName().contains(".java")){
-					RepositoryItem repositoryItem = parseDirEntryToRepositoryItem(entry, path);
+					RepositoryItem repositoryItem = parse.parseDirEntryToRepositoryItem(entry, path);
 					if(!listEntries.contains(repositoryItem))
 						listEntries.add(repositoryItem);
 				}
@@ -105,45 +121,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		}
 	}
 	
-	private RepositoryItem parseDirEntryToRepositoryItem(SVNDirEntry dirEntry, String path){
-		RepositoryItem repositoryItem = new RepositoryItem();
-		
-		repositoryItem.setName(dirEntry.getName());
-		repositoryItem.setPath(path);
-		
-		return repositoryItem;
-	}
-	
-	private RepositoryItem parseEntryPathToRepositoryItem(SVNLogEntryPath logEntryPath){
-		RepositoryItem repositoryItem = new RepositoryItem();
-		
-		repositoryItem.setName(StringUtils.getFileNameInPath(logEntryPath.getPath(), "/"));
-		repositoryItem.setPath(logEntryPath.getPath());
-		
-		return repositoryItem;
-	}
-	
-	private RepositoryRevision parseLogEntryToRepositoryRevision(SVNLogEntry logEntry){
-		RepositoryRevision repositoryRevision = new RepositoryRevision();
-		
-		repositoryRevision.setRevision(logEntry.getRevision());
-		repositoryRevision.setDateRevision(logEntry.getDate());
-		repositoryRevision.setComment(logEntry.getMessage());
-		repositoryRevision.setAuthor(logEntry.getAuthor());
-		
-		return repositoryRevision;
-	}
-	
 	@Override
-	public List<RepositoryItem> getAllProjectItens(Project project) {
-		String path = project.getPath();
-		List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
-		
-		listEntries(path,repositoryItens);
-		
-		return repositoryItens;
-	}
-	
 	public List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision){
 		List<RepositoryItem> repositoryItens = new ArrayList<RepositoryItem>();
 		
@@ -159,7 +137,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 				 for ( Iterator changedPaths = changedPathsSet.iterator( ); changedPaths.hasNext( ); ) {
 					 SVNLogEntryPath entryPath = ( SVNLogEntryPath ) revisionLog.getChangedPaths( ).get( changedPaths.next( ) );
 	                 if(isNewJavaFile(entryPath)){
-	                	 RepositoryItem item = parseEntryPathToRepositoryItem(entryPath);
+	                	 RepositoryItem item = parse.parseToRepositoryItem(entryPath);
 	                	 repositoryItens.add(item);
 	                	 
 	                	 //TODO: Refatorar
@@ -188,6 +166,23 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
        		 && entryPath.getType() == 'A';
 	}
 	
+	@Override
+	public List<RepositoryRevision> getAllProjectRevision(Project project) {
+		return listRevisions(project.getPath(), 1, -1);
+	}
+	
+	@Override
+	public List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end) {
+		return listRevisions(project.getPath(), start, end);
+	}
+	
+	@Override
+	public Long getLastRevisionNumber(Project project){
+		List<RepositoryRevision> repositoryRevision = getRevisionsInRange(project,-1,-1);
+		Long lastRevision = repositoryRevision.get(0).getRevision();
+		return lastRevision;
+	}
+	
 	private List<RepositoryRevision> listRevisions(String path, Integer startRevision, Integer endRevision) {
 		List<RepositoryRevision> repositoryRevisions = new ArrayList<RepositoryRevision>();
 		Collection<SVNLogEntry> revisions = getSVNLogEntryByRevision(path, startRevision, endRevision);
@@ -196,7 +191,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		
 		while(iteratorRevisions.hasNext()){
 			SVNLogEntry revision = iteratorRevisions.next();
-			RepositoryRevision repositoryRevision = parseLogEntryToRepositoryRevision(revision);
+			RepositoryRevision repositoryRevision = parse.parseToRepositoryRevision(revision);
 			repositoryRevisions.add(repositoryRevision);
 		}
 		
@@ -226,21 +221,6 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 	
 	@Override
-	public List<RepositoryRevision> getAllProjectRevision(Project project) {
-		return listRevisions(project.getPath(), 1, -1);
-	}
-	
-	public List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end) {
-		return listRevisions(project.getPath(), start, end);
-	}
-	
-	public Long getLastRevisionNumber(Project project){
-		List<RepositoryRevision> repositoryRevision = getRevisionsInRange(project,-1,-1);
-		Long lastRevision = repositoryRevision.get(0).getRevision();
-		return lastRevision;
-	}
-	
-	@Override
 	public void closeConnection() {
 		if(this.repository != null)
 			this.repository.closeSession();
@@ -266,6 +246,6 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public Boolean isCVS() {
 		return false;
-	}
+	}	
 	
 }

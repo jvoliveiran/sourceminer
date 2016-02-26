@@ -20,6 +20,8 @@ public interface RepositoryConnection {
 	
 	void setConnector(RepositoryConnector connector);
 	
+	RepositoryParse getParse();
+	
 	void openConnection();
 	
 	void closeConnection();
