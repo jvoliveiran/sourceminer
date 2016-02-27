@@ -49,4 +49,6 @@ public interface RepositoryConnection {
 	
 	Long getLastRevisionNumber(Project project);
 	
+	String getFileContent(String path, Long revision);
+	
 }

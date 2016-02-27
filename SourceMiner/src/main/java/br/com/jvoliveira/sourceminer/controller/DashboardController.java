@@ -58,9 +58,11 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String itemDetails(@RequestParam Long idItem, Model model){
 		
 		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
+		String fileContent = ((DashboardService)service).getFileContentInRevision(item.getPath(), new Long(-1));
 		
 		model.addAttribute("item", item);
 		model.addAttribute("project", item.getProject());
+		model.addAttribute("fileContent", fileContent);
 		
 		return forward("item_details");
 	}

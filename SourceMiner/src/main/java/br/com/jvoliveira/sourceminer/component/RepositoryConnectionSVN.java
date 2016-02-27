@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.component;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -22,6 +24,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import br.com.jvoliveira.arq.utils.StringUtils;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
@@ -226,6 +229,29 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		
 		return revisions;
 	}
+
+	@Override
+	public String getFileContent(String path, Long revision) {
+		try {
+			SVNNodeKind nodeKind = repository.checkPath(path, revision);
+			
+			if(nodeKind != SVNNodeKind.FILE){
+				System.err.println("O caminho indicado não se refere a um arquivo");
+				throw new RuntimeException("O caminho indicado não se refere a um arquivo");
+			}else{
+				SVNProperties svnProperties = new SVNProperties();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				
+				repository.getFile(path, revision, svnProperties, baos);
+				
+				return StringUtils.getFromCharBuffer(baos);
+			}
+			
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}	
 	
 	@Override
 	public void closeConnection() {
@@ -260,6 +286,6 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			Integer startRevision, Integer endRevision) {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}
 	
 }

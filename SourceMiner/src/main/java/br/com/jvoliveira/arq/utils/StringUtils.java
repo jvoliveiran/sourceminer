@@ -3,6 +3,13 @@
  */
 package br.com.jvoliveira.arq.utils;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
 /**
  * @author Joao Victor
  *
@@ -16,6 +23,22 @@ public class StringUtils {
 		String name = path.substring(lastIndex+1, path.length());
 		
 		return name;
+	}
+	
+	public static String getFromCharBuffer(OutputStream buffer){
+		ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) buffer;
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
+		String line = null;
+		StringBuffer sb = new StringBuffer();
+		try {
+			while ((line = bufferedReader.readLine()) != null)
+			    sb.append(line + " \n ");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return sb.toString();
 	}
 	
 }

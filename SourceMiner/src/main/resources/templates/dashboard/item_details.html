@@ -72,7 +72,7 @@
 				  			<b>Path:</b>
 				  		</div>
 				  		<div class="col-md-10">
-				  			<span th:text="${item.getFullPath()}" />
+				  			<span th:text="${item.path}" />
 				  		</div>
 				  	</div>
 				  	
@@ -93,6 +93,24 @@
 		<hr />
 		
 		<h3>Conteúdo do arquivo</h3>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">
+				  		<span th:text="${item.name}" /> - Head Revision
+				  	</h3>
+				  </div>
+				  <div class="panel-boddy">
+				  	<div class="code-block">
+				  		<pre>
+				  			<code th:text="${fileContent}"></code>
+				  		</pre>
+				  	</div>
+				  </div>
+				</div>
+			</div>
+		</div>
 		
 		<hr />
 		
@@ -129,6 +147,8 @@
 				</div>
 			</div>
 		</div>
+		
+		<hr />
 		
 	</div>
 	

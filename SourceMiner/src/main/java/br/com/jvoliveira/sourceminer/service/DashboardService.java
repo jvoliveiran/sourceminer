@@ -137,6 +137,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		return itemRepository.findOne(id);
 	}
 	
+	public String getFileContentInRevision(String path, Long revision){
+		return this.connection.getConnection().getFileContent(path, revision);
+	}
+	
 	@Autowired
 	public void setSyncLogRepository(RepositorySyncLogRepository syncLogRepository){
 		this.syncLogRepository = syncLogRepository;
