@@ -44,10 +44,10 @@
 		
 		<!-- Segunda linha -->
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				  	<h3 class="panel-title">Últimos Commits</h3>
+				  	<h3 class="panel-title">Revisions</h3>
 				  </div>
 				  <div class="panel-body">
 				    
@@ -56,25 +56,39 @@
 					</div>
 					
 					<div th:if="!${#lists.isEmpty(revisions)}">
-						<div th:each="revision : ${revisions}">
-							<div class="row">
-								<div class="col-md-12">
-									<span th:text="${revision.getFullDescription()}"></span>
-									<form action="#" th:action="@{/dashboard/revision_details}" method="post" >
+						<table class="table table-striped">
+					  		<thead>
+					  			<th>Revisão</th>
+					  			<th>Comentário</th>
+					  			<th>Autor</th>
+					  			<th>Data</th>
+					  			<th>Detalhes</th>
+					  		</thead>
+					  		<tr th:each="revision : ${revisions}">
+					  			<td th:text="${revision.revision}"></td>
+					  			<td th:text="${revision.comment}"></td>
+					  			<td th:text="${revision.author}"></td>
+					  			<td th:text="${revision.dateRevision}"></td>
+					  			<td>
+					  				<form action="#" th:action="@{/dashboard/revision_details}" method="post" >
 										<input type="hidden" name="idRevision" th:value="${revision.id}" />
 			    						<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 									</form>
-								</div>
-							</div>
-							<hr/>
-						</div>
+					  			</td>
+					  		</tr>
+					  	</table>
 					</div>
-				    
+					
 				  </div>
 				</div>
+				
 			</div>
-			
-  			<div class="col-md-6">
+		</div>
+		
+		<hr />
+		
+		<div class="row">	
+  			<div class="col-md-12">
   				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Arquivos</h3>
@@ -85,18 +99,24 @@
 					</div>
 					
 					<div th:if="!${#lists.isEmpty(itens)}">
-						<div th:each="item : ${itens}">
-							<div class="row">
-								<div class="col-md-12">
-									<span th:text="${item.name}"></span>
-									<form action="#" th:action="@{/dashboard/item_details}" method="post" >
-										<input type="hidden" name="idItem" th:value="${item.id}" />
-			    						<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
-									</form>
-								</div>
-							</div>
-							<hr/>
-						</div>
+						<table class="table table-striped">
+					  		<thead>
+					  			<th>Nome</th>
+					  			<th>Caminho</th>
+					  			<th>Detalhes</th>
+					  		</thead>
+					  		<tr th:each="item : ${itens}">
+					  			<td th:text="${item.name}"></td>
+					  			<td th:text="${item.path}"></td>
+					  			<td>
+					  				<form action="#" th:action="@{/dashboard/item_details}" method="post">
+					  					<input type="hidden" name="idItem" th:value="${item.id}" />
+					  					<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
+					  				</form>
+					  			</td>
+					  		</tr>
+					  	</table>
+					
 					</div>
 					
 				  </div>
