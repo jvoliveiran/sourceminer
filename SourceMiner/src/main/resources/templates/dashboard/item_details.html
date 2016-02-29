@@ -1,6 +1,31 @@
 <html layout:decorator="layouts/layout">
 	<head>
 		<meta charset="UTF-8"/>
+		
+		<script type="text/javascript">
+		
+		function getFileContentInRevision(path){
+			var revisionNumber = $("#revisionFile").val();
+			
+			$.ajax({
+	            type: "POST",
+	            url: "/SourceMiner/dashboard/file_content_revision",
+	            data: { 'revisionNumber': revisionNumber, 'path': path  },
+	            success: changeFileContentRevision,
+	            error : function(e) {
+					console.log("ERROR: ", e);
+				},
+				done : function(e) {
+					console.log("DONE");
+				}
+	            });
+		}
+		
+		function changeFileContentRevision(data, status){
+			$('#fileContentBox').text(data);
+		}
+		</script>
+		
 	</head>
 	
 	<div layout:fragment="content">
@@ -98,13 +123,24 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">
-				  		<span th:text="${item.name}" /> - Head Revision
+				  		<div class="row">
+					  		<div class="col-md-11">
+					  			<span th:text="${item.name}" />
+					  		</div>
+					  		<div class="col-md-1">
+					  			<select class="form-control" id="revisionFile" th:onchange="'getFileContentInRevision(\'' + ${item.path} + '\');'">
+								    <option th:each="revisionNumber: ${revisionsNumber}"
+								            th:value="${revisionNumber}"
+								            th:text="${revisionNumber}">Local</option>
+								</select>
+							</div>
+						</div>
 				  	</h3>
 				  </div>
 				  <div class="panel-boddy">
 				  	<div class="code-block">
 				  		<pre>
-				  			<code th:text="${fileContent}"></code>
+				  			<code th:text="${fileContent}" id="fileContentBox"></code>
 				  		</pre>
 				  	</div>
 				  </div>

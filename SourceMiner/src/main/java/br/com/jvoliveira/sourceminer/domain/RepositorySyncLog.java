@@ -16,8 +16,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
 /**
@@ -66,14 +64,12 @@ public class RepositorySyncLog implements ObjectDB{
 
 	@Override
 	public void setUpdateAt(Date date) {
-		throw new NotImplementedException("Método não implementado "
-				+ "para essa classe de domínio");
+		return;
 	}
 
 	@Override
 	public Date getUpdateAt() {
-		throw new NotImplementedException("Método não implementado "
-				+ "para essa classe de domínio");
+		return null;
 	}
 
 	public Long getHeadRevision() {

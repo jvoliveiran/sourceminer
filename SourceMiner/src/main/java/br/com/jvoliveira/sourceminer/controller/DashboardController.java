@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
@@ -63,7 +64,15 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("item", item);
 		model.addAttribute("project", item.getProject());
 		model.addAttribute("fileContent", fileContent);
+		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
 		
 		return forward("item_details");
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
+	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){
+		return ((DashboardService)service).getFileContentInRevision(path, revisionNumber);
+	}
+	
 }

@@ -4,18 +4,16 @@
 package br.com.jvoliveira.sourceminer.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -135,5 +133,16 @@ public class RepositoryItem implements ObjectDB{
 	public void setRevisionItem(List<RepositoryRevisionItem> revisionItem) {
 		this.revisionItem = revisionItem;
 	}
-	
+
+	public List<Long> getAllRevisionsNumber(){
+		List<Long> revisionsNumber = new ArrayList<>();
+		if(this.revisionItem != null && this.revisionItem.size() > 0){
+			for(RepositoryRevisionItem revisionItem : this.revisionItem)
+				revisionsNumber.add(revisionItem.getRepositoryRevision().getRevision());
+			
+			Comparator<Long> comparator = (revision1, revision2) -> revision1.compareTo(revision2);
+			revisionsNumber.sort(comparator.reversed());
+		}
+		return revisionsNumber;
+	}
 }
