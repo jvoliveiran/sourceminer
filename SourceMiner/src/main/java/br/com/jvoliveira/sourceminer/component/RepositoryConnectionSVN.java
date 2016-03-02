@@ -17,7 +17,10 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
+import org.tmatesoft.svn.core.auth.SVNAuthentication;
+import org.tmatesoft.svn.core.auth.SVNPasswordAuthentication;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.io.SVNRepository;
@@ -78,8 +81,13 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			ISVNAuthenticationManager authManager;
 			if(connector.isAnonymousConnection())
 				authManager = SVNWCUtil.createDefaultAuthenticationManager();
-			else
-				authManager = SVNWCUtil.createDefaultAuthenticationManager(connector.getUsername(), connector.getPassword().toCharArray());
+			else{
+				authManager = 
+						  new BasicAuthenticationManager(new SVNAuthentication[] {
+						        new SVNPasswordAuthentication(connector.getUsername(), connector.getPassword(), 
+						                                      false, SVNURL.parseURIEncoded(this.connector.getUrl()), false),
+						  });
+			}
 			
 			repository.setAuthenticationManager(authManager);
 			
