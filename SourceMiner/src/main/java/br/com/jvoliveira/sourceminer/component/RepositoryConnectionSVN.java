@@ -72,12 +72,12 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public void openConnection() {
 		try {
-			if(connector.getLocation().isLocal())
+			if(connector.getRepositoryLocation().getLocationType().isLocal())
 				FSRepositoryFactory.setup();
-			else if(connector.getLocation().isRemote())
+			else if(connector.getRepositoryLocation().getLocationType().isRemote())
 				DAVRepositoryFactory.setup();
 			
-			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(this.connector.getUrl()));
+			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(this.connector.getRepositoryLocation().getUrl()));
 			ISVNAuthenticationManager authManager;
 			if(connector.isAnonymousConnection())
 				authManager = SVNWCUtil.createDefaultAuthenticationManager();
@@ -85,7 +85,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 				authManager = 
 						  new BasicAuthenticationManager(new SVNAuthentication[] {
 						        new SVNPasswordAuthentication(connector.getUsername(), connector.getPassword(), 
-						                                      false, SVNURL.parseURIEncoded(this.connector.getUrl()), false),
+						                                      false, SVNURL.parseURIEncoded(this.connector.getRepositoryLocation().getUrl()), false),
 						  });
 			}
 			

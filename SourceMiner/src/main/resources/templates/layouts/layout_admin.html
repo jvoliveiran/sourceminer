@@ -1,0 +1,38 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="content">
+		<h3>Área Administrativa</h3>
+		
+		<div class="row">
+			<!-- Menu Admin -->
+			<div class="col-lg-3">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<ul class="nav nav-pills nav-stacked">
+							<li role="presentation"><a href="#">Repositórios</a></li>
+							<li role="presentation"><a href="#">Projetos</a></li>
+							<li role="presentation"><a href="#">Usuários</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-lg-9">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div layout:fragment="admin_content">
+					    	<!-- Conteúdo -->
+					    </div>
+					</div>
+				</div> 
+			</div>
+		</div>
+		
+		<hr />
+			
+	</div>
+
+</html>

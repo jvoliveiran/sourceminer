@@ -15,7 +15,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocation;
+import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocationType;
 import br.com.jvoliveira.sourceminer.domain.enums.RepositoryVersionManager;
 
 /**
@@ -33,9 +33,9 @@ public class RepositoryConnectionSVNTest {
 	@Before
 	public void setup(){
 		connector = new RepositoryConnector();
-		connector.setUrl("file:///Users/MacBook/Documents/SVNRepo");
-		connector.setLocation(RepositoryLocation.LOCAL);
-		connector.setVersionManager(RepositoryVersionManager.SVN);
+		connector.getRepositoryLocation().setUrl("file:///Users/MacBook/Documents/SVNRepo");
+		connector.getRepositoryLocation().setLocation(RepositoryLocationType.LOCAL);
+		connector.getRepositoryLocation().setVersionManager(RepositoryVersionManager.SVN);
 		
 		connection = new RepositoryConnectionSVN(connector);
 		

@@ -1,0 +1,45 @@
+<html layout:decorator="layouts/layout_admin">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="admin_content">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Repositórios</h3>
+				  </div>
+				  
+				  <div class="panel-body">
+				  	<div class="row">
+						<div class="col-md-12">
+							<a class="btn btn-primary" th:href="@{/repository_location/create}">
+								Novo <span th:text="${controllerTitle}"/>
+							</a>
+						</div>
+					</div>
+				  	<hr />
+				  	<table class="table table-striped">
+				  		<thead>
+				  			<th>Nome</th>
+				  			<th>URL</th>
+				  			<th>Localização</th>
+				  			<th>Versionamento</th>
+				  			<th>Ativo</th>
+				  		</thead>
+				  		<tr th:each="repository : ${list}">
+				  			<td th:text="${repository.name}"></td>
+				  			<td th:text="${repository.url}"></td>
+				  			<td th:text="${repository.versionManager.versionManager}"></td>
+				  			<td th:text="${repository.locationType.location}"></td>
+				  			<td th:text="${repository.getEnableDesc()}"></td>
+				  		</tr>
+				  	</table>
+				  </div> 
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</html>

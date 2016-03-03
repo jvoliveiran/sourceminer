@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocation;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryVersionManager;
+import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
+import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocationType;
 import br.com.jvoliveira.sourceminer.service.RepositoryConnectorService;
+import br.com.jvoliveira.sourceminer.service.RepositoryLocationService;
 
 
 /**
@@ -27,21 +28,20 @@ import br.com.jvoliveira.sourceminer.service.RepositoryConnectorService;
 @RequestMapping("/repository_connector")
 public class RepositoryConnectorController extends AbstractArqController<RepositoryConnector>{
 
+	private RepositoryLocationService locationService;
+	
 	@Autowired
-	public RepositoryConnectorController(RepositoryConnectorService service){
+	public RepositoryConnectorController(RepositoryConnectorService service,
+			RepositoryLocationService locationService){
 		path = "repository_connector";
 		title = "Repositório";
 		this.service = service;
+		this.locationService = locationService;
 	}
 	
 	@ModelAttribute("repositoryLocations")
 	public List<RepositoryLocation> getRepositoryLocationList(){
-		return RepositoryLocation.getValues();
-	}
-	
-	@ModelAttribute("versionManagers")
-	public List<RepositoryVersionManager> getVersionManagerList(){
-		return RepositoryVersionManager.getValues();
+		return locationService.getAllEnable();
 	}
 	
 	@Override

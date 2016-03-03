@@ -7,8 +7,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,8 +18,6 @@ import javax.persistence.TemporalType;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.security.domain.User;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocation;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryVersionManager;
 
 /**
  * @author Joao Victor
@@ -48,19 +44,12 @@ public class RepositoryConnector implements ObjectDB {
 	private String password;
 	
 	@ManyToOne
+	@JoinColumn(name="id_repository_location")
+	private RepositoryLocation repositoryLocation;
+	
+	@ManyToOne
 	@JoinColumn(name="id_user")
 	private User user;
-	
-	@Column(name="url")
-	private String url;
-	
-	@Enumerated(EnumType.STRING)
-    @Column(name="location")
-	private RepositoryLocation location;
-	
-	@Enumerated(EnumType.STRING)
-    @Column(name="version_manager")
-	private RepositoryVersionManager versionManager;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -112,38 +101,6 @@ public class RepositoryConnector implements ObjectDB {
 		this.user = user;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public RepositoryLocation getLocation() {
-		return location;
-	}
-
-	public String getLocationName() {
-		return location.getLocation();
-	}
-	
-	public void setLocation(RepositoryLocation location) {
-		this.location = location;
-	}
-
-	public RepositoryVersionManager getVersionManager() {
-		return versionManager;
-	}
-	
-	public String getVersionManagerName() {
-		return versionManager.getVersionManager();
-	}
-
-	public void setVersionManager(RepositoryVersionManager versionManager) {
-		this.versionManager = versionManager;
-	}
-
 	@Override
 	public void setCreateAt(Date date) {
 		this.createAt = date;
@@ -174,5 +131,13 @@ public class RepositoryConnector implements ObjectDB {
 	
 	public boolean isAnonymousConnection(){
 		return this.username == null && this.password == null;
+	}
+
+	public RepositoryLocation getRepositoryLocation() {
+		return repositoryLocation;
+	}
+
+	public void setRepositoryLocation(RepositoryLocation repositoryLocation) {
+		this.repositoryLocation = repositoryLocation;
 	}
 }

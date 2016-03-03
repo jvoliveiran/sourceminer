@@ -10,13 +10,13 @@ import java.util.List;
  * @author Joao Victor
  *
  */
-public enum RepositoryLocation {
+public enum RepositoryLocationType {
 
 	LOCAL("Local"), REMOTE("Remoto");
 	
 	private String location;
 	
-	private RepositoryLocation(String location){
+	private RepositoryLocationType(String location){
 		this.location = location;
 	}
 	
@@ -32,8 +32,8 @@ public enum RepositoryLocation {
 		return this == LOCAL;
 	}
 	
-	public static List<RepositoryLocation> getValues(){
-		return Arrays.asList(RepositoryLocation.values());
+	public static List<RepositoryLocationType> getValues(){
+		return Arrays.asList(RepositoryLocationType.values());
 	}
 	
 }

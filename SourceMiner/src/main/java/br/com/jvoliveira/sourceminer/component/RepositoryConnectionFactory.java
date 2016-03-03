@@ -13,7 +13,7 @@ public class RepositoryConnectionFactory {
 	
 	//TODO: Implementar factory para demais repositorios
 	public RepositoryConnection buildRepositoryConnection(RepositoryConnector connector){
-		if(connector.getVersionManager().isSVNManager())
+		if(connector.getRepositoryLocation().getVersionManager().isSVNManager())
 			return new RepositoryConnectionSVN(connector); 
 		
 		return null;
