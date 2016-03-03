@@ -8,14 +8,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
-import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocationType;
 import br.com.jvoliveira.sourceminer.service.RepositoryConnectorService;
 import br.com.jvoliveira.sourceminer.service.RepositoryLocationService;
 
@@ -55,12 +57,26 @@ public class RepositoryConnectorController extends AbstractArqController<Reposit
 	public String startConnection(@PathVariable Long idConnector){
 		((RepositoryConnectorService) service).startConnectionWithRepository(idConnector);
 		
-		return redirect("index");
+		return redirectController("/home/index");
+	}
+	
+	@Override
+	@RequestMapping(value="/create", method=RequestMethod.POST)
+	public String save(@Validated RepositoryConnector obj, Errors errors, Model model){
+		
+		if(errors.hasErrors()){
+			model.addAttribute("obj", obj);
+			return forward("form");
+		}
+		
+		service.persist(obj);
+		
+		return redirectController("/home/index");
 	}
 	
 	@RequestMapping("/close_connection")
 	public String closeConnection(){
 		((RepositoryConnectorService) service).closeConnection(this.repositoryConnetionSession);
-		return redirect("index");
+		return redirectController("/home/index");
 	}
 }

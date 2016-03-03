@@ -122,6 +122,10 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 		return "redirect:/" + path + "/" + action;
 	}
 	
+	protected String redirectController(String action){
+		return "redirect:/" + action;
+	}
+	
 	@ModelAttribute("controllerTitle")
 	public String getTitle(){
 		return this.title;

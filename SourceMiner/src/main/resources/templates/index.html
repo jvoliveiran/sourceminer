@@ -7,14 +7,106 @@
 		
 		<!-- Primeira linha -->
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-12">
 			
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Meus Repositórios</h3>
 				  </div>
 				  <div class="panel-body">
-				    Nenhum repositório cadastrado.
+				  	<div class="row">
+						<div class="col-lg-12">
+							<a class="btn btn-primary" th:href="@{/repository_connector/create}">
+								Novo <span th:text="${controllerTitle}"/>
+							</a>
+						</div>
+					</div>
+				  	<hr />
+				  	<div th:if="${#lists.isEmpty(listConnectors)}">
+						<i>Nenhum repositório localizado.</i>
+					</div>
+		
+					<!-- Bloco -->
+					<div class="row" th:if="!${#lists.isEmpty(listConnectors)}">
+						<!-- TODO: Thymeleaf proccess -->
+					
+						<!-- Item Default-->
+						<div class="col-lg-4" th:each="repositorio : ${listConnectors}">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Repositório
+										<span th:text="${repositorio.name}">Nome</span>
+									</h3>
+								</div>
+								<div class="panel-body">
+									<!-- Dados -->
+									<div class="row">
+										<div class="col-lg-4"><b>Usuário: </b></div>
+										<div class="col-lg-8">
+											<span th:text="${repositorio.username}">Usuário</span>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="col-lg-4"><b>Criado em: </b></div>
+										<div class="col-lg-8">
+											<span th:text="${repositorio.createAt}">Criado em</span>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="col-lg-4"><b>URL: </b></div>
+										<div class="col-lg-8">
+											<span th:text="${repositorio.repositoryLocation.url}">URL</span>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="col-lg-4"><b>Localização: </b></div>
+										<div class="col-lg-8">
+											<span th:text="${repositorio.repositoryLocation.locationType.location}">Localização</span>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="col-lg-4"><b>Version: </b></div>
+										<div class="col-lg-8">
+											<span th:text="${repositorio.repositoryLocation.versionManager.versionManager}">Versionamento</span>
+										</div>
+									</div>	
+							
+									<hr />
+						
+									<div class="row">
+										<div class="col-lg-12">
+											<span th:text="${repositorio.description}">Descrição</span><br />
+										</div>
+									</div>
+									
+									<hr />
+									
+									<div class="row">
+										<div class="col-lg-4">
+											<a class="btn btn-success btn-sm" th:href="@{'/repository_connector/start_connection/{id}'(id=${repositorio.id})}">
+												Conectar
+											</a>
+										</div>
+										<div class="col-md-4">
+											<a class="btn btn-default btn-sm">
+												Editar
+											</a>
+										</div>
+										<div class="col-md-4">
+											<a class="btn btn-danger btn-sm">
+												Desconectar
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
 				  </div>
 				</div>
 				
@@ -24,19 +116,8 @@
 		<hr />
 		
 		<!-- Segunda linha -->
-		<div class="row">
-			<div class="col-md-6">
-				<div class="panel panel-default">
-				  <div class="panel-heading">
-				  	<h3 class="panel-title">Últimos Commits</h3>
-				  </div>
-				  <div class="panel-body">
-				    Commits
-				  </div>
-				</div>
-			</div>
-			
-  			<div class="col-md-6">
+		<div class="row">	
+  			<div class="col-lg-12">
   				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Projetos</h3>
