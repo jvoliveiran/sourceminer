@@ -32,11 +32,11 @@
 			<div class="form-group">
 				<label for="versionManager" class="col-sm-2 control-label">Repositório: </label>
 				<div class="col-sm-10">
-					<select th:field="*{repositoryConnector}" class="form-control">
+					<select th:field="*{repositoryLocation}" class="form-control">
 					    <option value="NONE">---- SELECIONE ----</option>
-					    <option th:each="repositoryConn : ${connectors}"
-					            th:value="${repositoryConn.id}"
-					            th:text="${repositoryConn.name}">NULL</option>
+					    <option th:each="repositoryLoc : ${repositories}"
+					            th:value="${repositoryLoc.id}"
+					            th:text="${repositoryLoc.name}">NULL</option>
 					</select>
 				</div>
 			</div>

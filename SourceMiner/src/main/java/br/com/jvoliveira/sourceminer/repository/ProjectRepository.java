@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
-import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
 
 /**
  * @author Joao Victor
@@ -16,6 +16,6 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
  */
 public interface ProjectRepository extends CrudRepository<Project, Long>{
 
-	List<Project> findByRepositoryConnector(RepositoryConnector connector);
+	List<Project> findByRepositoryLocation(RepositoryLocation location);
 	
 }

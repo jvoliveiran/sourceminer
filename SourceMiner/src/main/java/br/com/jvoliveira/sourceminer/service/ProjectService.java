@@ -12,6 +12,7 @@ import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 
 /**
@@ -29,16 +30,16 @@ public class ProjectService extends AbstractArqService<Project>{
 		this.connection = connection;
 	}
 	
-	public List<Project> getAllByConnector(){
+	public List<Project> getAllByRepositoryLocation(){
 		if(connection.getConnection() != null){
-			RepositoryConnector connector = connection.getConnection().getConnector();
-			return ((ProjectRepository) repository).findByRepositoryConnector(connector);			
+			RepositoryLocation location = connection.getConnection().getConnector().getRepositoryLocation();
+			return ((ProjectRepository) repository).findByRepositoryLocation(location);			
 		}
 		return null;
 	}
 	
-	public List<RepositoryConnector> getAllConnectors(){
-		return getDAO().findAll(RepositoryConnector.class);
+	public List<RepositoryLocation> getAllRepositoryLocation(){
+		return getDAO().findAll(RepositoryLocation.class);
 	}
 	
 }

@@ -39,8 +39,8 @@ public class Project implements ObjectDB{
 	private String path;
 	
 	@ManyToOne
-	@JoinColumn(name="id_repository_connector")
-	private RepositoryConnector repositoryConnector;
+	@JoinColumn(name="id_repository_location")
+	private RepositoryLocation repositoryLocation;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -96,12 +96,12 @@ public class Project implements ObjectDB{
 		this.path = path;
 	}
 
-	public RepositoryConnector getRepositoryConnector() {
-		return repositoryConnector;
+	public RepositoryLocation getRepositoryLocation() {
+		return repositoryLocation;
 	}
 
-	public void setRepositoryConnector(RepositoryConnector repositoryConnector) {
-		this.repositoryConnector = repositoryConnector;
+	public void setRepositoryLocation(RepositoryLocation repositoryLocation) {
+		this.repositoryLocation = repositoryLocation;
 	}
 
 }

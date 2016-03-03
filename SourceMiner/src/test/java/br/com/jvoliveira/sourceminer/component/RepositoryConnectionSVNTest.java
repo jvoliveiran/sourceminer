@@ -40,7 +40,7 @@ public class RepositoryConnectionSVNTest {
 		connection = new RepositoryConnectionSVN(connector);
 		
 		project = new Project();
-		project.setRepositoryConnector(connector);
+		//project.setRepositoryConnector(connector);
 		project.setPath("/jgitcomponent");
 		
 		testOpenConnection();

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
-import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
 import br.com.jvoliveira.sourceminer.service.ProjectService;
 
 /**
@@ -34,14 +34,13 @@ public class ProjectController extends AbstractArqController<Project>{
 	@Override
 	@RequestMapping(value = {"","/index"})
 	public String getIndex(Model model){
-		model.addAttribute("list",
-				((ProjectService)service).getAllByConnector());
+		model.addAttribute("list",((ProjectService)service).getAllByRepositoryLocation());
 		return forward("index");
 	}
 	
-	@ModelAttribute("connectors")
-	public List<RepositoryConnector> getAllConnectors(){
-		return ((ProjectService)service).getAllConnectors();
+	@ModelAttribute("repositories")
+	public List<RepositoryLocation> getAllRepositoryLocation(){
+		return ((ProjectService)service).getAllRepositoryLocation();
 	}
 	
 }

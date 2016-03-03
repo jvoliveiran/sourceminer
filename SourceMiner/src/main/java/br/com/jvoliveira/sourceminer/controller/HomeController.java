@@ -28,7 +28,7 @@ public class HomeController extends AbstractArqController<User>{
 	@RequestMapping(value = {"/","/index"})
 	public String getIndex(Model model){
 		model.addAttribute("listConnectors",connectorService.getAllByUser());
-		model.addAttribute("listProject",projectService.getAllByConnector());
+		model.addAttribute("listProject",projectService.getAllByRepositoryLocation());
 		return "index";
 	}
 	
