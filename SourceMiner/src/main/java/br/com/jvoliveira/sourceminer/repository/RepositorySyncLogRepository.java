@@ -14,6 +14,6 @@ import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
  */
 public interface RepositorySyncLogRepository extends CrudRepository<RepositorySyncLog, Long>{
 
-	RepositorySyncLog findByProjectOrderByIdDesc(Project project);
+	RepositorySyncLog findFirstByProjectOrderByIdDesc(Project project);
 	
 }

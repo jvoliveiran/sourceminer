@@ -63,7 +63,7 @@ public class DashboardService extends AbstractArqService<Project>{
 		
 		Long revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
 		
-		RepositorySyncLog lastSyncLog = syncLogRepository.findByProjectOrderByIdDesc(project);
+		RepositorySyncLog lastSyncLog = syncLogRepository.findFirstByProjectOrderByIdDesc(project);
 		
 		if(lastSyncLog != null){
 			Long revisionLastSync = lastSyncLog.getHeadRevision();

@@ -36,7 +36,7 @@ public class RepositoryRevision implements ObjectDB{
 	@Column(name="revision", unique=true)
 	private Long revision;
 	
-	@Column(name="comment")
+	@Column(name="comment", length=3000)
 	private String comment;
 	
 	@Column(name="author")
