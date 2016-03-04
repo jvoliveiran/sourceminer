@@ -1,9 +1,9 @@
-<html layout:decorator="layouts/layout">
+<html layout:decorator="layouts/layout_admin">
 	<head>
 		<meta charset="UTF-8"/>
 	</head>
 	
-	<div layout:fragment="content">
+	<div layout:fragment="admin_content">
 		<div th:if="${obj.id == null}">
 			<h3>Cadastrar <span th:text="${controllerTitle}"/></h3>
 		</div>

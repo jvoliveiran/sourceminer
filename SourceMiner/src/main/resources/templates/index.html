@@ -123,7 +123,35 @@
 				  	<h3 class="panel-title">Projetos</h3>
 				  </div>
 				  <div class="panel-body">
-				    Projeto
+				    <div th:if="${#lists.isEmpty(listProject)}">
+						<i>Nenhum projeto localizado.</i>
+					</div>
+				  	
+				  	<table class="table table-striped" th:if="!${#lists.isEmpty(listProject)}">
+				  		<tr>
+							<th>Nome</th>
+							<th>Caminho</th>
+							<th>Visualizar</th>
+							<th>Editar</th>
+							<th>Remover</th>
+						</tr>
+						<tr th:each="item : ${listProject}">
+							<td th:text="${item.name}"></td>
+							<td th:text="${item.path}"></td>
+							<td>
+								<form action="#" th:action="@{/dashboard/project_dashboard}" method="post" >
+				    				<input type="hidden" name="idProject" th:value="${item.id}" />
+				    				<input type="submit" class="btn btn-default btn-xs" value="Dashboard" />
+				    			</form>
+							</td>
+							<td>
+								<a class="btn btn-warning btn-xs">Edit</a>
+							</td>
+							<td>
+								<a class="btn btn-danger btn-xs">Remove</a>
+							</td>
+						</tr>
+				  	</table>
 				  </div>
 				</div>
   			</div>
