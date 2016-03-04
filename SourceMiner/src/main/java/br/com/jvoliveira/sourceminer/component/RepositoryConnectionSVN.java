@@ -196,9 +196,13 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	
 	@Override
 	public Long getLastRevisionNumber(Project project){
-		List<RepositoryRevision> repositoryRevision = getRevisionsInRange(project,-1,-1);
-		Long lastRevision = repositoryRevision.get(0).getRevision();
-		return lastRevision;
+		try {
+			SVNDirEntry entry = repository.getDir(project.getPath(), -1, false, null);
+			return entry.getRevision();
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	private List<RepositoryRevision> listRevisions(String path, Integer startRevision, Integer endRevision) {
