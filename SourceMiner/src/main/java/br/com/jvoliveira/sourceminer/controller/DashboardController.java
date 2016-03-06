@@ -39,6 +39,9 @@ public class DashboardController extends AbstractArqController<Project>{
 		
 		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
 		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
+		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
+		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
+		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
 		model.addAttribute("project", obj);
 		
 		return forward("project_dashboard");

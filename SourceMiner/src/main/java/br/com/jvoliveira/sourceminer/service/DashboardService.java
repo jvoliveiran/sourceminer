@@ -43,6 +43,14 @@ public class DashboardService extends AbstractArqService<Project>{
 		this.connection = connection;
 	}
 	
+	public Integer getTotalItensInProject(Project project){
+		return itemRepository.countTotalItensByProject(project);
+	}
+	
+	public Integer getTotalRevisionsInProject(Project project){
+		return revisionRepository.countTotalItensByProject(project);
+	}
+	
 	public List<RepositoryItem> getAllItensInProject(Project project){
 		if(this.connection.getConnection() != null)
 			sincronyzeRepositoryDatabase(project);
@@ -57,13 +65,17 @@ public class DashboardService extends AbstractArqService<Project>{
 		return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
 	}
 	
+	public RepositorySyncLog getLastSync(Project project){
+		return syncLogRepository.findFirstByProjectOrderByIdDesc(project);
+	}
+	
 	private void sincronyzeRepositoryDatabase(Project project){
 		Integer revisionStartSync = 1;
 		Integer revisionEndSync = -1;
 		
 		Long revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
 		
-		RepositorySyncLog lastSyncLog = syncLogRepository.findFirstByProjectOrderByIdDesc(project);
+		RepositorySyncLog lastSyncLog = getLastSync(project);
 		
 		if(lastSyncLog != null){
 			Long revisionLastSync = lastSyncLog.getHeadRevision();

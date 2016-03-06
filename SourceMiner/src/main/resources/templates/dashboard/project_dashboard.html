@@ -8,7 +8,7 @@
 		
 		<!-- Primeira linha -->
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-12">
 			
 				<div class="panel panel-default">
 				  <div class="panel-heading">
@@ -17,20 +17,48 @@
 				  <div class="panel-body">
 				  
 				  	<div class="row">
-					    <div class="col-md-2">
+					    <div class="col-lg-2">
 					    	<b>Repositório:</b>
 					    </div>
-					    <div class="col-md-10">
+					    <div class="col-lg-10">
 					    	<span th:text="${repositoryConnetionSession.connectionName}"></span>
 					    </div>
 				    </div>
 				    
 				    <div class="row">
-					    <div class="col-md-2">
+					    <div class="col-lg-2">
 					    	<b>Projeto:</b>
 					    </div>
-					    <div class="col-md-10">
+					    <div class="col-lg-10">
 					    	<span th:text="${project.name}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-lg-2">
+					    	<b>Total de Classes:</b>
+					    </div>
+					    <div class="col-lg-10">
+					    	<span th:text="${totalItens}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-lg-2">
+					    	<b>Total de Revisões:</b>
+					    </div>
+					    <div class="col-lg-10">
+					    	<span th:text="${totalRevisions}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-lg-2">
+					    	<b>Última Sincronização:</b>
+					    </div>
+					    <div class="col-lg-10">
+					    	<span th:text="${lastSync.createAt}"></span> - Rev:
+					    	<span th:text="${lastSync.headRevision}"></span>
 					    </div>
 				    </div>
 				    
@@ -44,7 +72,7 @@
 		
 		<!-- Segunda linha -->
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Revisions</h3>
@@ -88,7 +116,7 @@
 		<hr />
 		
 		<div class="row">	
-  			<div class="col-md-12">
+  			<div class="col-lg-12">
   				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Arquivos</h3>
