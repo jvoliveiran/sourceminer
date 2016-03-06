@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.service.DashboardService;
 
 /**
@@ -36,6 +38,8 @@ public class DashboardController extends AbstractArqController<Project>{
 	@RequestMapping(value="/project_dashboard", method=RequestMethod.POST)
 	public String projectDashBoard(@RequestParam Long idProject, Model model){
 		obj = service.getOneById(idProject);
+		
+		model.addAttribute("itemFilter", new RepositoryItemFilter());
 		
 		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
 		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
@@ -70,6 +74,23 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
 		
 		return forward("item_details");
+	}
+	
+	@RequestMapping(value = "/search_item", method = RequestMethod.POST)
+	public String searchItem(@Validated RepositoryItemFilter filter, @RequestParam Long idProject, Model model){
+		this.obj = service.getOneById(idProject);
+		
+		((DashboardService)service).searchRepositoryItem(obj, filter);
+		model.addAttribute("itemFilter", filter);
+		
+		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
+		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
+		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
+		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
+		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
+		model.addAttribute("project", obj);
+		
+		return forward("project_dashboard");
 	}
 	
 	@ResponseBody

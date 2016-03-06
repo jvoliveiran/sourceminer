@@ -21,6 +21,8 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.search.RepositoryItemSearch;
+import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 
 /**
  * @author Joao Victor
@@ -35,6 +37,8 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
+	
+	private RepositoryItemSearch itemSearch;
 	
 	@Autowired
 	public DashboardService(ProjectRepository repository, 
@@ -55,7 +59,15 @@ public class DashboardService extends AbstractArqService<Project>{
 		if(this.connection.getConnection() != null)
 			sincronyzeRepositoryDatabase(project);
 		
-		return itemRepository.findTop10ByProjectOrderByIdDesc(project);
+		if(itemSearch.hasResult())
+			return itemSearch.getResult();
+		else
+			return itemRepository.findTop10ByProjectOrderByIdDesc(project);
+	}
+	
+	public void searchRepositoryItem(Project project, RepositoryItemFilter filter){
+		itemSearch.setFilter(filter);
+		itemSearch.searchWithFilter();
 	}
 	
 	public List<RepositoryRevision> getAllRevisionsInProject(Project project){
@@ -173,4 +185,8 @@ public class DashboardService extends AbstractArqService<Project>{
 		this.revisionItemRepository = revisionItemRepository;
 	}
 	
+	@Autowired
+	public void setItemSearch(RepositoryItemSearch search){
+		this.itemSearch = search;
+	}
 }
