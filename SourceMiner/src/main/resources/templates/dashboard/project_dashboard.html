@@ -79,6 +79,56 @@
 				  </div>
 				  <div class="panel-body">
 				    
+				    <a class="btn btn-primary" role="button" data-toggle="collapse" href="#formRevisionSearch" aria-expanded="false" aria-controls="formRevisionSearch">
+					  Filtros de Busca
+					</a>
+					
+					<div class="collapse" id="formRevisionSearch">
+					  <div class="well">
+					    <form action="#" method="post" class="form-horizontal">
+					    
+					    	<div class="form-group">
+					    		<div class="col-sm-1">
+					    			<input type="checkbox" />
+					    		</div>
+								<label for="name" class="col-sm-2 control-label">Revisão: </label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" placeholder="Número da Revisão"/>
+								</div>
+							</div>
+							
+							<div class="form-group">
+					    		<div class="col-sm-1">
+					    			<input type="checkbox" />
+					    		</div>
+								<label for="name" class="col-sm-2 control-label">Autor: </label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" placeholder="Ex: sig_software"/>
+								</div>
+							</div>
+							
+							<div class="form-group">
+					    		<div class="col-sm-1">
+					    			<input type="checkbox" />
+					    		</div>
+								<label for="name" class="col-sm-2 control-label">Comentário: </label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" placeholder="Ex: Migração% "/>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-1 col-sm-offset-3">
+									<button type="submit" class="btn btn-default">Filtrar</button>
+								</div>
+							</div>
+							
+					    </form>
+					  </div>
+					</div>
+				    
+				    <hr />
+				    
 				    <div th:if="${#lists.isEmpty(revisions)}">
 						<i>Nenhum commit localizado.</i>
 					</div>
@@ -121,7 +171,38 @@
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Arquivos</h3>
 				  </div>
-				  <div class="panel-body">
+				 <div class="panel-body">
+				  
+				  <a class="btn btn-primary" role="button" data-toggle="collapse" href="#formItemSearch" aria-expanded="false" aria-controls="formRevisionSearch">
+					  Filtros de Busca
+					</a>
+					
+					<div class="collapse" id="formItemSearch">
+					  <div class="well">
+					    <form action="#" method="post" class="form-horizontal">
+					    
+					    	<div class="form-group">
+					    		<div class="col-sm-1">
+					    			<input type="checkbox" />
+					    		</div>
+								<label for="name" class="col-sm-2 control-label">Nome: </label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" placeholder="App.java"/>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-1 col-sm-offset-3">
+									<button type="submit" class="btn btn-default">Filtrar</button>
+								</div>
+							</div>
+							
+					    </form>
+					  </div>
+					</div>
+				    
+				    <hr />
+				  
 				    <div th:if="${#lists.isEmpty(itens)}">
 						<i>Nenhum arquivo localizado.</i>
 					</div>
