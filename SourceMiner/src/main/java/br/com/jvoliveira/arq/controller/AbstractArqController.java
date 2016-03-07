@@ -55,7 +55,11 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 	
 	@ModelAttribute("userLogged")
 	public User getUsuarioLogado(){
-		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		try{
+			return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		}catch(ClassCastException e){
+			return null;
+		}
 	}
 
 	@RequestMapping(value = {"","/index"})

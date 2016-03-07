@@ -22,4 +22,6 @@ public class LoginController{
 	public String logoutPage(){
 		return "login/login";
 	}
+	
+	
 }
