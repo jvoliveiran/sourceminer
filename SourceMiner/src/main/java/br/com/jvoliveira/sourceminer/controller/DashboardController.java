@@ -17,6 +17,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
+import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 import br.com.jvoliveira.sourceminer.service.DashboardService;
 
 /**
@@ -41,12 +42,7 @@ public class DashboardController extends AbstractArqController<Project>{
 		
 		model.addAttribute("itemFilter", new RepositoryItemFilter());
 		
-		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
-		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
-		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
-		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
-		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
-		model.addAttribute("project", obj);
+		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
 	}
@@ -83,12 +79,7 @@ public class DashboardController extends AbstractArqController<Project>{
 		((DashboardService)service).searchRepositoryItem(obj, filter);
 		model.addAttribute("itemFilter", filter);
 		
-		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
-		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
-		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
-		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
-		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
-		model.addAttribute("project", obj);
+		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
 	}
@@ -100,20 +91,38 @@ public class DashboardController extends AbstractArqController<Project>{
 		((DashboardService)service).clearSearchRepositoryItem();
 		model.addAttribute("itemFilter", filter);
 		
+		loadDefaultModel(model);
+		
+		return forward("project_dashboard");
+	}
+	
+	@RequestMapping(value = "/search_revision", method = RequestMethod.POST)
+	public String searchRevision(@Validated RepositoryRevisionFilter filter, @RequestParam Long idProject, Model model){
+		this.obj = service.getOneById(idProject);
+		
+		((DashboardService)service).searchRepositoryRevision(obj, filter);
+		model.addAttribute("itemFilter", filter);
+		
+		loadDefaultModel(model);
+		
+		return forward("project_dashboard");
+	}
+	
+	//TODO: Clear search
+	
+	@ResponseBody
+	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
+	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){
+		return ((DashboardService)service).getFileContentInRevision(path, revisionNumber);
+	}
+	
+	private void loadDefaultModel(Model model){
 		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
 		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
 		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
 		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
 		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
 		model.addAttribute("project", obj);
-		
-		return forward("project_dashboard");
-	}
-	
-	@ResponseBody
-	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
-	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){
-		return ((DashboardService)service).getFileContentInRevision(path, revisionNumber);
 	}
 	
 }

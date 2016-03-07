@@ -22,7 +22,9 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
 import br.com.jvoliveira.sourceminer.search.RepositoryItemSearch;
+import br.com.jvoliveira.sourceminer.search.RepositoryRevisionSearch;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
+import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 
 /**
  * @author Joao Victor
@@ -39,6 +41,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryRevisionItemRepository revisionItemRepository;
 	
 	private RepositoryItemSearch itemSearch;
+	private RepositoryRevisionSearch revisionSearch;
 	
 	@Autowired
 	public DashboardService(ProjectRepository repository, 
@@ -69,6 +72,12 @@ public class DashboardService extends AbstractArqService<Project>{
 		filter.setProject(project);
 		itemSearch.setFilter(filter);
 		itemSearch.searchWithFilter();
+	}
+	
+	public void searchRepositoryRevision(Project project, RepositoryRevisionFilter filter){
+		filter.setProject(project);
+		revisionSearch.setFilter(filter);
+		revisionSearch.searchWithFilter();
 	}
 	
 	public void clearSearchRepositoryItem(){

@@ -1,0 +1,49 @@
+/**
+ * 
+ */
+package br.com.jvoliveira.sourceminer.search;
+
+import javax.persistence.Query;
+
+import br.com.jvoliveira.arq.search.AbstractArqSearch;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
+
+/**
+ * @author Joao Victor
+ *
+ */
+public class RepositoryRevisionSearch extends AbstractArqSearch<RepositoryRevision>{
+
+	@Override
+	public void createSearchQuery(StringBuilder sql) {
+		sql.append("SELECT rr FROM RepositoryRevision rr ");
+		sql.append("WHERE 1=1 ");
+		
+		if(((RepositoryRevisionFilter)filter).isValidRevision())
+			sql.append(" AND rr.revision = :revision ");
+		
+		if(((RepositoryRevisionFilter)filter).isValidAuthor())
+			sql.append(" AND rr.author LIKE :author ");
+		
+		if(((RepositoryRevisionFilter)filter).isValidComment())
+			sql.append(" AND rr.comment LIKE :comment ");
+		
+		if(((RepositoryRevisionFilter)filter).getProject() != null)
+			sql.append(" AND rr.project = :project ");
+	}
+
+	@Override
+	public void prepareQueryArgs(Query q) {
+		if(((RepositoryRevisionFilter)filter).isValidRevision())
+			q.setParameter("revision", ((RepositoryRevisionFilter)filter).getRevision());
+		
+		if(((RepositoryRevisionFilter)filter).isValidAuthor())
+			q.setParameter("author", "%"+((RepositoryRevisionFilter)filter).getAuthor()+"%");
+		
+		if(((RepositoryRevisionFilter)filter).isValidComment())
+			q.setParameter("comment", "%"+((RepositoryRevisionFilter)filter).getComment()+"%");
+		
+	}
+
+}
