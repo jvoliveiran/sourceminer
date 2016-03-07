@@ -18,26 +18,26 @@ import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 @Repository
 public class RepositoryItemSearch extends AbstractArqSearch<RepositoryItem>{
 
-	private RepositoryItemFilter filter;
-	
-	public void setFilter(RepositoryItemFilter filter){
-		this.filter = filter;
-	}
-	
 	@Override
 	public void createSearchQuery(StringBuilder sql) {
 		sql.append("SELECT ri FROM RepositoryItem ri ");
 		sql.append("WHERE 1=1 ");
 		
-		if(filter.isValidName())
+		if(((RepositoryItemFilter)filter).isValidName())
 			sql.append(" AND ri.name LIKE :name ");
+		
+		if(((RepositoryItemFilter)filter).getProject() != null)
+			sql.append(" AND ri.project = :project ");
 			
 	}
 	
 	@Override
 	public void prepareQueryArgs(Query q) {
-		if(filter.isValidName())
-			q.setParameter("name", "%"+filter.getName()+"%");
+		if(((RepositoryItemFilter)filter).isValidName())
+			q.setParameter("name", "%"+((RepositoryItemFilter)filter).getName()+"%");
+		
+		if(((RepositoryItemFilter)filter).getProject() != null)
+			q.setParameter("project", ((RepositoryItemFilter)filter).getProject());
 	}
 	
 	

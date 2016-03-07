@@ -93,6 +93,23 @@ public class DashboardController extends AbstractArqController<Project>{
 		return forward("project_dashboard");
 	}
 	
+	@RequestMapping(value = "/clear_search_item", method = RequestMethod.POST)
+	public String clearSearchItem(@Validated RepositoryItemFilter filter, @RequestParam Long idProject, Model model){
+		this.obj = service.getOneById(idProject);
+		
+		((DashboardService)service).clearSearchRepositoryItem();
+		model.addAttribute("itemFilter", filter);
+		
+		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
+		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
+		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
+		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
+		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
+		model.addAttribute("project", obj);
+		
+		return forward("project_dashboard");
+	}
+	
 	@ResponseBody
 	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
 	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){

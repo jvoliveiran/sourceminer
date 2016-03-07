@@ -66,8 +66,13 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	public void searchRepositoryItem(Project project, RepositoryItemFilter filter){
+		filter.setProject(project);
 		itemSearch.setFilter(filter);
 		itemSearch.searchWithFilter();
+	}
+	
+	public void clearSearchRepositoryItem(){
+		itemSearch.init();
 	}
 	
 	public List<RepositoryRevision> getAllRevisionsInProject(Project project){

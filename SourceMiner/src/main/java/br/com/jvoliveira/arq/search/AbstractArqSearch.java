@@ -29,6 +29,8 @@ public abstract class AbstractArqSearch<T extends ObjectDB> {
 	
 	protected StringBuilder sql;
 	
+	protected ArqFilter filter;
+	
 	public abstract void createSearchQuery(StringBuilder sql);
 	public abstract void prepareQueryArgs(Query q);
 	
@@ -41,21 +43,24 @@ public abstract class AbstractArqSearch<T extends ObjectDB> {
 		init();
 	}
 	
-	protected void init(){
+	public void init(){
 		this.result = new ArrayList<>();
 	}
 	
 	public List<T> searchWithFilter(){
 		
-		sql = new StringBuilder();
+		if(filter.hasFilterToSearch()){
 		
-		createSearchQuery(sql);
-		
-		Query query = entityManager.createQuery(sql.toString());
-		
-		prepareQueryArgs(query);
-		
-		result = query.getResultList();
+			sql = new StringBuilder();
+			
+			createSearchQuery(sql);
+			
+			Query query = entityManager.createQuery(sql.toString());
+			
+			prepareQueryArgs(query);
+			
+			result = query.getResultList();
+		}
 		
 		return result;
 	}
@@ -70,8 +75,13 @@ public abstract class AbstractArqSearch<T extends ObjectDB> {
 	public void setEntityManager(EntityManager em){
 		this.entityManager = em;
 	}
+	
 	public List<T> getResult() {
 		return result;
+	}
+	
+	public void setFilter(ArqFilter filter){
+		this.filter = filter;
 	}
 	
 }
