@@ -5,6 +5,10 @@ package br.com.jvoliveira.sourceminer.search;
 
 import javax.persistence.Query;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Repository;
+
 import br.com.jvoliveira.arq.search.AbstractArqSearch;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
@@ -13,6 +17,8 @@ import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
  * @author Joao Victor
  *
  */
+@Repository
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RepositoryRevisionSearch extends AbstractArqSearch<RepositoryRevision>{
 
 	@Override
@@ -43,6 +49,9 @@ public class RepositoryRevisionSearch extends AbstractArqSearch<RepositoryRevisi
 		
 		if(((RepositoryRevisionFilter)filter).isValidComment())
 			q.setParameter("comment", "%"+((RepositoryRevisionFilter)filter).getComment()+"%");
+		
+		if(((RepositoryRevisionFilter)filter).getProject() != null)
+			q.setParameter("project", ((RepositoryRevisionFilter)filter).getProject());
 		
 	}
 

@@ -40,7 +40,11 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String projectDashBoard(@RequestParam Long idProject, Model model){
 		obj = service.getOneById(idProject);
 		
-		model.addAttribute("itemFilter", new RepositoryItemFilter());
+		((DashboardService)service).setItemFilter(new RepositoryItemFilter());
+		((DashboardService)service).setRevisionFilter(new RepositoryRevisionFilter());
+		
+		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
+		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
 		
 		loadDefaultModel(model);
 		
@@ -77,7 +81,9 @@ public class DashboardController extends AbstractArqController<Project>{
 		this.obj = service.getOneById(idProject);
 		
 		((DashboardService)service).searchRepositoryItem(obj, filter);
+		
 		model.addAttribute("itemFilter", filter);
+		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
 		
 		loadDefaultModel(model);
 		
@@ -90,6 +96,7 @@ public class DashboardController extends AbstractArqController<Project>{
 		
 		((DashboardService)service).clearSearchRepositoryItem();
 		model.addAttribute("itemFilter", filter);
+		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
 		
 		loadDefaultModel(model);
 		
@@ -101,14 +108,26 @@ public class DashboardController extends AbstractArqController<Project>{
 		this.obj = service.getOneById(idProject);
 		
 		((DashboardService)service).searchRepositoryRevision(obj, filter);
-		model.addAttribute("itemFilter", filter);
+		model.addAttribute("revisionFilter", filter);
+		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
 		
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
 	}
 	
-	//TODO: Clear search
+	@RequestMapping(value = "/clear_search_revision", method = RequestMethod.POST)
+	public String clearSearchRevision(@Validated RepositoryRevisionFilter filter, @RequestParam Long idProject, Model model){
+		this.obj = service.getOneById(idProject);
+		
+		((DashboardService)service).clearSearchRepositoryRevision();
+		model.addAttribute("revisionFilter", filter);
+		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
+		
+		loadDefaultModel(model);
+		
+		return forward("project_dashboard");
+	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)

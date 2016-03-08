@@ -1,6 +1,8 @@
 package br.com.jvoliveira.sourceminer.search;
 import javax.persistence.Query;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.arq.search.AbstractArqSearch;
@@ -16,6 +18,7 @@ import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
  *
  */
 @Repository
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RepositoryItemSearch extends AbstractArqSearch<RepositoryItem>{
 
 	@Override

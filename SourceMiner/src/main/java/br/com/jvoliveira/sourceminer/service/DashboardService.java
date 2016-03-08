@@ -84,11 +84,18 @@ public class DashboardService extends AbstractArqService<Project>{
 		itemSearch.init();
 	}
 	
+	public void clearSearchRepositoryRevision(){
+		revisionSearch.init();
+	}
+	
 	public List<RepositoryRevision> getAllRevisionsInProject(Project project){
 		if(this.connection.getConnection() != null)
 			sincronyzeRepositoryDatabase(project);
 		
-		return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
+		if(revisionSearch.hasResult())
+			return revisionSearch.getResult();
+		else
+			return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
 	}
 	
 	public RepositorySyncLog getLastSync(Project project){
@@ -179,6 +186,22 @@ public class DashboardService extends AbstractArqService<Project>{
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
+	public RepositoryRevisionFilter getRevisionFilter(){
+		return (RepositoryRevisionFilter) this.revisionSearch.getFilter();
+	}
+	
+	public void setRevisionFilter(RepositoryRevisionFilter filter){
+		this.revisionSearch.setFilter(filter);
+	}
+	
+	public RepositoryItemFilter getItemFilter(){
+		return (RepositoryItemFilter) this.itemSearch.getFilter();
+	}
+	
+	public void setItemFilter(RepositoryItemFilter filter){
+		this.itemSearch.setFilter(filter);
+	}
+	
 	@Autowired
 	public void setSyncLogRepository(RepositorySyncLogRepository syncLogRepository){
 		this.syncLogRepository = syncLogRepository;
@@ -202,5 +225,10 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setItemSearch(RepositoryItemSearch search){
 		this.itemSearch = search;
+	}
+	
+	@Autowired
+	public void setRevisionSearch(RepositoryRevisionSearch search){
+		this.revisionSearch = search;
 	}
 }

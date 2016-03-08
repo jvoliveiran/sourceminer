@@ -84,4 +84,8 @@ public abstract class AbstractArqSearch<T extends ObjectDB> {
 		this.filter = filter;
 	}
 	
+	public ArqFilter getFilter(){
+		return this.filter;
+	}
+	
 }
