@@ -13,12 +13,13 @@ import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 /**
  * @author Joao Victor
  *
  */
-public class JavaClassVisitor extends GenericClassVisitor{
+public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements GenericClassVisitor{
 
 	private Map<String,FieldDeclaration> fields;
 	private Map<String,MethodDeclaration> methods;
