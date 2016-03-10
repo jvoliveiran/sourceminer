@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
-import br.com.jvoliveira.sourceminer.component.RepositoryConnectionHelper;
-import br.com.jvoliveira.sourceminer.component.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionHelper;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.repository.RepositoryConnectorRepository;
 

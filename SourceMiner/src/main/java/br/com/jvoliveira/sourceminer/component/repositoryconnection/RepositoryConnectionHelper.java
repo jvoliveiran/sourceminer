@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.component;
+package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

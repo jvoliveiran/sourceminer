@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.component;
+package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 

@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSVN;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;

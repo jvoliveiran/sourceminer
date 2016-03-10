@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.component;
+package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
