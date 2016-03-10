@@ -123,7 +123,7 @@ public class RepositoryItem implements ObjectDB{
 	}
 	
 	public String getFullPath(){
-		return this.path + "/" + this.name;
+		return this.path;
 	}
 
 	public List<RepositoryRevisionItem> getRevisionItem() {

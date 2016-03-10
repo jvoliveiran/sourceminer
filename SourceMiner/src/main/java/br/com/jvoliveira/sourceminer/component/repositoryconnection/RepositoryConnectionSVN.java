@@ -224,7 +224,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			Integer endRevision) {
 		Collection<SVNLogEntry> revisions = new ArrayList<SVNLogEntry>();
 		try {
-			revisions = repository.log(new String[]{path}, null, startRevision, endRevision, true, true);
+			revisions = repository.log(new String[]{path}, null, startRevision, endRevision, true, false);
 			
 			Iterator<SVNLogEntry> iteratorRevisions = revisions.iterator();
 			while(iteratorRevisions.hasNext()){
