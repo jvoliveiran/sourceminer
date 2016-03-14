@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 
@@ -54,6 +55,9 @@ public class ItemAsset implements GenericAsset{
 	@Temporal(TemporalType.DATE)
 	@Column(name="update_at")
 	private Date updateAt;
+	
+	@Transient
+	private RepositoryItemChange itemChageLog;
 
 	@Override
 	public void setId(Long id) {
@@ -125,6 +129,14 @@ public class ItemAsset implements GenericAsset{
 
 	public void setRepositoryItem(RepositoryItem repositoryItem) {
 		this.repositoryItem = repositoryItem;
+	}
+
+	public RepositoryItemChange getItemChageLog() {
+		return itemChageLog;
+	}
+
+	public void setItemChageLog(RepositoryItemChange itemChageLog) {
+		this.itemChageLog = itemChageLog;
 	}
 	
 }
