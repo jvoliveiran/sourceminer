@@ -6,12 +6,12 @@ package br.com.jvoliveira.sourceminer.component.javaparser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
-import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
+import br.com.jvoliveira.sourceminer.domain.RepositoryItemChange;
+import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
 
 /**
  * @author Joao Victor
@@ -39,20 +39,28 @@ public class ClassParserHelper {
 	private Collection<? extends ItemAsset> getMethodAssets(
 			List<ItemAsset> actualAssets, List<ItemAsset> assetsInFileContent) {
 		
-		//TODO
+		List<ItemAsset> assets = new ArrayList<ItemAsset>();
 		
-		List<String> actualMethodsSignature = actualAssets
-												.stream()
-												.filter(method -> method.getAssetType().equals(AssetType.METHOD))
-												.map(ItemAsset::getSignature)
-												.collect(Collectors.toList());
+		for(ItemAsset newAsset : assetsInFileContent){
+			
+			for(ItemAsset oldAsset : actualAssets){
+			
+				if(oldAsset.getSignature().equals(newAsset.getSignature())){
+					oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+					assets.add(oldAsset);
+					break;
+				}
+				
+			}
+			
+			if(!assets.contains(newAsset)){
+				newAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.ADDED));
+				assets.add(newAsset);
+			}
+			
+		}
 		
-		List<ItemAsset> methodAsset = assetsInFileContent
-			.stream()
-			.filter(asset -> !actualMethodsSignature.contains(asset.getSignature()))
-			.collect(Collectors.toList());
-		
-		return methodAsset;
+		return assets;
 	}
 
 	public List<ItemAsset> getDiffMethodsBetweenFileContent(String oldContent, String actualContent){

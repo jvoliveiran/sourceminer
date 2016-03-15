@@ -52,6 +52,10 @@ public class RepositoryItemChange implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
+	public RepositoryItemChange(ChangeFileType changeType){
+		this.changeType = changeType;
+	}
+	
 	@Override
 	public void setId(Long id) {
 		this.id = id;

@@ -139,4 +139,14 @@ public class ItemAsset implements GenericAsset{
 		this.itemChageLog = itemChageLog;
 	}
 	
+	@Override
+	public boolean equals(Object anotherAsset){
+		return this.toString().equals(anotherAsset.toString());
+	}
+	
+	@Override
+	public String toString(){
+		return this.signature + " # " + getAssetTypeDescription();
+	}
+	
 }
