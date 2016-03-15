@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.component.javaparser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -31,7 +32,7 @@ public class ClassParserHelper {
 		List<ItemAsset> itemAssets = new ArrayList<ItemAsset>();
 		
 		itemAssets.addAll(getMethodAssets(actualAssets, assetsInFileContent));
-		//Implementar diferença de fields e imports
+		//TODO: Implementar diferença de fields e imports
 		
 		return itemAssets;
 	}
@@ -45,8 +46,12 @@ public class ClassParserHelper {
 			
 			for(ItemAsset oldAsset : actualAssets){
 			
-				if(oldAsset.getSignature().equals(newAsset.getSignature())){
-					oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+				if(oldAsset.equals(newAsset)){
+					if(oldAsset.isMethodAsset() && !oldAsset.hasSameBodyMethod(newAsset))
+						oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+					else if(!oldAsset.isMethodAsset())
+						oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+					
 					assets.add(oldAsset);
 					break;
 				}
@@ -60,16 +65,18 @@ public class ClassParserHelper {
 			
 		}
 		
+		List<ItemAsset> deletedAssets = actualAssets.stream()
+			.filter(old -> !assets.contains(old) && old.isMethodAsset())
+			.collect(Collectors.toList());
+		
+		deletedAssets.stream().forEach(old -> putDeletedAssetInList(old,assets));
+		
 		return assets;
 	}
-
-	public List<ItemAsset> getDiffMethodsBetweenFileContent(String oldContent, String actualContent){
-		
-		List<ItemAsset> oldAssets = getAllMethodsInFileContent(oldContent);
-		List<ItemAsset> actualAssets = getAllMethodsInFileContent(actualContent);
-		
-		//TODO: Implementar comparação
-		return null;
+	
+	private void putDeletedAssetInList(ItemAsset deletedAsset, List<ItemAsset> assets){
+		deletedAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.DELETED));
+		assets.add(deletedAsset);
 	}
 
 	private List<ItemAsset> getAllMethodsInFileContent(String fileContent){

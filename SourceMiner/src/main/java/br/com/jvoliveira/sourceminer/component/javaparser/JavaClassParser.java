@@ -61,6 +61,7 @@ public class JavaClassParser extends GenericClassParser{
 				itemAsset.setName(method.getKey());
 				itemAsset.setSignature(method.getValue().getDeclarationAsString());
 				itemAsset.setAssetType(AssetType.METHOD);
+				itemAsset.setValue(method.getValue().getBody().toString());
 				methods.add(itemAsset);
 			}
 		}

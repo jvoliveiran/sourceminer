@@ -41,6 +41,6 @@ public class ClassParserHelperTest {
 		List<ItemAsset> metodosAntigos = classParser.getAll();
 		List<ItemAsset> newMethods = parserHelper.generateActualClassAssets(metodosAntigos, newFileContent);
 		
-		Assert.assertTrue(newMethods.size() == 3);
+		Assert.assertTrue(newMethods.size() == 4);
 	}
 }

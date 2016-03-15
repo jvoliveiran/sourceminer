@@ -58,6 +58,9 @@ public class ItemAsset implements GenericAsset{
 	
 	@Transient
 	private RepositoryItemChange itemChageLog;
+	
+	@Transient
+	private String value;
 
 	@Override
 	public void setId(Long id) {
@@ -149,4 +152,22 @@ public class ItemAsset implements GenericAsset{
 		return this.signature + " # " + getAssetTypeDescription();
 	}
 	
+	public boolean isMethodAsset(){
+		return this.assetType.equals(AssetType.METHOD);
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	public boolean hasSameBodyMethod(ItemAsset asset){
+		if(!this.isMethodAsset() || !asset.isMethodAsset())
+			return false;
+		
+		return this.getValue().equals(asset.getValue());
+	}
 }

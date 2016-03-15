@@ -43,5 +43,8 @@ public class JavaClassParserTest {
 		Assert.assertNotNull(assets);
 		Assert.assertTrue(assets.size() > 0);
 	}
+	
+	private void removedMethod(){
+	}
 }
 
