@@ -59,7 +59,7 @@ public class ItemAsset implements GenericAsset{
 	@Transient
 	private RepositoryItemChange itemChageLog;
 	
-	@Transient
+	@Column(name="value")
 	private String value;
 
 	@Override

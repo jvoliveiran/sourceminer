@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.arq.utils.DateUtils;
+import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RepositoryItemChange;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
+import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
@@ -39,6 +43,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
+	private ItemAssetRepository itemAssetRepository;
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
@@ -127,15 +132,43 @@ public class DashboardService extends AbstractArqService<Project>{
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, revisionStartSync, revisionEndSync);
 		
+		ClassParserHelper classParserHelper = new ClassParserHelper();
+		
 		for(RepositoryRevisionItem item : repositoryItens){
 			item.setCreateAt(DateUtils.now());
 			item.setProject(project);
 			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
 			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
 			revisionItemRepository.save(item);
+			
+			//processRepositoryItemChanges(item, classParserHelper);
 		}
 	}
 	
+	private void processRepositoryItemChanges(RepositoryRevisionItem revisionItem, ClassParserHelper classParserHelper) {
+		Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
+		RepositoryItem item = revisionItem.getRepositoryItem();
+		
+		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItem(item);
+		String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
+		
+		List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
+		
+		syncAssets(assetsToSync, revisionItem);
+	}
+
+	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
+		for(ItemAsset asset : assetsToSync){
+			//TODO: Sincronizar
+			RepositoryItemChange itemChange = asset.getItemChageLog();
+			if(itemChange != null){
+				itemChange.setName(asset.getName());
+				itemChange.setSignature(asset.getSignature());
+				itemChange.setRevisionItem(revisionItem);
+			}
+		}
+	}
+
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
 		Long revisionNumber = revision.getRevision();
 		RepositoryRevision revisionFromDB = revisionRepository.findByProjectAndRevision(project,revisionNumber);
@@ -230,5 +263,10 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setRevisionSearch(RepositoryRevisionSearch search){
 		this.revisionSearch = search;
+	}
+	
+	@Autowired
+	public void setItemAssetRepository(ItemAssetRepository repository){
+		this.itemAssetRepository = repository;
 	}
 }

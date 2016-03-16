@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItemChange;
 import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
@@ -18,7 +16,6 @@ import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
  * @author Joao Victor
  *
  */
-@Component
 public class ClassParserHelper {
 	
 	JavaClassParser javaParser;
@@ -46,11 +43,10 @@ public class ClassParserHelper {
 			
 			for(ItemAsset oldAsset : actualAssets){
 			
-				if(oldAsset.equals(newAsset)){
-					if(oldAsset.isMethodAsset() && !oldAsset.hasSameBodyMethod(newAsset))
-						oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
-					else if(!oldAsset.isMethodAsset())
-						oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+				if(oldAsset.isMethodAsset() 
+						&& !oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
+					
+					oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
 					
 					assets.add(oldAsset);
 					break;
