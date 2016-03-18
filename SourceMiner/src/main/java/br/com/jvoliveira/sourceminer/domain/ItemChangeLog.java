@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.domain;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -23,7 +25,9 @@ import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
  * @author Joao Victor
  *
  */
-public class RepositoryItemChange implements ObjectDB{
+@Entity
+@Table(name="item_change_log")
+public class ItemChangeLog implements ObjectDB{
 
 	@Id
 	@Column(name="id_repository_revision_item")
@@ -31,8 +35,8 @@ public class RepositoryItemChange implements ObjectDB{
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="id_repository_revision_item")
-	private RepositoryRevisionItem revisionItem;
+	@JoinColumn(name="id_item_asset")
+	private ItemAsset asset;
 	
 	@Column(name="name")
 	private String name;
@@ -52,7 +56,7 @@ public class RepositoryItemChange implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
-	public RepositoryItemChange(ChangeFileType changeType){
+	public ItemChangeLog(ChangeFileType changeType){
 		this.changeType = changeType;
 	}
 	
@@ -86,14 +90,6 @@ public class RepositoryItemChange implements ObjectDB{
 		return this.updateAt;
 	}
 
-	public RepositoryRevisionItem getRevisionItem() {
-		return revisionItem;
-	}
-
-	public void setRevisionItem(RepositoryRevisionItem revisionItem) {
-		this.revisionItem = revisionItem;
-	}
-
 	public ChangeFileType getChangeType() {
 		return changeType;
 	}
@@ -120,5 +116,13 @@ public class RepositoryItemChange implements ObjectDB{
 
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}
+
+	public ItemAsset getAsset() {
+		return asset;
+	}
+
+	public void setAsset(ItemAsset asset) {
+		this.asset = asset;
 	}
 }

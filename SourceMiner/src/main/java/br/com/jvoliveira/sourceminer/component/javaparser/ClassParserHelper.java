@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
-import br.com.jvoliveira.sourceminer.domain.RepositoryItemChange;
+import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
 
 /**
@@ -46,7 +46,7 @@ public class ClassParserHelper {
 				if(oldAsset.isMethodAsset() 
 						&& !oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
 					
-					oldAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.UPDATED));
+					oldAsset.setItemChageLog(new ItemChangeLog(ChangeFileType.UPDATED));
 					
 					assets.add(oldAsset);
 					break;
@@ -55,7 +55,7 @@ public class ClassParserHelper {
 			}
 			
 			if(!assets.contains(newAsset)){
-				newAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.ADDED));
+				newAsset.setItemChageLog(new ItemChangeLog(ChangeFileType.ADDED));
 				assets.add(newAsset);
 			}
 			
@@ -71,7 +71,7 @@ public class ClassParserHelper {
 	}
 	
 	private void putDeletedAssetInList(ItemAsset deletedAsset, List<ItemAsset> assets){
-		deletedAsset.setItemChageLog(new RepositoryItemChange(ChangeFileType.DELETED));
+		deletedAsset.setItemChageLog(new ItemChangeLog(ChangeFileType.DELETED));
 		assets.add(deletedAsset);
 	}
 

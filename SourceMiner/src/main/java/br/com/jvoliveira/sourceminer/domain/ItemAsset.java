@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -57,9 +58,10 @@ public class ItemAsset implements GenericAsset{
 	private Date updateAt;
 	
 	@Transient
-	private RepositoryItemChange itemChageLog;
+	private ItemChangeLog itemChageLog;
 	
-	@Column(name="value")
+	@Lob
+	@Column(name="value", length=10000)
 	private String value;
 
 	@Override
@@ -134,11 +136,11 @@ public class ItemAsset implements GenericAsset{
 		this.repositoryItem = repositoryItem;
 	}
 
-	public RepositoryItemChange getItemChageLog() {
+	public ItemChangeLog getItemChageLog() {
 		return itemChageLog;
 	}
 
-	public void setItemChageLog(RepositoryItemChange itemChageLog) {
+	public void setItemChageLog(ItemChangeLog itemChageLog) {
 		this.itemChageLog = itemChageLog;
 	}
 	

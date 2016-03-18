@@ -13,13 +13,14 @@ import br.com.jvoliveira.arq.utils.DateUtils;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
+import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
-import br.com.jvoliveira.sourceminer.domain.RepositoryItemChange;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
+import br.com.jvoliveira.sourceminer.repository.ItemChangeLogRepository;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
@@ -44,6 +45,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
 	private ItemAssetRepository itemAssetRepository;
+	private ItemChangeLogRepository itemChangeLogRepository;
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
@@ -141,7 +143,7 @@ public class DashboardService extends AbstractArqService<Project>{
 			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
 			revisionItemRepository.save(item);
 			
-			//processRepositoryItemChanges(item, classParserHelper);
+			processRepositoryItemChanges(item, classParserHelper);
 		}
 	}
 	
@@ -159,12 +161,24 @@ public class DashboardService extends AbstractArqService<Project>{
 
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
 		for(ItemAsset asset : assetsToSync){
-			//TODO: Sincronizar
-			RepositoryItemChange itemChange = asset.getItemChageLog();
+			
+			try{
+				if(asset.getId() == null){
+					asset.setCreateAt(DateUtils.now());
+					itemAssetRepository.save(asset);
+				}
+			}catch(Exception e){
+				System.out.println(e);
+			}
+			
+			ItemChangeLog itemChange = asset.getItemChageLog();
 			if(itemChange != null){
 				itemChange.setName(asset.getName());
 				itemChange.setSignature(asset.getSignature());
-				itemChange.setRevisionItem(revisionItem);
+				itemChange.setAsset(asset);
+				itemChange.setCreateAt(DateUtils.now());
+				
+				itemChangeLogRepository.save(itemChange);
 			}
 		}
 	}
@@ -268,5 +282,10 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setItemAssetRepository(ItemAssetRepository repository){
 		this.itemAssetRepository = repository;
+	}
+	
+	@Autowired
+	public void setItemChangeLogRepository(ItemChangeLogRepository repository){
+		this.itemChangeLogRepository = repository;
 	}
 }
