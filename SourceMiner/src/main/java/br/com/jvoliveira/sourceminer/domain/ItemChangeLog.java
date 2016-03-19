@@ -30,7 +30,7 @@ import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
 public class ItemChangeLog implements ObjectDB{
 
 	@Id
-	@Column(name="id_repository_revision_item")
+	@Column(name="id_item_change_log")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
@@ -43,6 +43,10 @@ public class ItemChangeLog implements ObjectDB{
 	
 	@Column(name="signature")
 	private String signature;
+	
+	@ManyToOne
+	@JoinColumn(name="id_repository_revision_item")
+	private RepositoryRevisionItem revisionItem;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="change_file_type")
@@ -124,5 +128,11 @@ public class ItemChangeLog implements ObjectDB{
 
 	public void setAsset(ItemAsset asset) {
 		this.asset = asset;
+	}
+	
+	public String getChangeLogDesc(){
+		return this.asset.getAssetTypeDesc() + " " 
+				+ this.changeType.getDescription() + " "
+				+ this.name ;
 	}
 }

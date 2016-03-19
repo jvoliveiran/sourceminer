@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
+import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
@@ -67,11 +70,13 @@ public class DashboardController extends AbstractArqController<Project>{
 		
 		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
 		String fileContent = ((DashboardService)service).getFileContentInRevision(item.getPath(), new Long(-1));
+		List<ItemChangeLog> historyChangeLog = ((DashboardService)service).getChangeLogInRepositoryItem(item);
 		
 		model.addAttribute("item", item);
 		model.addAttribute("project", item.getProject());
 		model.addAttribute("fileContent", fileContent);
 		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
+		model.addAttribute("historyChangeLog", historyChangeLog);
 		
 		return forward("item_details");
 	}

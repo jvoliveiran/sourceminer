@@ -20,7 +20,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
-import br.com.jvoliveira.sourceminer.repository.ItemChangeLogRepository;
+import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
@@ -45,7 +45,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
 	private ItemAssetRepository itemAssetRepository;
-	private ItemChangeLogRepository itemChangeLogRepository;
+	private ItemChageLogRepositoryImpl itemChangeLogRepository;
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
@@ -162,13 +162,9 @@ public class DashboardService extends AbstractArqService<Project>{
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
 		for(ItemAsset asset : assetsToSync){
 			
-			try{
-				if(asset.getId() == null){
-					asset.setCreateAt(DateUtils.now());
-					itemAssetRepository.save(asset);
-				}
-			}catch(Exception e){
-				System.out.println(e);
+			if(asset.getId() == null){
+				asset.setCreateAt(DateUtils.now());
+				itemAssetRepository.save(asset);
 			}
 			
 			ItemChangeLog itemChange = asset.getItemChageLog();
@@ -233,6 +229,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
+	public List<ItemChangeLog> getChangeLogInRepositoryItem(RepositoryItem item){
+		return this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
+	}
+	
 	public RepositoryRevisionFilter getRevisionFilter(){
 		return (RepositoryRevisionFilter) this.revisionSearch.getFilter();
 	}
@@ -285,7 +285,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	@Autowired
-	public void setItemChangeLogRepository(ItemChangeLogRepository repository){
+	public void setItemChangeLogRepository(ItemChageLogRepositoryImpl repository){
 		this.itemChangeLogRepository = repository;
 	}
 }

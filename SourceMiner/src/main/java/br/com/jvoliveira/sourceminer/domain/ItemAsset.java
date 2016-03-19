@@ -172,4 +172,8 @@ public class ItemAsset implements GenericAsset{
 		
 		return this.getValue().equals(asset.getValue());
 	}
+	
+	public String getAssetTypeDesc(){
+		return this.assetType.getDescription();
+	}
 }
