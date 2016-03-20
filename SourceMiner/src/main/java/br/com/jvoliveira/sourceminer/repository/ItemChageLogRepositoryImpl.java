@@ -31,20 +31,29 @@ public class ItemChageLogRepositoryImpl implements ItemChangeLogRepositoryCustom
 		this.repository = repository;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ItemChangeLog> findAllChangeLogRepositoryItem(
 			RepositoryItem repositoryItem) {
 		
 		String hql = "SELECT changeLog FROM ItemChangeLog AS changeLog "
-				+ "INNER JOIN changeLog.revisionItem AS revisionItem "
-				+ "INNER JOIN revisionItem.repositoryItem AS repositoryItem "
-				+ "WHERE repositoryItem = :repositoryItem ";
+				+ "JOIN changeLog.revisionItem AS revisionItem "
+				+ "JOIN revisionItem.repositoryItem AS repositoryItem "
+				+ "WHERE repositoryItem.id = :repositoryItem ";
 		
 		Query query = entityManager.createQuery(hql);
 		
-		query.setParameter("repositoryItem", repositoryItem);
+		query.setParameter("repositoryItem", repositoryItem.getId());
 		
 		return query.getResultList();
+	}
+	
+	public Long countTotalChangeLogs(){
+		String hlq = "SELECT count(changeLog) FROM ItemChangeLog AS changeLog";
+		
+		Query query = entityManager.createQuery(hlq);
+		
+		return (Long) query.getSingleResult();
 	}
 
 	public ItemChangeLog save(ItemChangeLog changeLog){

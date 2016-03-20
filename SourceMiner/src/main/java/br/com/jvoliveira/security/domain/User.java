@@ -30,7 +30,7 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
  */
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_miner")
 public class User implements UserDetails, ObjectDB{
 	
 	private static final long serialVersionUID = 0L;

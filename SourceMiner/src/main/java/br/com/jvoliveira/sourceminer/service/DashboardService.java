@@ -173,6 +173,7 @@ public class DashboardService extends AbstractArqService<Project>{
 				itemChange.setSignature(asset.getSignature());
 				itemChange.setAsset(asset);
 				itemChange.setCreateAt(DateUtils.now());
+				itemChange.setRevisionItem(revisionItem);
 				
 				itemChangeLogRepository.save(itemChange);
 			}

@@ -60,6 +60,10 @@ public class ItemChangeLog implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
+	public ItemChangeLog(){
+		
+	}
+	
 	public ItemChangeLog(ChangeFileType changeType){
 		this.changeType = changeType;
 	}
@@ -134,5 +138,13 @@ public class ItemChangeLog implements ObjectDB{
 		return this.asset.getAssetTypeDesc() + " " 
 				+ this.changeType.getDescription() + " "
 				+ this.name ;
+	}
+
+	public RepositoryRevisionItem getRevisionItem() {
+		return revisionItem;
+	}
+
+	public void setRevisionItem(RepositoryRevisionItem revisionItem) {
+		this.revisionItem = revisionItem;
 	}
 }

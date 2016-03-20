@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -60,7 +59,6 @@ public class ItemAsset implements GenericAsset{
 	@Transient
 	private ItemChangeLog itemChageLog;
 	
-	@Lob
 	@Column(name="value", length=10000)
 	private String value;
 
