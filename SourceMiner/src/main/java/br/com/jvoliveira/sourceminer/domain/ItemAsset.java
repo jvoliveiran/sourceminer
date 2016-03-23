@@ -59,6 +59,9 @@ public class ItemAsset implements GenericAsset{
 	@Transient
 	private ItemChangeLog itemChageLog;
 	
+	@Transient
+	private boolean newAsset = true;
+	
 	@Column(name="value", length=10000)
 	private String value;
 
@@ -173,6 +176,14 @@ public class ItemAsset implements GenericAsset{
 	
 	public String getAssetTypeDesc(){
 		return this.assetType.getDescription();
+	}
+
+	public boolean isNewAsset() {
+		return newAsset;
+	}
+
+	public void setNewAsset(boolean newAsset) {
+		this.newAsset = newAsset;
 	}
 	
 }

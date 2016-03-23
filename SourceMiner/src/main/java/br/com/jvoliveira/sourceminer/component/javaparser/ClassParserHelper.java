@@ -50,11 +50,15 @@ public class ClassParserHelper {
 					
 					assets.add(oldAsset);
 					break;
+				}else if(oldAsset.isMethodAsset() 
+						&& oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
+					newAsset.setNewAsset(false);
+					break;
 				}
 				
 			}
 			
-			if(!assets.contains(newAsset)){
+			if(!assets.contains(newAsset) && newAsset.isNewAsset()){
 				newAsset.setItemChageLog(new ItemChangeLog(ChangeFileType.ADDED));
 				assets.add(newAsset);
 			}
