@@ -154,6 +154,26 @@
 			<div class="col-md-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
+				  	<h3 class="panel-title">Change History</h3>
+				  </div>
+				  <div class="panel-body>">
+				  	<div class="row" th:each="itemAsset : ${historyChangeLog}">
+				  		<div class="col-md-12" >
+				  			<span style="margin-left: 2%" th:text="${itemAsset.getChangeLogDesc()}"
+				  			th:style="'background-color: ' + ${itemAsset.getBackgroundColorHexa()}" />
+				  		</div>
+				  	</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+		
+		<hr />
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
 				  	<h3 class="panel-title">Revisões</h3>
 				  </div>
 				  

@@ -39,7 +39,8 @@ public class ItemChageLogRepositoryImpl implements ItemChangeLogRepositoryCustom
 		String hql = "SELECT changeLog FROM ItemChangeLog AS changeLog "
 				+ "JOIN changeLog.revisionItem AS revisionItem "
 				+ "JOIN revisionItem.repositoryItem AS repositoryItem "
-				+ "WHERE repositoryItem.id = :repositoryItem ";
+				+ "WHERE repositoryItem.id = :repositoryItem "
+				+ "ORDER BY changeLog.id DESC ";
 		
 		Query query = entityManager.createQuery(hql);
 		

@@ -174,4 +174,5 @@ public class ItemAsset implements GenericAsset{
 	public String getAssetTypeDesc(){
 		return this.assetType.getDescription();
 	}
+	
 }
