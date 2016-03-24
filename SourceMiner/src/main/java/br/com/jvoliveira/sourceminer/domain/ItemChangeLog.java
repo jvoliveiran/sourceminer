@@ -41,7 +41,7 @@ public class ItemChangeLog implements ObjectDB{
 	@Column(name="name")
 	private String name;
 	
-	@Column(name="signature")
+	@Column(name="signature", length=1000)
 	private String signature;
 	
 	@ManyToOne
@@ -152,15 +152,21 @@ public class ItemChangeLog implements ObjectDB{
 	public String getBackgroundColorHexa(){
 		if(this.changeType.isAdd())
 			return getHexaColorAdd();
-		else
+		else if(this.changeType.isDelete())
 			return getHexaColorDelete();
+		else
+			return getHexaColorUpdate();
 	}
 	
 	private String getHexaColorAdd(){
-		return "#00b242";
+		return "#70db70";
 	}
 	
 	private String getHexaColorDelete(){
-		return "#b20000";
+		return "#ff4d4d";
+	}
+	
+	private String getHexaColorUpdate(){
+		return "#ffa64d";
 	}
 }

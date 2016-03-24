@@ -37,7 +37,7 @@ public class ItemAsset implements GenericAsset{
 	@Column(name="name")
 	private String name;
 	
-	@Column(name="signature")
+	@Column(name="signature", length=1000)
 	private String signature;
 	
 	@Enumerated(EnumType.STRING)
@@ -62,7 +62,7 @@ public class ItemAsset implements GenericAsset{
 	@Transient
 	private boolean newAsset = true;
 	
-	@Column(name="value", length=10000)
+	@Column(name="value", length = 100000)
 	private String value;
 
 	@Override

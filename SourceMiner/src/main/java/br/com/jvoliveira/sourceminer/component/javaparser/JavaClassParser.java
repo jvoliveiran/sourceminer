@@ -13,6 +13,7 @@ import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
+import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -61,7 +62,11 @@ public class JavaClassParser extends GenericClassParser{
 				itemAsset.setName(method.getKey());
 				itemAsset.setSignature(method.getValue().getDeclarationAsString());
 				itemAsset.setAssetType(AssetType.METHOD);
-				itemAsset.setValue(method.getValue().getBody().toString());
+				try{
+					itemAsset.setValue(method.getValue().getBody().toString());
+				}catch(NullPointerException e){
+					itemAsset.setValue(null);
+				}
 				methods.add(itemAsset);
 			}
 		}
@@ -102,11 +107,20 @@ public class JavaClassParser extends GenericClassParser{
 	
 	private CompilationUnit getCompilationUnit(){
 		CompilationUnit compUnit = new CompilationUnit();
+		fileContent = fileContent.replace("\u00bf", "");
+		fileContent = fileContent.replace("\ufffd", "");
 		try {
-			compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()));
+			compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "UTF8");
 		} catch (ParseException e) {
 			//TODO: Tratar exceção
 			e.printStackTrace();
+		}catch(TokenMgrError tokenError){
+			try {
+				compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "ISO8859_1");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return compUnit;
 	}
