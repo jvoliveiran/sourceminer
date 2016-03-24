@@ -164,6 +164,7 @@ public class DashboardService extends AbstractArqService<Project>{
 			
 			if(asset.getId() == null){
 				asset.setCreateAt(DateUtils.now());
+				asset.setRepositoryItem(revisionItem.getRepositoryItem());
 				itemAssetRepository.save(asset);
 			}
 			

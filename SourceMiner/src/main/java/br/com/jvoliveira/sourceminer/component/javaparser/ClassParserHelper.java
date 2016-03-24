@@ -53,6 +53,7 @@ public class ClassParserHelper {
 				}else if(oldAsset.isMethodAsset() 
 						&& oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
 					newAsset.setNewAsset(false);
+					oldAsset.setNewAsset(false);
 					break;
 				}
 				
@@ -66,7 +67,7 @@ public class ClassParserHelper {
 		}
 		
 		List<ItemAsset> deletedAssets = actualAssets.stream()
-			.filter(old -> !assets.contains(old) && old.isMethodAsset())
+			.filter(old -> !assets.contains(old) && old.isMethodAsset() && old.isNewAsset())
 			.collect(Collectors.toList());
 		
 		deletedAssets.stream().forEach(old -> putDeletedAssetInList(old,assets));
