@@ -147,10 +147,26 @@
 			
 			<div class="col-lg-4">
 				<div class="panel panel-default">
+				
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Change History</h3>
 				  </div>
+				  
 				  <div class="panel-body code-block">
+				  	<div class="row">
+				  		<div class="col-lg-12">
+				  			<a class="btn-sm btn-primary" role="button" data-toggle="collapse" href="#formChangeLogSearch" aria-expanded="false" aria-controls="formRevisionSearch">
+							  Filtros de Busca
+							</a>
+							
+							<div class="collapse" id="formChangeLogSearch">
+					 			<div class="well">
+					 				FORMULÁRIO
+					 			</div>
+					 		</div>
+					 		
+				  		</div>
+				  	</div>
 				  	<div class="row" th:each="changeLogGroup : ${historyChangeLog}">
 				  		<div class="col-lg-12">
 					  		<table class="table table-striped">
@@ -164,7 +180,9 @@
 				  		</div>
 				  	</div>
 				  </div>
+				  
 				</div>
+				
 			</div>
 			
 		</div>
