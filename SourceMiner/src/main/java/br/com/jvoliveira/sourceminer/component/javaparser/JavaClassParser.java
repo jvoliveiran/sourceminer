@@ -15,6 +15,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
@@ -94,8 +95,19 @@ public class JavaClassParser extends GenericClassParser{
 
 	@Override
 	public List<ItemAsset> parserImport() {
-		//TODO
-		return new ArrayList<ItemAsset>();
+		if(imports.isEmpty()){
+			loadClassVisitor();
+			
+			for (ImportDeclaration importClass : getClassVisitor().getImports()) {
+				ItemAsset itemAsset = new ItemAsset();
+				
+				itemAsset.setName(importClass.getName().getName());
+				itemAsset.setSignature(importClass.getName().getName());
+				itemAsset.setAssetType(AssetType.IMPORT);
+				fields.add(itemAsset);
+			}
+		}
+		return imports;
 	}
 	
 	private void loadClassVisitor(){

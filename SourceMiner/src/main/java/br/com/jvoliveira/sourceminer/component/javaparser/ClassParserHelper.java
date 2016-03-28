@@ -25,16 +25,15 @@ public class ClassParserHelper {
 	}
 	
 	public List<ItemAsset> generateActualClassAssets(List<ItemAsset> actualAssets, String newFileContent){
-		List<ItemAsset> assetsInFileContent = getAllMethodsInFileContent(newFileContent);
+		List<ItemAsset> assetsInFileContent = getAllAssetsInFileContent(newFileContent);
 		List<ItemAsset> itemAssets = new ArrayList<ItemAsset>();
 		
-		itemAssets.addAll(getMethodAssets(actualAssets, assetsInFileContent));
-		//TODO: Implementar diferença de fields e imports
+		itemAssets.addAll(getDiffAssets(actualAssets, assetsInFileContent));
 		
 		return itemAssets;
 	}
 	
-	private Collection<? extends ItemAsset> getMethodAssets(
+	private Collection<? extends ItemAsset> getDiffAssets(
 			List<ItemAsset> actualAssets, List<ItemAsset> assetsInFileContent) {
 		
 		List<ItemAsset> assets = new ArrayList<ItemAsset>();
@@ -52,6 +51,10 @@ public class ClassParserHelper {
 					break;
 				}else if(oldAsset.isMethodAsset() 
 						&& oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
+					newAsset.setNewAsset(false);
+					oldAsset.setNewAsset(false);
+					break;
+				}else if(!oldAsset.isMethodAsset() && oldAsset.equals(newAsset)){
 					newAsset.setNewAsset(false);
 					oldAsset.setNewAsset(false);
 					break;
@@ -80,9 +83,9 @@ public class ClassParserHelper {
 		assets.add(deletedAsset);
 	}
 
-	private List<ItemAsset> getAllMethodsInFileContent(String fileContent){
+	private List<ItemAsset> getAllAssetsInFileContent(String fileContent){
 		javaParser = new JavaClassParser(fileContent);
-		return javaParser.parserMethods();
+		return javaParser.getAll();
 	}
 	
 	public List<ChangeLogGroupModel> getChangeLogGroupByRevision(List<ItemChangeLog> itemChangeLogs){
