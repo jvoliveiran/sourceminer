@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.arq.utils.DateUtils;
+import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
@@ -50,11 +51,14 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
 	
+	private ClassParserHelper classParserHelper;
+	
 	@Autowired
 	public DashboardService(ProjectRepository repository, 
 			RepositoryConnectionSession connection){
 		this.repository = repository;
 		this.connection = connection;
+		this.classParserHelper = new ClassParserHelper();
 	}
 	
 	public Integer getTotalItensInProject(Project project){
@@ -134,8 +138,6 @@ public class DashboardService extends AbstractArqService<Project>{
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, revisionStartSync, revisionEndSync);
 		
-		ClassParserHelper classParserHelper = new ClassParserHelper();
-		
 		for(RepositoryRevisionItem item : repositoryItens){
 			item.setCreateAt(DateUtils.now());
 			item.setProject(project);
@@ -143,11 +145,11 @@ public class DashboardService extends AbstractArqService<Project>{
 			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
 			revisionItemRepository.save(item);
 			
-			processRepositoryItemChanges(item, classParserHelper);
+			processRepositoryItemChanges(item);
 		}
 	}
 	
-	private void processRepositoryItemChanges(RepositoryRevisionItem revisionItem, ClassParserHelper classParserHelper) {
+	private void processRepositoryItemChanges(RepositoryRevisionItem revisionItem) {
 		Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
 		RepositoryItem item = revisionItem.getRepositoryItem();
 		
@@ -231,8 +233,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
-	public List<ItemChangeLog> getChangeLogInRepositoryItem(RepositoryItem item){
-		return this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
+	public List<ChangeLogGroupModel> getChangeLogInRepositoryItem(RepositoryItem item){
+		List<ItemChangeLog> changeLogs = this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
+		
+		return classParserHelper.getChangeLogGroupByRevision(changeLogs);
 	}
 	
 	public RepositoryRevisionFilter getRevisionFilter(){

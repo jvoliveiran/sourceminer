@@ -29,10 +29,10 @@
 	</head>
 	
 	<div layout:fragment="content">
-		<div class="col-md-10">
+		<div class="col-lg-10">
 				<h3>Dashboard - Detalhes arquivo</h3>
 			</div>
-			<div class="col-md-2">
+			<div class="col-lg-2">
 				<form action="#" th:action="@{/dashboard/project_dashboard}" method="post">
 					<input type="hidden" name="idProject" th:value="${project.id}" />
 					<input type="submit" class="btn btn-primary" value="Dashboard" />
@@ -41,28 +41,28 @@
 		
 		<!-- Primeira linha -->
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-6">
 			
-				<div class="panel panel-default">
+				<div class="panel panel-default" style="height: 150px">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Informações do Projeto</h3>
 				  </div>
 				  <div class="panel-body">
 				  
 				  	<div class="row">
-					    <div class="col-md-2">
+					    <div class="col-lg-3">
 					    	<b>Repositório:</b>
 					    </div>
-					    <div class="col-md-10">
+					    <div class="col-lg-9">
 					    	<span th:text="${repositoryConnetionSession.connectionName}"></span>
 					    </div>
 				    </div>
 				    
 				    <div class="row">
-					    <div class="col-md-2">
+					    <div class="col-lg-3">
 					    	<b>Projeto:</b>
 					    </div>
-					    <div class="col-md-10">
+					    <div class="col-lg-9">
 					    	<span th:text="${project.name}"></span>
 					    </div>
 				    </div>
@@ -71,63 +71,60 @@
 				</div>
 				
 			</div>
-		</div>
-		
-		<hr />
-		
-		<div class="row">
-			<div class="col-md-12">
-				<div class="panel panel-default">
+			
+			<div class="col-lg-6">
+				<div class="panel panel-default" style="height: 150px">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Detalhes do arquivo</h3>
 				  </div>
 				  
 				  <div class="panel-body">
 				  	<div class="row">
-				  		<div class="col-md-2">
+				  		<div class="col-lg-2">
 				  			<b>Nome:</b>
 				  		</div>
-				  		<div class="col-md-10">
+				  		<div class="col-lg-10">
 				  			<span th:text="${item.name}" />
 				  		</div>
 				  	</div>
 				  	
 				  	<div class="row">
-				  		<div class="col-md-2">
-				  			<b>Path:</b>
+				  		<div class="col-lg-2">
+				  			<b>Projeto:</b>
 				  		</div>
-				  		<div class="col-md-10">
-				  			<span th:text="${item.path}" />
+				  		<div class="col-lg-10">
+				  			<span th:text="${project.name}" />
 				  		</div>
 				  	</div>
 				  	
 				  	<div class="row">
-				  		<div class="col-md-2">
-				  			<b>Projeto:</b>
+				  		<div class="col-lg-2">
+				  			<b>Path:</b>
 				  		</div>
-				  		<div class="col-md-10">
-				  			<span th:text="${project.name}" />
+				  		<div class="col-lg-10">
+				  			<span th:text="${item.path}" />
 				  		</div>
 				  	</div>
 				  	
 				  </div>
 				</div>
 			</div>
+			
 		</div>
 		
 		<hr />
 		
 		<h3>Conteúdo do arquivo</h3>
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-8">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">
 				  		<div class="row">
-					  		<div class="col-md-11">
+					  		<div class="col-lg-10">
 					  			<span th:text="${item.name}" />
 					  		</div>
-					  		<div class="col-md-1">
+					  		<div class="col-lg-2">
 					  			<select class="form-control" id="revisionFile" th:onchange="'getFileContentInRevision(\'' + ${item.path} + '\');'">
 								    <option th:each="revisionNumber: ${revisionsNumber}"
 								            th:value="${revisionNumber}"
@@ -137,7 +134,7 @@
 						</div>
 				  	</h3>
 				  </div>
-				  <div class="panel-boddy">
+				  <div class="panel-body">
 				  	<div class="code-block">
 				  		<pre>
 				  			<code th:text="${fileContent}" id="fileContentBox"></code>
@@ -146,32 +143,36 @@
 				  </div>
 				</div>
 			</div>
-		</div>
-		
-		<hr />
-		
-		<div class="row">
-			<div class="col-md-12">
+			
+			
+			<div class="col-lg-4">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Change History</h3>
 				  </div>
-				  <div class="panel-body>">
-				  	<div class="row" th:each="itemAsset : ${historyChangeLog}">
-				  		<div class="col-md-12" >
-				  			<span style="margin-left: 2%" th:text="${itemAsset.getChangeLogDesc()}"
-				  			th:style="'background-color: ' + ${itemAsset.getBackgroundColorHexa()}" />
+				  <div class="panel-body">
+				  	<div class="row" th:each="changeLogGroup : ${historyChangeLog}">
+				  		<div class="col-lg-12">
+					  		<table class="table table-striped">
+					  			<caption>Revisão: <span th:text="${changeLogGroup.revision}" /> </caption>
+					  			<tr th:each="itemChangeLog : ${changeLogGroup.changeLogs}">
+					  				<td th:style="'background-color: ' + ${itemChangeLog.getBackgroundColorHexa()}">
+					  					<span th:text="${itemChangeLog.getChangeLogDesc()}"/>
+					  				</td>
+					  			</tr>
+					  		</table>
 				  		</div>
 				  	</div>
 				  </div>
 				</div>
 			</div>
+			
 		</div>
 		
 		<hr />
 		
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-lg-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				  	<h3 class="panel-title">Revisões</h3>
@@ -203,8 +204,6 @@
 				</div>
 			</div>
 		</div>
-		
-		<hr />
 		
 	</div>
 	

@@ -137,8 +137,7 @@ public class ItemChangeLog implements ObjectDB{
 	public String getChangeLogDesc(){
 		return this.asset.getAssetTypeDesc() + " " 
 				+ this.changeType.getDescription() + " - "
-				+ this.name
-				+ " (Rev: " + this.revisionItem.getRepositoryRevision().getRevision() + ")";
+				+ this.signature;
 	}
 
 	public RepositoryRevisionItem getRevisionItem() {
@@ -147,6 +146,14 @@ public class ItemChangeLog implements ObjectDB{
 
 	public void setRevisionItem(RepositoryRevisionItem revisionItem) {
 		this.revisionItem = revisionItem;
+	}
+	
+	public Long getRevision(){
+		try{
+			return this.revisionItem.getRepositoryRevision().getRevision();
+		}catch(NullPointerException e){
+			return 0L;
+		}
 	}
 		
 	public String getBackgroundColorHexa(){

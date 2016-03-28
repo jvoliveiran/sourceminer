@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.Project;
-import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 

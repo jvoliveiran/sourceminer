@@ -85,4 +85,23 @@ public class ClassParserHelper {
 		return javaParser.parserMethods();
 	}
 	
+	public List<ChangeLogGroupModel> getChangeLogGroupByRevision(List<ItemChangeLog> itemChangeLogs){
+		List<ChangeLogGroupModel> modelList = new ArrayList<ChangeLogGroupModel>();
+		
+		itemChangeLogs = itemChangeLogs.stream()
+				.sorted((item1, item2) -> (-1)*(item1.getId().compareTo(item2.getId())))
+				.collect(Collectors.toList());
+		
+		Long revisionGroup = 0L;
+		for(ItemChangeLog changeLog : itemChangeLogs){	
+			if(revisionGroup != changeLog.getRevision()){
+				modelList.add(new ChangeLogGroupModel(changeLog.getRevision()));
+				revisionGroup = changeLog.getRevision();
+			}
+			
+			modelList.get(modelList.size() - 1).addLog(changeLog);
+		}
+		
+		return modelList;
+	}
 }
