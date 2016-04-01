@@ -1,5 +1,8 @@
 package br.com.jvoliveira.sourceminer.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 
  * @author Joao Victor
@@ -29,6 +32,10 @@ public enum AssetType {
 	
 	public boolean isImport(){
 		return this.equals(IMPORT);
+	}
+	
+	public static List<AssetType> getValues(){
+		return Arrays.asList(AssetType.values());
 	}
 	
 }

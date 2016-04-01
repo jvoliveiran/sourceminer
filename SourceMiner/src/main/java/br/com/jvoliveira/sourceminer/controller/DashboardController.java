@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,8 @@ import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
+import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 import br.com.jvoliveira.sourceminer.service.DashboardService;
@@ -68,6 +71,8 @@ public class DashboardController extends AbstractArqController<Project>{
 	@RequestMapping(value = "/item_details", method = RequestMethod.POST)
 	public String itemDetails(@RequestParam Long idItem, Model model){
 		
+		((DashboardService)service).setItemChangeLogFilter(new ItemChangeLogFilter());
+		
 		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
 		String fileContent = ((DashboardService)service).getFileContentInRevision(item.getPath(), new Long(-1));
 		List<ChangeLogGroupModel> historyChangeLog = ((DashboardService)service).getChangeLogInRepositoryItem(item);
@@ -77,6 +82,8 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("fileContent", fileContent);
 		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
 		model.addAttribute("historyChangeLog", historyChangeLog);
+		
+		model.addAttribute("itemChangeLogFilter", ((DashboardService)service).getItemChangeLogFilter());
 		
 		return forward("item_details");
 	}
@@ -149,4 +156,8 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("project", obj);
 	}
 	
+	@ModelAttribute("assetTypeList")
+	public List<AssetType> getAssetTypeList(){
+		return AssetType.getValues();
+	}
 }

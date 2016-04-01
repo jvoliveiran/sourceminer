@@ -27,8 +27,10 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.search.ItemChangeLogSearch;
 import br.com.jvoliveira.sourceminer.search.RepositoryItemSearch;
 import br.com.jvoliveira.sourceminer.search.RepositoryRevisionSearch;
+import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 
@@ -50,6 +52,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
+	private ItemChangeLogSearch itemChangeLogSearch;
 	
 	private ClassParserHelper classParserHelper;
 	
@@ -236,6 +239,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	public List<ChangeLogGroupModel> getChangeLogInRepositoryItem(RepositoryItem item){
 		List<ItemChangeLog> changeLogs = this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
 		
+		//TODO: Incluir tratamento do ItemChangeLogSearch
 		return classParserHelper.getChangeLogGroupByRevision(changeLogs);
 	}
 	
@@ -244,7 +248,8 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	public void setRevisionFilter(RepositoryRevisionFilter filter){
-		this.revisionSearch.setFilter(filter);
+		if(this.revisionSearch.getFilter() == null)
+			this.revisionSearch.setFilter(filter);
 	}
 	
 	public RepositoryItemFilter getItemFilter(){
@@ -252,7 +257,17 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	public void setItemFilter(RepositoryItemFilter filter){
-		this.itemSearch.setFilter(filter);
+		if(this.itemSearch.getFilter() == null)
+			this.itemSearch.setFilter(filter);
+	}
+	
+	public ItemChangeLogFilter getItemChangeLogFilter(){
+		return (ItemChangeLogFilter) this.itemChangeLogSearch.getFilter();
+	}
+	
+	public void setItemChangeLogFilter(ItemChangeLogFilter filter){
+		if(this.itemChangeLogSearch.getFilter() == null)
+			this.itemChangeLogSearch.setFilter(filter);
 	}
 	
 	@Autowired
@@ -283,6 +298,11 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setRevisionSearch(RepositoryRevisionSearch search){
 		this.revisionSearch = search;
+	}
+	
+	@Autowired
+	public void setItemChangeLogSearch(ItemChangeLogSearch search){
+		this.itemChangeLogSearch = search;
 	}
 	
 	@Autowired

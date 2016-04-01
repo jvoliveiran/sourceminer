@@ -161,7 +161,25 @@
 							
 							<div class="collapse" id="formChangeLogSearch">
 					 			<div class="well">
-					 				FORMULÁRIO
+					 				<!-- TODO: Incluir th:action -->
+					 				 <form action="#" th:object="${itemChangeLogFilter}" method="post" class="form-horizontal">
+					    
+								    	<div class="form-group">
+								    		<div class="col-sm-1">
+								    			<input type="checkbox" th:field="*{checkAssetType}" />
+								    		</div>
+											<label for="name" class="col-sm-2 control-label">Tipo: </label>
+											<div class="col-sm-8">
+												<select class="form-control" id="filterAssetType" th:field="*{assetType}">
+													<option label="-- SELECIONE --" value="">-- SELECIONE --</option>
+												    <option th:each="assetType: ${assetTypeList}"
+												            th:value="${assetType.description}"
+												            th:text="${assetType.description}">Tipo</option>
+												</select>
+											</div>
+										</div>
+										
+									</form>
 					 			</div>
 					 		</div>
 					 		
