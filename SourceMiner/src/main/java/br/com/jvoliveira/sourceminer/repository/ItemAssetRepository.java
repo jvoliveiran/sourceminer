@@ -16,6 +16,6 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
  */
 public interface ItemAssetRepository extends CrudRepository<ItemAsset, Long>{
 
-	List<ItemAsset> findByRepositoryItem(RepositoryItem repositoryItem);
+	List<ItemAsset> findByRepositoryItemAndEnable(RepositoryItem repositoryItem, Boolean enable);
 	
 }

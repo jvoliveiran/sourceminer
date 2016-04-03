@@ -64,6 +64,13 @@ public class ItemAsset implements GenericAsset{
 	
 	@Column(name="value", length = 100000)
 	private String value;
+	
+	@Column(name="enable")
+	private boolean enable = true;
+	
+	public ItemAsset(){
+		newAsset = true;
+	}
 
 	@Override
 	public void setId(Long id) {
@@ -184,6 +191,14 @@ public class ItemAsset implements GenericAsset{
 
 	public void setNewAsset(boolean newAsset) {
 		this.newAsset = newAsset;
+	}
+
+	public boolean isEnable() {
+		return enable;
+	}
+
+	public void setEnable(boolean enable) {
+		this.enable = enable;
 	}
 	
 }

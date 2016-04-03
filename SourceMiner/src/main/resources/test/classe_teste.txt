@@ -46,5 +46,12 @@ public class JavaClassParserTest {
 	
 	private void removedMethod(){
 	}
+	
+	private void changedMethod(){
+		System.out.println("");
+	}
+	
+	private void removedMethod2(){
+	}
 }
 

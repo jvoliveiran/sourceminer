@@ -156,7 +156,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
 		RepositoryItem item = revisionItem.getRepositoryItem();
 		
-		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItem(item);
+		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnable(item,true);
+		
+		actualItemAssets.stream().forEach(asset -> asset.setNewAsset(true));
+		
 		String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
 		
 		List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
@@ -170,6 +173,13 @@ public class DashboardService extends AbstractArqService<Project>{
 			if(asset.getId() == null){
 				asset.setCreateAt(DateUtils.now());
 				asset.setRepositoryItem(revisionItem.getRepositoryItem());
+				itemAssetRepository.save(asset);
+			}else if(asset.getItemChageLog().getChangeType().isDelete()){
+				asset.setUpdateAt(DateUtils.now());
+				asset.setEnable(false);
+				itemAssetRepository.save(asset);
+			}else if(asset.getItemChageLog().getChangeType().isUpdate()){
+				asset.setUpdateAt(DateUtils.now());
 				itemAssetRepository.save(asset);
 			}
 			

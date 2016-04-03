@@ -46,6 +46,7 @@ public class ClassParserHelper {
 						&& !oldAsset.hasSameBodyMethod(newAsset) && oldAsset.equals(newAsset)){
 					
 					oldAsset.setItemChageLog(new ItemChangeLog(ChangeFileType.UPDATED));
+					oldAsset.setValue(newAsset.getValue());
 					
 					assets.add(oldAsset);
 					break;

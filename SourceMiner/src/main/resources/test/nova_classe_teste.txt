@@ -46,4 +46,9 @@ public class JavaClassParserTest {
 	
 	private void stubMethod(){
 	}
+	
+	private void changedMethod(){
+		System.out.println("Changed");
+		return;
+	}
 }
