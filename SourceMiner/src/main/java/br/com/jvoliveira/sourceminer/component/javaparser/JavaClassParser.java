@@ -102,9 +102,9 @@ public class JavaClassParser extends GenericClassParser{
 				ItemAsset itemAsset = new ItemAsset();
 				
 				itemAsset.setName(importClass.getName().getName());
-				itemAsset.setSignature(importClass.getName().getName());
+				itemAsset.setSignature(importClass.getName().toString());
 				itemAsset.setAssetType(AssetType.IMPORT);
-				fields.add(itemAsset);
+				imports.add(itemAsset);
 			}
 		}
 		return imports;

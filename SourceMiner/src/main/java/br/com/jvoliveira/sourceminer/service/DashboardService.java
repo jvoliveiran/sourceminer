@@ -94,6 +94,12 @@ public class DashboardService extends AbstractArqService<Project>{
 		revisionSearch.searchWithFilter();
 	}
 	
+	public void searchItemChangeLog(RepositoryItem item, ItemChangeLogFilter filter){
+		filter.setItem(item);
+		itemChangeLogSearch.setFilter(filter);
+		itemChangeLogSearch.searchWithFilter();
+	}
+	
 	public void clearSearchRepositoryItem(){
 		itemSearch.init();
 	}
@@ -247,9 +253,13 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	public List<ChangeLogGroupModel> getChangeLogInRepositoryItem(RepositoryItem item){
-		List<ItemChangeLog> changeLogs = this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
+		List<ItemChangeLog> changeLogs = null;
 		
-		//TODO: Incluir tratamento do ItemChangeLogSearch
+		if(getItemChangeLogFilter().hasFilterToSearch())
+			changeLogs = itemChangeLogSearch.searchWithFilter();
+		else
+			changeLogs = this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
+		
 		return classParserHelper.getChangeLogGroupByRevision(changeLogs);
 	}
 	

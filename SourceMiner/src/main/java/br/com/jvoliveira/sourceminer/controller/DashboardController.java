@@ -71,6 +71,13 @@ public class DashboardController extends AbstractArqController<Project>{
 	@RequestMapping(value = "/item_details", method = RequestMethod.POST)
 	public String itemDetails(@RequestParam Long idItem, Model model){
 		
+		loadDefaultItemDetails(idItem, model);
+		
+		return forward("item_details");
+	}
+	
+	private void loadDefaultItemDetails(Long idItem, Model model){
+
 		((DashboardService)service).setItemChangeLogFilter(new ItemChangeLogFilter());
 		
 		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
@@ -84,8 +91,6 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("historyChangeLog", historyChangeLog);
 		
 		model.addAttribute("itemChangeLogFilter", ((DashboardService)service).getItemChangeLogFilter());
-		
-		return forward("item_details");
 	}
 	
 	@RequestMapping(value = "/search_item", method = RequestMethod.POST)
@@ -139,6 +144,18 @@ public class DashboardController extends AbstractArqController<Project>{
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
+	}
+	
+	@RequestMapping(value = "/search_item_changelog", method = RequestMethod.POST)
+	public String searchItemChangelog(@Validated ItemChangeLogFilter filter, @RequestParam Long idItem, Model model){
+		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
+		
+		((DashboardService)service).searchItemChangeLog(item, filter);
+		model.addAttribute("itemChangeLogFilter", filter);
+		
+		loadDefaultItemDetails(idItem, model);
+		
+		return forward("item_details");
 	}
 	
 	@ResponseBody
