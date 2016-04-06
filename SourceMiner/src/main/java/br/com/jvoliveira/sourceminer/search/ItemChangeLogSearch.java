@@ -24,15 +24,16 @@ public class ItemChangeLogSearch extends AbstractArqSearch<ItemChangeLog>{
 	@Override
 	public void createSearchQuery(StringBuilder sql) {
 		sql.append(" SELECT changeLog FROM ItemChangeLog AS changeLog ");
+		sql.append(" JOIN changeLog.asset AS asset ");
 		sql.append(" JOIN changeLog.revisionItem AS revisionItem ");
 		sql.append(" JOIN revisionItem.repositoryItem AS repositoryItem ");
 		sql.append(" WHERE 1=1 ");
 		
 		if(((ItemChangeLogFilter)filter).isValidChangeFileType())
-			sql.append(" AND changeLog.changeFileType LIKE :changeFileType ");
+			sql.append(" AND changeLog.changeType LIKE :changeFileType ");
 		
 		if(((ItemChangeLogFilter)filter).isValidAssetType())
-			sql.append(" AND changeLog.assetType LIKE :assetType ");
+			sql.append(" AND asset.assetType LIKE :assetType ");
 		
 		if(((ItemChangeLogFilter)filter).getItem() != null)
 			sql.append(" AND repositoryItem = :item ");
@@ -48,7 +49,7 @@ public class ItemChangeLogSearch extends AbstractArqSearch<ItemChangeLog>{
 			q.setParameter("assetType", ((ItemChangeLogFilter)filter).getAssetType());
 		
 		if(((ItemChangeLogFilter)filter).getItem() != null)
-			q.setParameter("repositoryItem", ((ItemChangeLogFilter)filter).getItem());
+			q.setParameter("item", ((ItemChangeLogFilter)filter).getItem());
 	}
 
 }

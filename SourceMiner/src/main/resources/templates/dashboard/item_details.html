@@ -161,19 +161,34 @@
 							
 							<div class="collapse" id="formChangeLogSearch">
 					 			<div class="well">
-					 				 <form action="#" th:action="@{/dashboard/item_details}" th:object="${itemChangeLogFilter}" method="post" class="form-horizontal">
+					 				 <form action="#" th:action="@{/dashboard/search_item_changelog}" th:object="${itemChangeLogFilter}" method="post" class="form-horizontal">
 					    
 								    	<div class="form-group">
 								    		<div class="col-sm-1">
 								    			<input type="checkbox" th:field="*{checkAssetType}" />
 								    		</div>
-											<label for="name" class="col-sm-2 control-label">Tipo: </label>
-											<div class="col-sm-8">
+											<label for="name" class="col-sm-4 control-label">Tipo: </label>
+											<div class="col-sm-7">
 												<select class="form-control" id="filterAssetType" th:field="*{assetType}">
 													<option label="-- SELECIONE --" value="">-- SELECIONE --</option>
 												    <option th:each="assetType: ${assetTypeList}"
-												            th:value="${assetType.description}"
+												            th:value="${assetType}"
 												            th:text="${assetType.description}">Tipo</option>
+												</select>
+											</div>
+										</div>
+										
+										<div class="form-group">
+								    		<div class="col-sm-1">
+								    			<input type="checkbox" th:field="*{checkChangeFileType}" />
+								    		</div>
+											<label for="name" class="col-sm-4 control-label">Situação: </label>
+											<div class="col-sm-7">
+												<select class="form-control" id="filterChangeFileType" th:field="*{changeFileType}">
+													<option label="-- SELECIONE --" value="">-- SELECIONE --</option>
+												    <option th:each="changeFileType: ${changeFileTypeList}"
+												            th:value="${changeFileType}"
+												            th:text="${changeFileType.description}">Situação</option>
 												</select>
 											</div>
 										</div>

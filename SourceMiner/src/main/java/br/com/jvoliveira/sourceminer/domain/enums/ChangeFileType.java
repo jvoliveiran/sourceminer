@@ -3,6 +3,9 @@
  */
 package br.com.jvoliveira.sourceminer.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Joao Victor
  *
@@ -31,5 +34,9 @@ public enum ChangeFileType {
 	
 	public boolean isUpdate(){
 		return this == UPDATED;
+	}
+
+	public static List<ChangeFileType> getValues() {
+		return Arrays.asList(ChangeFileType.values());
 	}
 }

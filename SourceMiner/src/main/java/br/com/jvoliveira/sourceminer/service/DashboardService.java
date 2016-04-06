@@ -147,6 +147,9 @@ public class DashboardService extends AbstractArqService<Project>{
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, revisionStartSync, revisionEndSync);
 		
+		System.out.println("Itens to sync: " + repositoryItens.size());
+		Integer totalItemSyncronized = 0;
+		
 		for(RepositoryRevisionItem item : repositoryItens){
 			item.setCreateAt(DateUtils.now());
 			item.setProject(project);
@@ -155,6 +158,9 @@ public class DashboardService extends AbstractArqService<Project>{
 			revisionItemRepository.save(item);
 			
 			processRepositoryItemChanges(item);
+			
+			totalItemSyncronized++;
+			System.out.println("Sync status: " + totalItemSyncronized + "/" + repositoryItens.size());
 		}
 	}
 	

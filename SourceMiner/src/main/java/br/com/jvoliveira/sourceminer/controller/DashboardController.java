@@ -21,6 +21,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
+import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
 import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
@@ -176,5 +177,10 @@ public class DashboardController extends AbstractArqController<Project>{
 	@ModelAttribute("assetTypeList")
 	public List<AssetType> getAssetTypeList(){
 		return AssetType.getValues();
+	}
+	
+	@ModelAttribute("changeFileTypeList")
+	public List<ChangeFileType> getChangeFileTypeList(){
+		return ChangeFileType.getValues();
 	}
 }

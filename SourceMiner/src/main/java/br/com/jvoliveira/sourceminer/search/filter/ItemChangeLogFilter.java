@@ -24,28 +24,23 @@ public class ItemChangeLogFilter implements ArqFilter{
 	
 	@Override
 	public boolean hasFilterToSearch() {
-		if(!isValidAssetType())
-			return false;
+		if(isValidAssetType())
+			return true;
 		
 		if(isValidChangeFileType())
 			return false;
 		
-		if(item == null)
-			return false;
-		
-		return true;
+		return false;
 	}
 	
 	public boolean isValidChangeFileType(){
-		return checkChangeFileType != null
-				&& checkChangeFileType
-				&& changeFileType != null;
+		return ((checkChangeFileType != null) && checkChangeFileType
+				&& (changeFileType != null));
 	}
 	
 	public boolean isValidAssetType(){
-		return checkAssetType != null
-				&& checkAssetType
-				&& assetType != null;
+		return ((checkAssetType != null) && checkAssetType
+				&& (assetType != null));
 	}
 
 	public Boolean getCheckAssetType() {
