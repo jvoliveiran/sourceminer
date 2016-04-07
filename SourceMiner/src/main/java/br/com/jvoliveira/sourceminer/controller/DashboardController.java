@@ -3,26 +3,16 @@
  */
 package br.com.jvoliveira.sourceminer.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
-import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.domain.Project;
-import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
-import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
-import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
-import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
-import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 import br.com.jvoliveira.sourceminer.service.DashboardService;
@@ -56,42 +46,6 @@ public class DashboardController extends AbstractArqController<Project>{
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
-	}
-	
-	@RequestMapping(value = "/revision_details", method = RequestMethod.POST)
-	public String revisionDetails(@RequestParam Long idRevision, Model model){
-		
-		RepositoryRevision revision = ((DashboardService)service).getRevisionById(idRevision);
-		
-		model.addAttribute("revision", revision);
-		model.addAttribute("project", revision.getProject());
-		
-		return forward("revision_details");
-	}
-	
-	@RequestMapping(value = "/item_details", method = RequestMethod.POST)
-	public String itemDetails(@RequestParam Long idItem, Model model){
-		
-		loadDefaultItemDetails(idItem, model);
-		
-		return forward("item_details");
-	}
-	
-	private void loadDefaultItemDetails(Long idItem, Model model){
-
-		((DashboardService)service).setItemChangeLogFilter(new ItemChangeLogFilter());
-		
-		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
-		String fileContent = ((DashboardService)service).getFileContentInRevision(item.getPath(), new Long(-1));
-		List<ChangeLogGroupModel> historyChangeLog = ((DashboardService)service).getChangeLogInRepositoryItem(item);
-		
-		model.addAttribute("item", item);
-		model.addAttribute("project", item.getProject());
-		model.addAttribute("fileContent", fileContent);
-		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
-		model.addAttribute("historyChangeLog", historyChangeLog);
-		
-		model.addAttribute("itemChangeLogFilter", ((DashboardService)service).getItemChangeLogFilter());
 	}
 	
 	@RequestMapping(value = "/search_item", method = RequestMethod.POST)
@@ -147,24 +101,6 @@ public class DashboardController extends AbstractArqController<Project>{
 		return forward("project_dashboard");
 	}
 	
-	@RequestMapping(value = "/search_item_changelog", method = RequestMethod.POST)
-	public String searchItemChangelog(@Validated ItemChangeLogFilter filter, @RequestParam Long idItem, Model model){
-		RepositoryItem item = ((DashboardService)service).getItemById(idItem);
-		
-		((DashboardService)service).searchItemChangeLog(item, filter);
-		model.addAttribute("itemChangeLogFilter", filter);
-		
-		loadDefaultItemDetails(idItem, model);
-		
-		return forward("item_details");
-	}
-	
-	@ResponseBody
-	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
-	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){
-		return ((DashboardService)service).getFileContentInRevision(path, revisionNumber);
-	}
-	
 	private void loadDefaultModel(Model model){
 		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
 		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
@@ -172,15 +108,5 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
 		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
 		model.addAttribute("project", obj);
-	}
-	
-	@ModelAttribute("assetTypeList")
-	public List<AssetType> getAssetTypeList(){
-		return AssetType.getValues();
-	}
-	
-	@ModelAttribute("changeFileTypeList")
-	public List<ChangeFileType> getChangeFileTypeList(){
-		return ChangeFileType.getValues();
 	}
 }

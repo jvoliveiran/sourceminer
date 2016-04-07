@@ -121,7 +121,7 @@
 				  			<td th:text="${revisionItem.commitType.initial}"></td>
 				  			<td th:text="${revisionItem.repositoryItem.getFullPath()}"></td>
 				  			<td>
-				  				<form action="#" th:action="@{/dashboard/item_details}" method="post">
+				  				<form action="#" th:action="@{/dashboard/repository_item/item_details}" method="post">
 				  					<input type="hidden" name="idItem" th:value="${revisionItem.repositoryItem.id}" />
 				  					<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 				  				</form>

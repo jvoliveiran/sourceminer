@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.arq.utils.DateUtils;
-import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
@@ -27,10 +26,8 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
-import br.com.jvoliveira.sourceminer.search.ItemChangeLogSearch;
 import br.com.jvoliveira.sourceminer.search.RepositoryItemSearch;
 import br.com.jvoliveira.sourceminer.search.RepositoryRevisionSearch;
-import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 
@@ -43,16 +40,15 @@ public class DashboardService extends AbstractArqService<Project>{
 
 	private RepositoryConnectionSession connection;
 	
-	private RepositorySyncLogRepository syncLogRepository;
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
+	private RepositorySyncLogRepository syncLogRepository;
 	private ItemAssetRepository itemAssetRepository;
-	private ItemChageLogRepositoryImpl itemChangeLogRepository;
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
-	private ItemChangeLogSearch itemChangeLogSearch;
+	private ItemChageLogRepositoryImpl itemChangeLogRepository;
 	
 	private ClassParserHelper classParserHelper;
 	
@@ -82,6 +78,16 @@ public class DashboardService extends AbstractArqService<Project>{
 			return itemRepository.findTop10ByProjectOrderByIdDesc(project);
 	}
 	
+	public List<RepositoryRevision> getAllRevisionsInProject(Project project){
+		if(this.connection.getConnection() != null)
+			sincronyzeRepositoryDatabase(project);
+		
+		if(revisionSearch.hasResult())
+			return revisionSearch.getResult();
+		else
+			return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
+	}
+	
 	public void searchRepositoryItem(Project project, RepositoryItemFilter filter){
 		filter.setProject(project);
 		itemSearch.setFilter(filter);
@@ -94,28 +100,12 @@ public class DashboardService extends AbstractArqService<Project>{
 		revisionSearch.searchWithFilter();
 	}
 	
-	public void searchItemChangeLog(RepositoryItem item, ItemChangeLogFilter filter){
-		filter.setItem(item);
-		itemChangeLogSearch.setFilter(filter);
-		itemChangeLogSearch.searchWithFilter();
-	}
-	
 	public void clearSearchRepositoryItem(){
 		itemSearch.init();
 	}
 	
 	public void clearSearchRepositoryRevision(){
 		revisionSearch.init();
-	}
-	
-	public List<RepositoryRevision> getAllRevisionsInProject(Project project){
-		if(this.connection.getConnection() != null)
-			sincronyzeRepositoryDatabase(project);
-		
-		if(revisionSearch.hasResult())
-			return revisionSearch.getResult();
-		else
-			return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
 	}
 	
 	public RepositorySyncLog getLastSync(Project project){
@@ -177,6 +167,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
 		
 		syncAssets(assetsToSync, revisionItem);
+	}
+	
+	public String getFileContentInRevision(String path, Long revision){
+		return this.connection.getConnection().getFileContent(path, revision);
 	}
 
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
@@ -246,29 +240,6 @@ public class DashboardService extends AbstractArqService<Project>{
 		syncLogRepository.save(lastSyncLog);
 	}
 	
-	public RepositoryRevision getRevisionById(Long id){
-		return revisionRepository.findOne(id);
-	}
-	
-	public RepositoryItem getItemById(Long id){
-		return itemRepository.findOne(id);
-	}
-	
-	public String getFileContentInRevision(String path, Long revision){
-		return this.connection.getConnection().getFileContent(path, revision);
-	}
-	
-	public List<ChangeLogGroupModel> getChangeLogInRepositoryItem(RepositoryItem item){
-		List<ItemChangeLog> changeLogs = null;
-		
-		if(getItemChangeLogFilter().hasFilterToSearch())
-			changeLogs = itemChangeLogSearch.searchWithFilter();
-		else
-			changeLogs = this.itemChangeLogRepository.findAllChangeLogRepositoryItem(item);
-		
-		return classParserHelper.getChangeLogGroupByRevision(changeLogs);
-	}
-	
 	public RepositoryRevisionFilter getRevisionFilter(){
 		return (RepositoryRevisionFilter) this.revisionSearch.getFilter();
 	}
@@ -285,15 +256,6 @@ public class DashboardService extends AbstractArqService<Project>{
 	public void setItemFilter(RepositoryItemFilter filter){
 		if(this.itemSearch.getFilter() == null)
 			this.itemSearch.setFilter(filter);
-	}
-	
-	public ItemChangeLogFilter getItemChangeLogFilter(){
-		return (ItemChangeLogFilter) this.itemChangeLogSearch.getFilter();
-	}
-	
-	public void setItemChangeLogFilter(ItemChangeLogFilter filter){
-		if(this.itemChangeLogSearch.getFilter() == null)
-			this.itemChangeLogSearch.setFilter(filter);
 	}
 	
 	@Autowired
@@ -324,11 +286,6 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setRevisionSearch(RepositoryRevisionSearch search){
 		this.revisionSearch = search;
-	}
-	
-	@Autowired
-	public void setItemChangeLogSearch(ItemChangeLogSearch search){
-		this.itemChangeLogSearch = search;
 	}
 	
 	@Autowired

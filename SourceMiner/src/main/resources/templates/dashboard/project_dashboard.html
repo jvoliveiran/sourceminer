@@ -159,7 +159,7 @@
 					  			<td th:text="${revision.author}"></td>
 					  			<td th:text="${revision.dateRevision}"></td>
 					  			<td>
-					  				<form action="#" th:action="@{/dashboard/revision_details}" method="post" >
+					  				<form action="#" th:action="@{/dashboard/repository_revision/revision_details}" method="post" >
 										<input type="hidden" name="idRevision" th:value="${revision.id}" />
 			    						<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 									</form>
@@ -239,7 +239,7 @@
 					  			<td th:text="${item.name}"></td>
 					  			<td th:text="${item.path}"></td>
 					  			<td>
-					  				<form action="#" th:action="@{/dashboard/item_details}" method="post">
+					  				<form action="#" th:action="@{/dashboard/repository_item/item_details}" method="post">
 					  					<input type="hidden" name="idItem" th:value="${item.id}" />
 					  					<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 					  				</form>

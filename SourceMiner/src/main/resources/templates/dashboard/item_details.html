@@ -9,7 +9,7 @@
 			
 			$.ajax({
 	            type: "POST",
-	            url: "/SourceMiner/dashboard/file_content_revision",
+	            url: "/SourceMiner/dashboard/repository_item/file_content_revision",
 	            data: { 'revisionNumber': revisionNumber, 'path': path  },
 	            success: changeFileContentRevision,
 	            error : function(e) {
@@ -161,7 +161,7 @@
 							
 							<div class="collapse" id="formChangeLogSearch">
 					 			<div class="well">
-					 				 <form action="#" th:action="@{/dashboard/search_item_changelog}" th:object="${itemChangeLogFilter}" method="post" class="form-horizontal">
+					 				 <form action="#" th:action="@{/dashboard/repository_item/search_item_changelog}" th:object="${itemChangeLogFilter}" method="post" class="form-horizontal">
 					    
 								    	<div class="form-group">
 								    		<div class="col-sm-1">
@@ -249,7 +249,7 @@
 				  			<td th:text="${revisionItem.repositoryRevision.author}"></td>
 				  			<td th:text="${revisionItem.repositoryRevision.dateRevision}"></td>
 				  			<td>
-				  				<form action="#" th:action="@{/dashboard/revision_details}" method="post">
+				  				<form action="#" th:action="@{/dashboard/repository_revision/revision_details}" method="post">
 				  					<input type="hidden" name="idRevision" th:value="${revisionItem.repositoryRevision.id}" />
 				  					<input type="submit" class="btn btn-primary btn-xs" value="Detalhes" />
 				  				</form>
