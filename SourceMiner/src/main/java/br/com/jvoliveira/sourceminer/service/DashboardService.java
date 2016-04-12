@@ -53,8 +53,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private ClassParserHelper classParserHelper;
 	
 	@Autowired
-	public DashboardService(ProjectRepository repository, 
-			RepositoryConnectionSession connection){
+	public DashboardService(ProjectRepository repository,  RepositoryConnectionSession connection){
 		this.repository = repository;
 		this.connection = connection;
 		this.classParserHelper = new ClassParserHelper();

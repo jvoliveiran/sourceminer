@@ -69,6 +69,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return this.parse;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void openConnection() {
 		try {
@@ -108,6 +109,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return repositoryItens;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void listEntries(String path, List<RepositoryItem> listEntries) {
 		Collection<SVNDirEntry> entries;
 		try {
@@ -134,6 +136,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, Integer startRevision, Integer endRevision){
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<RepositoryRevisionItem>();
@@ -162,6 +165,8 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	                		 revisionItemLog.setCommitType(CommitType.ADD);
 	                	 else if(entryPath.getType() == 'M')
 	                		 revisionItemLog.setCommitType(CommitType.MOD);
+	                	 else if(entryPath.getType() == 'D')
+	                		 revisionItemLog.setCommitType(CommitType.DEL);
 	                	 
 	                	 revisionItemLogs.add(revisionItemLog);
 	                 }

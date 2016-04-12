@@ -8,7 +8,8 @@ package br.com.jvoliveira.sourceminer.domain.enums;
 public enum CommitType {
 
 	ADD("Adição",'A'),
-	MOD("Modificação",'M');
+	MOD("Modificação",'M'),
+	DEL("Remoção",'R');
 	
 	private String description;
 	private Character initial;
