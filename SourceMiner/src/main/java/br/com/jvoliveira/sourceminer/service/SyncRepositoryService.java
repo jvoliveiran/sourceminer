@@ -15,12 +15,14 @@ import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryCo
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.Project;
+import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
+import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
@@ -42,9 +44,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
 	private ItemAssetRepository itemAssetRepository;
+	private ProjectConfigurationRepository projectConfigurationRepository;
 	private ItemChageLogRepositoryImpl itemChangeLogRepository;
 	
 	private ClassParserHelper classParserHelper;
+	
+	private ProjectConfiguration config;
 	
 	@Autowired
 	public SyncRepositoryService(RepositoryConnectionSession connection,
@@ -55,9 +60,89 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		this.classParserHelper = new ClassParserHelper();
 	}
 	
-	public void sincronyzeRepositoryDatabase(Project project){
+	/**
+	 * Método de sincronização principal. Considera as configurações de sincronização
+	 * definidas para o projeto.
+	 * @param project
+	 */
+	public void synchronizeRepositoryUsingConfiguration(Project project){
+		this.config = projectConfigurationRepository.findOneByProject(project);
+		RepositorySyncLog lastSyncLog = getLastSync(project);
+		
+		if(lastSyncLog == null)
+			synchronizeRepositoryItem(project);
+		
+		List<RepositoryRevisionItem> repositoryItensDatabase = synchronizeRepositoryRevision(project);
+		
+		if(repositoryItensDatabase != null && getConfig().isFullAssetSync())
+			processRepositoryItemChanges(repositoryItensDatabase);
+		/*
+		 * TODO:
+		 * Criar ELSE para buscar todos os itens gerados no primeiro passo e criar os assets.
+		 * No caso do IF acima, criar assets complementares para itens não associados com uma revisão.
+		 */
+		
+		refreshSyncLog(lastSyncLog, project);
+	}
+
+	/**
+	 * Sincroniza todos os itens do repositório, mesmo que não associados a uma revisão
+	 * @param project
+	 */
+	private void synchronizeRepositoryItem(Project project){
+		System.out.println("	SINCRONIZANDO ITENS...");
+		List<RepositoryItem> items = connection.getConnection().getAllProjectItens(project);
+		
+		System.out.println("	ITENS PARA SINCRONIZAÇÃO: " + items.size());
+		
+		for(RepositoryItem repositoryItem : items)
+			getSyncItem(project, repositoryItem);
+		
+		System.out.println("	ITENS SINCRONIZADOS!!!");
+	}
+	
+	/**
+	 * Associa os itens do repositório com as revisões.
+	 * @param project
+	 * @return 
+	 */
+	private List<RepositoryRevisionItem> synchronizeRepositoryRevision(Project project){
+		Integer revisionStartSync = getRevisionToStartSync(project);
+		
+		if(revisionStartSync == 0)
+			return null;
+		
+		getConfig().setSyncStartRevision(revisionStartSync);
+		getConfig().setSyncEndRevision(-1);
+		
+		System.out.println("	SINCRONIZANDO ITENS COM REVISÕES...");
+		
+		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
+				getRevisionItensInProjectRange(project, getConfig());
+		
+		System.out.println("	ITENS COM REVISÃO PARA SINCRONIZAÇÃO: " + repositoryItens.size());
+		
+		for(RepositoryRevisionItem item : repositoryItens){
+			item.setCreateAt(DateUtils.now());
+			item.setProject(project);
+			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
+			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
+			
+			revisionItemRepository.save(item);
+		}
+		
+		System.out.println("	ITENS COM REVISÃO SINCRONIZADOS!!!");
+		
+		return repositoryItens;
+	}
+	
+	/**
+	 * Identifica a primeira revisão do repositório que não está sincronizada com o SourceMiner
+	 * @param project
+	 * @return
+	 */
+	private Integer getRevisionToStartSync(Project project) {
 		Integer revisionStartSync = 1;
-		Integer revisionEndSync = -1;
 		
 		Long revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
 		
@@ -69,58 +154,65 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			if(revisionLastSync < revisionLastCommit)
 				revisionStartSync = revisionLastSync.intValue() + 1;
 			else
-				return;
+				return 0;
 		}
 		
-		sincronyzeRepositoryDatabase(project,revisionStartSync,revisionEndSync);
-		refreshSyncLog(lastSyncLog, project);
+		return revisionStartSync;
 	}
 	
+	/**
+	 * Recupera a última revisão de um projeto específico no repositório
+	 * @param project
+	 * @return
+	 */
 	public RepositorySyncLog getLastSync(Project project){
 		return syncLogRepository.findFirstByProjectOrderByIdDesc(project);
 	}
 	
-	private void sincronyzeRepositoryDatabase(Project project, Integer revisionStartSync, Integer revisionEndSync) {
-		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
-				getRevisionItensInProjectRange(project, revisionStartSync, revisionEndSync);
+	/**
+	 * Identifica as mudanças geradas em cada artefato associados a uma determinada revisão.
+	 * @param revisionItem
+	 */
+	private void processRepositoryItemChanges(List<RepositoryRevisionItem> revisionItensInDatabase) {
+		System.out.println("	SINCRONIZANDO ITEM CHANGE...");
 		
-		System.out.println("Itens to sync: " + repositoryItens.size());
-		Integer totalItemSyncronized = 0;
+		System.out.println("	ITENS CHANGE PARA SINCRONIZAÇÃO: " + revisionItensInDatabase.size());
 		
-		for(RepositoryRevisionItem item : repositoryItens){
-			item.setCreateAt(DateUtils.now());
-			item.setProject(project);
-			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
-			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
-			revisionItemRepository.save(item);
+		Integer itemChangeProcessed = 0;
+		for(RepositoryRevisionItem revisionItem : revisionItensInDatabase){
+			Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
+			RepositoryItem item = revisionItem.getRepositoryItem();
 			
-			processRepositoryItemChanges(item);
+			List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnable(item,true);
 			
-			totalItemSyncronized++;
-			System.out.println("Sync status: " + totalItemSyncronized + "/" + repositoryItens.size());
+			actualItemAssets.stream().forEach(asset -> asset.setNewAsset(true));
+			
+			String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
+			
+			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
+			
+			syncAssets(assetsToSync, revisionItem);
+			
+			itemChangeProcessed++;
+			System.out.println("	SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + revisionItensInDatabase.size() );
 		}
-	}
-	
-	private void processRepositoryItemChanges(RepositoryRevisionItem revisionItem) {
-		Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
-		RepositoryItem item = revisionItem.getRepositoryItem();
 		
-		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnable(item,true);
-		
-		actualItemAssets.stream().forEach(asset -> asset.setNewAsset(true));
-		
-		String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
-		
-		List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
-		
-		syncAssets(assetsToSync, revisionItem);
+		System.out.println("	ITEM CHANGE SINCRONIZADO!!!");
 	}
 	
 	public String getFileContentInRevision(String path, Long revision){
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
+	/**
+	 * Sincroniza todas as adições, alterações e exclusões de métodos, imports e atributos em uma classe.
+	 * @param assetsToSync
+	 * @param revisionItem
+	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
+		System.out.println("	SINCRONIZANDO ASSETS...");
+		
+		System.out.println("	ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
 		for(ItemAsset asset : assetsToSync){
 			
 			if(asset.getId() == null){
@@ -136,17 +228,21 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				itemAssetRepository.save(asset);
 			}
 			
-			ItemChangeLog itemChange = asset.getItemChageLog();
-			if(itemChange != null){
-				itemChange.setName(asset.getName());
-				itemChange.setSignature(asset.getSignature());
-				itemChange.setAsset(asset);
-				itemChange.setCreateAt(DateUtils.now());
-				itemChange.setRevisionItem(revisionItem);
-				
-				itemChangeLogRepository.save(itemChange);
+			if(getConfig().isSyncChangeLog()){
+				ItemChangeLog itemChange = asset.getItemChageLog();
+				if(itemChange != null){
+					itemChange.setName(asset.getName());
+					itemChange.setSignature(asset.getSignature());
+					itemChange.setAsset(asset);
+					itemChange.setCreateAt(DateUtils.now());
+					itemChange.setRevisionItem(revisionItem);
+					
+					itemChangeLogRepository.save(itemChange);
+				}
 			}
+			
 		}
+		System.out.println("	ASSETS SINCRONIZADOS!!!");
 	}
 
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
@@ -187,6 +283,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		syncLogRepository.save(lastSyncLog);
 	}
 	
+	private ProjectConfiguration getConfig() {
+		return config;
+	}
+	
 	@Autowired
 	public void setRevisionItemRepository(RepositoryRevisionItemRepository revisionItemRepository){
 		this.revisionItemRepository = revisionItemRepository;
@@ -216,4 +316,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	public void setItemRepository(RepositoryItemRepository itemRepository){
 		this.itemRepository = itemRepository;
 	}
+	
+	@Autowired
+	public void setProjectConfigurationRepository(ProjectConfigurationRepository repository){
+		this.projectConfigurationRepository = repository;
+	}
+
 }

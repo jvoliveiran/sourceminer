@@ -33,6 +33,7 @@
 							<th>Caminho</th>
 							<th>Repositório</th>
 							<th>Configurações</th>
+							<th>Sincronizar</th>
 						</tr>
 						<tr th:each="item : ${list}">
 							<td th:text="${item.name}"></td>
@@ -42,6 +43,12 @@
 								<form action="#" th:action="@{/project/configuration/edit}" method="post" >
 				    				<input type="hidden" name="idObj" th:value="${item.id}" />
 				    				<input type="submit" class="btn btn-primary btn-sm" value="Configurar" />
+				    			</form>
+							</td>
+							<td>
+								<form action="#" th:action="@{/project/configuration/sync}" method="post" >
+				    				<input type="hidden" name="idObj" th:value="${item.id}" />
+				    				<input type="submit" class="btn btn-primary btn-sm" value="Sincronizar" />
 				    			</form>
 							</td>
 						</tr>

@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
+import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.service.ProjectConfigurationService;
+import br.com.jvoliveira.sourceminer.service.SyncRepositoryService;
 
 /**
  * @author Joao Victor
@@ -24,6 +26,8 @@ import br.com.jvoliveira.sourceminer.service.ProjectConfigurationService;
 @RequestMapping("/project/configuration")
 public class ProjectConfigurationController extends AbstractArqController<ProjectConfiguration>{
 
+	
+	
 	@Autowired
 	public ProjectConfigurationController(ProjectConfigurationService service){
 		this.path = "project/configuration";
@@ -57,4 +61,13 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 		
 		return redirectController("project/index");
 	}
+	
+	@RequestMapping(value="/sync", method=RequestMethod.POST)
+	public String synchronize(@RequestParam("idObj") Long idProject, Model model){
+		
+		((ProjectConfigurationService)this.service).syncProjectUsingConfiguration(getRepositoryConnectionSession(),idProject);
+		
+		return redirectController("project/index");
+	}
+	
 }

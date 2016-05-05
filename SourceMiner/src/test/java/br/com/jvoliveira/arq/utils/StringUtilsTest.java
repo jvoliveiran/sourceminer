@@ -31,4 +31,10 @@ public class StringUtilsTest {
 		Assert.assertEquals("SVNKitHelper.java", fileName);
 	}
 	
+	@Test
+	public void testGetExtensionInFileName(){
+		String fileNameWithExtension = "App.java";
+		String extension = StringUtils.getExtensionInFileName(fileNameWithExtension);
+		Assert.assertEquals("java", extension);
+	}
 }

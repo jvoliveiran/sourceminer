@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 import java.util.List;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
+import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
@@ -41,7 +42,7 @@ public interface RepositoryConnection {
 	
 	List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision);
 	
-	List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, Integer startRevision, Integer endRevision);
+	List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config);
 	
 	List<RepositoryRevision> getAllProjectRevision(Project project);
 	

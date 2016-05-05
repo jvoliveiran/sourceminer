@@ -104,7 +104,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	private void sincronyzeRepositoryDatabase(Project project){
-		syncService.sincronyzeRepositoryDatabase(project);
+		syncService.synchronizeRepositoryUsingConfiguration(project);
 	}
 	
 	public RepositoryRevisionFilter getRevisionFilter(){

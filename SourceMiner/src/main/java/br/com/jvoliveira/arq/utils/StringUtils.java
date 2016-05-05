@@ -41,4 +41,15 @@ public class StringUtils {
 		return sb.toString();
 	}
 	
+	public static String getExtensionInFileName(String fileNameWithExtension){
+		String[] piecesFileName = fileNameWithExtension.split("\\.");
+		Integer lastPiecesNumber = piecesFileName.length - 1;
+		
+		try{
+			return piecesFileName[lastPiecesNumber];
+		}catch(ArrayIndexOutOfBoundsException boundException){
+			boundException.printStackTrace();
+			return "";
+		}
+	}
 }

@@ -29,6 +29,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import br.com.jvoliveira.arq.utils.StringUtils;
 import br.com.jvoliveira.sourceminer.domain.Project;
+import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
@@ -138,10 +139,10 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, Integer startRevision, Integer endRevision){
+	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config){
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<RepositoryRevisionItem>();
 		
-		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), startRevision, endRevision);
+		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), config.getSyncStartRevision(), config.getSyncEndRevision(), !config.isJoinParentBrach());
 		
 		Iterator<SVNLogEntry> iteratorEntries = entries.iterator();
 		
@@ -212,7 +213,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	
 	private List<RepositoryRevision> listRevisions(String path, Integer startRevision, Integer endRevision) {
 		List<RepositoryRevision> repositoryRevisions = new ArrayList<RepositoryRevision>();
-		Collection<SVNLogEntry> revisions = getSVNLogEntryByRevision(path, startRevision, endRevision);
+		Collection<SVNLogEntry> revisions = getSVNLogEntryByRevision(path, startRevision, endRevision, false);
 		
 		Iterator<SVNLogEntry> iteratorRevisions = revisions.iterator();
 		
@@ -226,10 +227,10 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 
 	private Collection<SVNLogEntry> getSVNLogEntryByRevision(String path, Integer startRevision,
-			Integer endRevision) {
+			Integer endRevision, boolean simpleBranchLog) {
 		Collection<SVNLogEntry> revisions = new ArrayList<SVNLogEntry>();
 		try {
-			revisions = repository.log(new String[]{path}, null, startRevision, endRevision, true, false);
+			revisions = repository.log(new String[]{path}, null, startRevision, endRevision, true, simpleBranchLog);
 			
 			Iterator<SVNLogEntry> iteratorRevisions = revisions.iterator();
 			while(iteratorRevisions.hasNext()){

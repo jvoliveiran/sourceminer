@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
@@ -36,6 +37,9 @@ public class ProjectConfiguration implements ObjectDB{
 	@JoinColumn(name="id_project")
 	private Project project;
 	
+	@Column(name="published")
+	private boolean published;
+	
 	@Column(name="join_paren_branch")
 	private boolean joinParentBrach;
 	
@@ -53,6 +57,12 @@ public class ProjectConfiguration implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
+	@Transient
+	private Integer syncStartRevision;
+	
+	@Transient
+	private Integer syncEndRevision;
+	
 	public ProjectConfiguration() {
 		defaultConfiguration();
 	}
@@ -66,6 +76,7 @@ public class ProjectConfiguration implements ObjectDB{
 		this.joinParentBrach = false;
 		this.syncChangeLog = false;
 		this.fullAssetSync = false;
+		this.published = false;
 	}
 	
 	@Override
@@ -128,6 +139,30 @@ public class ProjectConfiguration implements ObjectDB{
 
 	public void setFullAssetSync(boolean fullAssetSync) {
 		this.fullAssetSync = fullAssetSync;
+	}
+
+	public boolean isPublished() {
+		return published;
+	}
+
+	public void setPublished(boolean published) {
+		this.published = published;
+	}
+
+	public Integer getSyncStartRevision() {
+		return syncStartRevision;
+	}
+
+	public void setSyncStartRevision(Integer syncStartRevision) {
+		this.syncStartRevision = syncStartRevision;
+	}
+
+	public Integer getSyncEndRevision() {
+		return syncEndRevision;
+	}
+
+	public void setSyncEndRevision(Integer syncEndRevision) {
+		this.syncEndRevision = syncEndRevision;
 	}
 
 	

@@ -35,7 +35,8 @@ public class RepositoryParseSVN implements RepositoryParse{
 		RepositoryItem repositoryItem = new RepositoryItem();
 		
 		repositoryItem.setName(dirEntry.getName());
-		repositoryItem.setPath(path);
+		repositoryItem.setPath(path+"/"+dirEntry.getName());
+		repositoryItem.setExtension(StringUtils.getExtensionInFileName(dirEntry.getName()));
 		
 		return repositoryItem;
 	}
