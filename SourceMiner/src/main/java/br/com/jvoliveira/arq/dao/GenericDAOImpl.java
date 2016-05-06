@@ -3,8 +3,9 @@ package br.com.jvoliveira.arq.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
@@ -16,13 +17,9 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
 @Repository
 public class GenericDAOImpl implements GenericDAO{
 
+	@PersistenceContext
 	private EntityManager entityManager;
 	
-	@Autowired
-	public GenericDAOImpl(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ObjectDB> List<T> findAll(Class<T> entityClass) {
@@ -32,6 +29,16 @@ public class GenericDAOImpl implements GenericDAO{
 	@Override
 	public <T extends ObjectDB> T findByPrimaryKey(Long id, Class<T> entityClass) {
 		return (T) entityManager.find(entityClass, id);
+	}
+	
+	@Transactional
+	@Override
+	public <T extends ObjectDB> T update(T obj){
+		return entityManager.merge(obj);
+	}
+	
+	public void setEntityManager(EntityManager em) {
+		this.entityManager = em;
 	}
 	
 }

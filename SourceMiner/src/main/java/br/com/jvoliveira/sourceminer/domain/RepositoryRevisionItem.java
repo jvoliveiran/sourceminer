@@ -57,6 +57,14 @@ public class RepositoryRevisionItem implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
+	public RepositoryRevisionItem(){
+		
+	}
+	
+	public RepositoryRevisionItem(RepositoryItem item){
+		this.repositoryItem = item;
+	}
+	
 	@Override
 	public void setId(Long id) {
 		this.id = id;

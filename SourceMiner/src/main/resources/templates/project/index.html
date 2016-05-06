@@ -32,6 +32,7 @@
 							<th>Nome</th>
 							<th>Caminho</th>
 							<th>Repositório</th>
+							<th>Última Sincronização</th>
 							<th>Configurações</th>
 							<th>Sincronizar</th>
 						</tr>
@@ -39,6 +40,7 @@
 							<td th:text="${item.name}"></td>
 							<td th:text="${item.path}"></td>
 							<td th:text="${item.repositoryLocation.name}"></td>
+							<td th:text="${item.getSyncText()}"></td>
 							<td>
 								<form action="#" th:action="@{/project/configuration/edit}" method="post" >
 				    				<input type="hidden" name="idObj" th:value="${item.id}" />

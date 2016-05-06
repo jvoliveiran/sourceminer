@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,6 +50,10 @@ public class Project implements ObjectDB{
 	@Temporal(TemporalType.DATE)
 	@Column(name="update_at")
 	private Date updateAt;
+	
+	@OneToOne
+	@JoinColumn(name="id_repository_sync_log")
+	private RepositorySyncLog lastSync;
 	
 	@Override
 	public void setId(Long id) {
@@ -104,4 +109,19 @@ public class Project implements ObjectDB{
 		this.repositoryLocation = repositoryLocation;
 	}
 
+	public RepositorySyncLog getLastSync() {
+		return lastSync;
+	}
+
+	public void setLastSync(RepositorySyncLog lastSync) {
+		this.lastSync = lastSync;
+	}
+
+	public String getSyncText(){
+		try{
+			return this.lastSync.getCreateAt().toString() + " (Head revision: " + this.lastSync.getHeadRevision() + ")";
+		}catch(NullPointerException e){
+			return "Não sincronizado";
+		}
+	}
 }
