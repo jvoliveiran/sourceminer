@@ -12,6 +12,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
 import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
+import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
 /**
  * @author Joao Victor
@@ -20,11 +21,13 @@ import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
 @Service
 public class ProjectConfigurationService extends AbstractArqService<ProjectConfiguration>{
 
-	private SyncRepositoryService syncService;
+	private SyncRepositoryService syncService;	
+	private SyncRepositoryObserver observer;
 	
 	@Autowired
 	public ProjectConfigurationService(ProjectConfigurationRepository repository){
 		this.repository = repository;
+		observer = new SyncRepositoryObserver();
 	}
 	
 	public ProjectConfiguration getProjectConfiguration(Long idProject){
@@ -35,8 +38,10 @@ public class ProjectConfigurationService extends AbstractArqService<ProjectConfi
 	public void syncProjectUsingConfiguration(RepositoryConnectionSession connSession, Long idProject) {
 		Project project = getDAO().findByPrimaryKey(idProject, Project.class);
 		
-		if(validateSyncUsingConfiguration(connSession,project))
+		if(validateSyncUsingConfiguration(connSession,project)){
+			syncService.startSyncThread(this.observer);
 			syncService.synchronizeRepositoryUsingConfiguration(project);
+		}
 	}
 	
 	private boolean validateSyncUsingConfiguration(RepositoryConnectionSession connSession, Project project){
@@ -56,4 +61,7 @@ public class ProjectConfigurationService extends AbstractArqService<ProjectConfi
 		this.syncService = syncService;
 	}
 	
+	public SyncRepositoryObserver getObserver() {
+		return observer;
+	}
 }

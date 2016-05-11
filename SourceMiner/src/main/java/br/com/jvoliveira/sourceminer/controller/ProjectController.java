@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
+import br.com.jvoliveira.sourceminer.service.ProjectConfigurationService;
 import br.com.jvoliveira.sourceminer.service.ProjectService;
+import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
 /**
  * @author Joao Victor
@@ -23,6 +25,8 @@ import br.com.jvoliveira.sourceminer.service.ProjectService;
 @RequestMapping("/project")
 public class ProjectController extends AbstractArqController<Project>{
 
+	private ProjectConfigurationService projectConfigService;
+	
 	@Autowired
 	public ProjectController(ProjectService service){
 		this.service = service;
@@ -35,4 +39,18 @@ public class ProjectController extends AbstractArqController<Project>{
 		return ((ProjectService)service).getAllRepositoryLocation();
 	}
 	
+	@ModelAttribute("syncStatus")
+	public String getSyncStatus(){
+		SyncRepositoryObserver syncObserver = projectConfigService.getObserver();
+		
+		if(syncObserver.isInSync())
+			return syncObserver.getLabel();
+		else
+			return "Nenhuma sincronização ativa";
+	}
+	
+	@Autowired
+	public void setProjectConfigurationService(ProjectConfigurationService service){
+		this.projectConfigService = service;
+	}
 }

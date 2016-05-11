@@ -23,6 +23,14 @@
 					
 				  	<hr />
 				  	
+				  	<div class="row">
+						<div class="col-lg-12">
+							<span th:text="${syncStatus}"/>
+						</div>
+					</div>
+				  	
+				  	<hr />
+				  	
 				  	<div th:if="${#lists.isEmpty(list)}">
 						<i>Nenhum projeto localizado.</i>
 					</div>

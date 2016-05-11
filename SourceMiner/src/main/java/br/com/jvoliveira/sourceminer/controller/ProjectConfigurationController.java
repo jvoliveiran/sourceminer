@@ -8,15 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
-import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.service.ProjectConfigurationService;
-import br.com.jvoliveira.sourceminer.service.SyncRepositoryService;
+import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
 /**
  * @author Joao Victor
@@ -70,4 +70,13 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 		return redirectController("project/index");
 	}
 	
+	@ModelAttribute("syncStatus")
+	public String getSyncStatus(){
+		SyncRepositoryObserver syncObserver = ((ProjectConfigurationService)this.service).getObserver();
+		
+		if(syncObserver.isInSync())
+			return syncObserver.getLabel();
+		else
+			return "Nenhuma sincronização ativa";
+	}
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
@@ -29,6 +30,8 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
+import br.com.jvoliveira.sourceminer.sync.SyncRepositoryThread;
 
 /**
  * @author Joao Victor
@@ -67,6 +70,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param project
 	 */
 	public void synchronizeRepositoryUsingConfiguration(Project project){
+		System.out.println("Execute method synchronously - "
+			      + Thread.currentThread().getName());
+		
 		this.config = projectConfigurationRepository.findOneByProject(project);
 		RepositorySyncLog lastSyncLog = getLastSync(project);
 		
@@ -95,6 +101,20 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		}
 		
 		refreshSyncLog(lastSyncLog, project);
+	}
+	
+	@Async
+	public void startSyncThread(SyncRepositoryObserver observer) {
+		
+		if(observer.isInSync())
+			return;
+		
+		System.out.println("Execute method asynchronously - "
+			      + Thread.currentThread().getName());
+		
+		SyncRepositoryThread syncThread = new SyncRepositoryThread();
+		
+		syncThread.prepareAndRun(observer);
 	}
 
 	/**
