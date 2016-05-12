@@ -3,6 +3,9 @@
  */
 package br.com.jvoliveira.arq.thread;
 
+import br.com.jvoliveira.arq.domain.ObjectDB;
+import br.com.jvoliveira.arq.service.AbstractArqService;
+
 /**
  * @author Joao Victor
  *
@@ -14,6 +17,8 @@ public abstract class AbstractArqObserver {
 	private boolean inSync = false;
 	
 	public abstract void getNotification(AbstractArqThread thread);
+	public abstract void getNotification(AbstractArqService<? extends ObjectDB> service);
+	public abstract void getNotification(String mensagem);
 	
 	public AbstractArqObserver(){
 		label = "";

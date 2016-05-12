@@ -4,9 +4,11 @@
 package br.com.jvoliveira.sourceminer.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
@@ -38,10 +40,17 @@ public class ProjectConfigurationService extends AbstractArqService<ProjectConfi
 	public void syncProjectUsingConfiguration(RepositoryConnectionSession connSession, Long idProject) {
 		Project project = getDAO().findByPrimaryKey(idProject, Project.class);
 		
-		if(validateSyncUsingConfiguration(connSession,project)){
-			syncService.startSyncThread(this.observer);
-			syncService.synchronizeRepositoryUsingConfiguration(project);
-		}
+		if(validateSyncUsingConfiguration(connSession,project))
+			syncService.synchronizeRepositoryUsingConfigurationObserver(project,observer,connSession.getConnection());
+		
+	}
+	
+	@Async
+	public void asyncProjectUsingConfiguration(Long idProject, RepositoryConnection connection){
+		Project project = getDAO().findByPrimaryKey(idProject, Project.class);
+		
+		//TODO: Refatorar método de validação de conexão aberta. Não usar bean de sessão
+		syncService.synchronizeRepositoryUsingConfigurationObserver(project,observer,connection);
 	}
 	
 	private boolean validateSyncUsingConfiguration(RepositoryConnectionSession connSession, Project project){

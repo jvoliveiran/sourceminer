@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.arq.utils.DateUtils;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
@@ -31,7 +31,6 @@ import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
-import br.com.jvoliveira.sourceminer.sync.SyncRepositoryThread;
 
 /**
  * @author Joao Victor
@@ -55,6 +54,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	
 	private ProjectConfiguration config;
 	
+	private SyncRepositoryObserver observer;
+	
 	@Autowired
 	public SyncRepositoryService(RepositoryConnectionSession connection,
 			ProjectRepository repository){
@@ -65,13 +66,34 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	/**
+	 * Iniciar sincronização utilizando observer
+	 * @param project
+	 * @param observer
+	 */
+	public void synchronizeRepositoryUsingConfigurationObserver(Project project, SyncRepositoryObserver observer, RepositoryConnection connection){
+		if(observer.isInSync())
+			return;
+		
+		this.connection = new RepositoryConnectionSession();
+		this.connection.setConnection(connection);
+		
+		System.out.println("Execute method asynchronously - "
+			      + Thread.currentThread().getName());
+		
+		this.observer = observer;
+		this.observer.startSync();
+		
+		synchronizeRepositoryUsingConfiguration(project);
+		
+		this.observer.closeSync();
+	}
+	
+	/**
 	 * Método de sincronização principal. Considera as configurações de sincronização
 	 * definidas para o projeto.
 	 * @param project
 	 */
 	public void synchronizeRepositoryUsingConfiguration(Project project){
-		System.out.println("Execute method synchronously - "
-			      + Thread.currentThread().getName());
 		
 		this.config = projectConfigurationRepository.findOneByProject(project);
 		RepositorySyncLog lastSyncLog = getLastSync(project);
@@ -102,20 +124,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		refreshSyncLog(lastSyncLog, project);
 	}
-	
-	@Async
-	public void startSyncThread(SyncRepositoryObserver observer) {
-		
-		if(observer.isInSync())
-			return;
-		
-		System.out.println("Execute method asynchronously - "
-			      + Thread.currentThread().getName());
-		
-		SyncRepositoryThread syncThread = new SyncRepositoryThread();
-		
-		syncThread.prepareAndRun(observer);
-	}
 
 	/**
 	 * Sincroniza todos os itens do repositório, mesmo que não associados a uma revisão
@@ -123,15 +131,15 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @return 
 	 */
 	private List<RepositoryItem> synchronizeRepositoryItem(Project project){
-		System.out.println("	SINCRONIZANDO ITENS...");
+		notifyObservers("SINCRONIZANDO ITENS...");
 		List<RepositoryItem> items = connection.getConnection().getAllProjectItens(project);
 		
-		System.out.println("	ITENS PARA SINCRONIZAÇÃO: " + items.size());
+		notifyObservers("ITENS PARA SINCRONIZAÇÃO: " + items.size());
 		
 		for(RepositoryItem repositoryItem : items)
 			getSyncItem(project, repositoryItem);
 		
-		System.out.println("	ITENS SINCRONIZADOS!!!");
+		notifyObservers("ITENS SINCRONIZADOS!!!");
 		
 		return items;
 	}
@@ -150,12 +158,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		getConfig().setSyncStartRevision(revisionStartSync);
 		getConfig().setSyncEndRevision(-1);
 		
-		System.out.println("	SINCRONIZANDO ITENS COM REVISÕES...");
+		notifyObservers("SINCRONIZANDO ITENS COM REVISÕES...");
 		
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, getConfig());
 		
-		System.out.println("	ITENS COM REVISÃO PARA SINCRONIZAÇÃO: " + repositoryItens.size());
+		notifyObservers("ITENS COM REVISÃO PARA SINCRONIZAÇÃO: " + repositoryItens.size());
 		
 		for(RepositoryRevisionItem item : repositoryItens){
 			item.setCreateAt(DateUtils.now());
@@ -166,7 +174,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			revisionItemRepository.save(item);
 		}
 		
-		System.out.println("	ITENS COM REVISÃO SINCRONIZADOS!!!");
+		notifyObservers("ITENS COM REVISÃO SINCRONIZADOS!!!");
 		
 		return repositoryItens;
 	}
@@ -209,9 +217,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void processRepositoryItemChanges(List<RepositoryRevisionItem> revisionItensInDatabase) {
-		System.out.println("	SINCRONIZANDO ITEM CHANGE...");
+		notifyObservers("SINCRONIZANDO ITEM CHANGE...");
 		
-		System.out.println("	ITENS CHANGE PARA SINCRONIZAÇÃO: " + revisionItensInDatabase.size());
+		notifyObservers("ITENS CHANGE PARA SINCRONIZAÇÃO: " + revisionItensInDatabase.size());
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryRevisionItem revisionItem : revisionItensInDatabase){
@@ -229,10 +237,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			syncAssets(assetsToSync, revisionItem);
 			
 			itemChangeProcessed++;
-			System.out.println("	SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + revisionItensInDatabase.size() );
+			notifyObservers("SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + revisionItensInDatabase.size() );
 		}
 		
-		System.out.println("	ITEM CHANGE SINCRONIZADO!!!");
+		notifyObservers("ITEM CHANGE SINCRONIZADO!!!");
 	}
 	
 	/**
@@ -240,9 +248,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param itensInDatabase
 	 */
 	private void processSimpleRepositoryItemChanges(List<RepositoryItem> itensInDatabase){
-		System.out.println("	SINCRONIZANDO ITEM CHANGE...");
+		notifyObservers("SINCRONIZANDO ITEM CHANGE...");
 		
-		System.out.println("	ITENS CHANGE PARA SINCRONIZAÇÃO: " + itensInDatabase.size());
+		notifyObservers("ITENS CHANGE PARA SINCRONIZAÇÃO: " + itensInDatabase.size());
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryItem item : itensInDatabase){
@@ -256,9 +264,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			syncAssets(assetsToSync, new RepositoryRevisionItem(item));
 			itemChangeProcessed++;
-			System.out.println("	SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + itensInDatabase.size() );
+			notifyObservers("SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + itensInDatabase.size() );
 		}
-		System.out.println("	ITEM CHANGE SINCRONIZADO!!!");
+		notifyObservers("ITEM CHANGE SINCRONIZADO!!!");
 	}
 	
 	
@@ -272,9 +280,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
-		System.out.println("	SINCRONIZANDO ASSETS...");
+		System.out.println("SINCRONIZANDO ASSETS...");
 		
-		System.out.println("	ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
+		System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
 		for(ItemAsset asset : assetsToSync){
 			
 			if(asset.getId() == null){
@@ -304,7 +312,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			}
 			
 		}
-		System.out.println("	ASSETS SINCRONIZADOS!!!");
+		System.out.println("ASSETS SINCRONIZADOS!!!");
 	}
 
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
@@ -389,6 +397,11 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	@Autowired
 	public void setProjectConfigurationRepository(ProjectConfigurationRepository repository){
 		this.projectConfigurationRepository = repository;
+	}
+	
+	public void notifyObservers(String mensagem){
+		if(observer != null);
+			observer.getNotification(mensagem);
 	}
 
 }

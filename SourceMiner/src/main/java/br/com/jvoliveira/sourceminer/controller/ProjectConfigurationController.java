@@ -65,7 +65,8 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 	@RequestMapping(value="/sync", method=RequestMethod.POST)
 	public String synchronize(@RequestParam("idObj") Long idProject, Model model){
 		
-		((ProjectConfigurationService)this.service).syncProjectUsingConfiguration(getRepositoryConnectionSession(),idProject);
+		//((ProjectConfigurationService)this.service).syncProjectUsingConfiguration(getRepositoryConnectionSession(),idProject);
+		((ProjectConfigurationService)this.service).asyncProjectUsingConfiguration(idProject, getRepositoryConnectionSession().getConnection());
 		
 		return redirectController("project/index");
 	}

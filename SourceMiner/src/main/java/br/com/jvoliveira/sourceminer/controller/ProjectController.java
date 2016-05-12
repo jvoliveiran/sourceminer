@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
@@ -40,7 +42,17 @@ public class ProjectController extends AbstractArqController<Project>{
 	}
 	
 	@ModelAttribute("syncStatus")
-	public String getSyncStatus(){
+	public String getSyncStatusModel(){
+		return getSyncStatus();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/sync_status", method=RequestMethod.GET)
+	public String getSyncStatusAjax(){
+		return getSyncStatus();
+	}
+	
+	private String getSyncStatus(){
 		SyncRepositoryObserver syncObserver = projectConfigService.getObserver();
 		
 		if(syncObserver.isInSync())

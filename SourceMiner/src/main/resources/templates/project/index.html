@@ -1,6 +1,45 @@
 <html layout:decorator="layouts/layout_admin">
 	<head>
 		<meta charset="UTF-8"/>
+		
+		<script type="text/javascript">
+			var stompClient = null;
+		
+			function connectSockJS() {
+				console.log('starting connection...');
+	            var socket = new SockJS('/syncstatusmsg');
+	            stompClient = Stomp.over(socket);
+	            stompClient.connect({}, function(frame) {
+	                console.log('Connected: ' + frame);
+	                stompClient.subscribe('/project/syncstatus', function(message_status){
+	                    showSyncStatus(JSON.parse(message_status.body).content);
+	                });
+	            });
+	        }
+			
+			function refreshSyncStatus(){
+				$.ajax({
+		            type: "GET",
+		            url: "/SourceMiner/project/sync_status",
+		            data: { },
+		            success: showSyncStatus,
+		            error : function(e) {
+						console.log("ERROR: ", e);
+					},
+					done : function(e) {
+						console.log("DONE");
+					}
+		        });
+			}
+			
+			function showSyncStatus(data, status){
+				$('#response_sync_status').text(data);
+			}
+			
+			$( document ).ready(function() {
+				setInterval(refreshSyncStatus, 5000);
+			});
+		</script>
 	</head>
 	
 	<div layout:fragment="admin_content">
@@ -25,7 +64,7 @@
 				  	
 				  	<div class="row">
 						<div class="col-lg-12">
-							<span th:text="${syncStatus}"/>
+							<p id="response_sync_status" th:text="${syncStatus}"></p>
 						</div>
 					</div>
 				  	
