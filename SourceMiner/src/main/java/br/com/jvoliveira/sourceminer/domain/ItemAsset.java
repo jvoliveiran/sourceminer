@@ -178,6 +178,9 @@ public class ItemAsset implements GenericAsset{
 		if(!this.isMethodAsset() || !asset.isMethodAsset())
 			return false;
 		
+		if(this.getValue() == null)
+			this.setValue("");
+		
 		return this.getValue().equals(asset.getValue());
 	}
 	
