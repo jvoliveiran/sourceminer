@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,6 +48,10 @@ public class ItemAsset implements GenericAsset{
 	@ManyToOne
 	@JoinColumn(name="id_repository_item")
 	private RepositoryItem repositoryItem;
+	
+	@ManyToOne
+	@JoinColumn(name="id_import_repository_item", referencedColumnName="id_repository_item")
+	private RepositoryItem importRepositoryItem;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -199,6 +204,20 @@ public class ItemAsset implements GenericAsset{
 
 	public void setEnable(boolean enable) {
 		this.enable = enable;
+	}
+	
+	public boolean isAbleToSetImportRepositoryItem(){
+		if(this.assetType != null && this.assetType.isImport())
+			return true;
+		return false;
+	}
+
+	public RepositoryItem getImportRepositoryItem() {
+		return importRepositoryItem;
+	}
+
+	public void setImportRepositoryItem(RepositoryItem importRepositoryItem) {
+		this.importRepositoryItem = importRepositoryItem;
 	}
 	
 }

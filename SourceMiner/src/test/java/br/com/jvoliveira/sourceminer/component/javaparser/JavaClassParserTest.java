@@ -50,4 +50,12 @@ public class JavaClassParserTest {
 		
 		Assert.assertTrue(assets.size() == 3);
 	}
+	
+	@Test
+	public void testParseMethodCall(){
+		List<String> nameMethodsCalled = classParser.parseMethodCall();
+		
+		Assert.assertNotNull(nameMethodsCalled);
+		Assert.assertTrue(nameMethodsCalled.size() == 7);
+	}
 }

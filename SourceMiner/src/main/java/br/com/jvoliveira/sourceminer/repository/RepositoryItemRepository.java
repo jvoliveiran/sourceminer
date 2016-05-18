@@ -15,7 +15,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
  * @author Joao Victor
  *
  */
-public interface RepositoryItemRepository extends CrudRepository<RepositoryItem, Long>{
+public interface RepositoryItemRepository extends CrudRepository<RepositoryItem, Long>, RepositoryItemRepositoryCustom{
 
 	List<RepositoryItem> findByProject(Project project);
 	

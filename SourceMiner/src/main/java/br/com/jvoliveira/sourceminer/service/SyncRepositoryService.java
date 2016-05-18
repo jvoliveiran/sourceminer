@@ -77,7 +77,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		this.connection = new RepositoryConnectionSession();
 		this.connection.setConnection(connection);
 		
-		System.out.println("Execute method asynchronously - "
+		System.out.println("Execute sync asynchronously - "
 			      + Thread.currentThread().getName());
 		
 		this.observer = observer;
@@ -288,6 +288,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			if(asset.getId() == null){
 				asset.setCreateAt(DateUtils.now());
 				asset.setRepositoryItem(revisionItem.getRepositoryItem());
+				
+				if(asset.isAbleToSetImportRepositoryItem())
+					setImportRepositoryItem(asset, revisionItem);
+				
 				itemAssetRepository.save(asset);
 			}else if(asset.getItemChageLog().getChangeType().isDelete()){
 				asset.setUpdateAt(DateUtils.now());
@@ -313,6 +317,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 		}
 		System.out.println("ASSETS SINCRONIZADOS!!!");
+	}
+
+	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {
+		RepositoryItem importItem = itemRepository.findItemByFullPath(asset.getSignature(), revisionItem.getProject(), revisionItem.getRepositoryItem().getExtension());
+		if(importItem != null)
+			asset.setImportRepositoryItem(importItem);
 	}
 
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
