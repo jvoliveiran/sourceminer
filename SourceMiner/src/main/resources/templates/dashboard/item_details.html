@@ -249,15 +249,43 @@
 						  	</div>
 						  	<div id="analise_dependencias" class="tab-pane fade">
 						    	<h3>Dependências</h3>
-						    	<p>Listar imports</p>
+						    	<p>
+						    		<table class="table table-striped">
+						    			<tr th:each="assetImport : ${assets.imports}">
+						    				<div th:if="${assetImport.importRepositoryItem == null}">
+						    					<td th:text="${assetImport.signature}"></td>
+						    				</div>
+						    				<div th:if="${assetImport.importRepositoryItem != null}">
+						    					<td>
+							    					<form action="#" th:action="@{/dashboard/repository_item/item_details}" method="post">
+									  					<input type="hidden" name="idItem" th:value="${assetImport.importRepositoryItem.id}" />
+									  					<input type="submit" class="btn btn-link" th:value="${assetImport.signature}" value="Item" />
+									  				</form>
+									  			</td>
+						    				</div>
+						    			</tr>
+						    		</table>
+						    	</p>
 						  	</div>
 						  	<div id="analise_metodos" class="tab-pane fade">
 						    	<h3>Métodos</h3>
-						    	<p>Listar Métodos</p>
+						    	<p>
+						    		<table class="table table-striped">
+						    			<tr th:each="assetMethod : ${assets.methods}">
+						    				<td th:text="${assetMethod.signature}"></td>
+						    			</tr>
+						    		</table>
+						    	</p>
 						  	</div>
 						  	<div id="analise_atributos" class="tab-pane fade">
 						    	<h3>Atributos</h3>
-						    	<p>Listar Atributos</p>
+						    	<p>
+						    		<table class="table table-striped">
+						    			<tr th:each="assetField : ${assets.attributes}">
+						    				<td th:text="${assetField.signature}"></td>
+						    			</tr>
+						    		</table>
+						    	</p>
 						  	</div>
 						</div>
 					</div>

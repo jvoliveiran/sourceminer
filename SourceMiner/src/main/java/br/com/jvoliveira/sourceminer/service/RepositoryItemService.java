@@ -12,8 +12,11 @@ import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
+import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.search.ItemChangeLogSearch;
@@ -32,6 +35,7 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	private ItemChangeLogSearch itemChangeLogSearch;
 	
 	private ItemChageLogRepositoryImpl itemChangeLogRepository;
+	private ItemAssetRepository itemAssetRepository;
 	
 	@Autowired
 	public RepositoryItemService(RepositoryItemRepository repository,
@@ -71,6 +75,12 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 		return classParserHelper.getChangeLogGroupByRevision(changeLogs);
 	}
 	
+	public ItemAssetGroupType getItemAssetGroupType(RepositoryItem item){
+		List<ItemAsset> assets = itemAssetRepository.findByRepositoryItemAndEnable(item, true);
+		
+		return new ItemAssetGroupType(assets);
+	}
+	
 	public ItemChangeLogFilter getItemChangeLogFilter(){
 		return (ItemChangeLogFilter) this.itemChangeLogSearch.getFilter();
 	}
@@ -83,5 +93,10 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	@Autowired
 	public void setItemChangeLogRepository(ItemChageLogRepositoryImpl repository){
 		this.itemChangeLogRepository = repository;
+	}
+	
+	@Autowired
+	public void setItemAssetRepository(ItemAssetRepository repository){
+		this.itemAssetRepository = repository;
 	}
 }

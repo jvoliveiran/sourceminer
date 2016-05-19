@@ -20,6 +20,7 @@ import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
+import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
 import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 import br.com.jvoliveira.sourceminer.service.RepositoryItemService;
 
@@ -63,6 +64,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 		((RepositoryItemService)service).setItemChangeLogFilter(new ItemChangeLogFilter());
 		
 		RepositoryItem item = ((RepositoryItemService)service).getItemById(idItem);
+		ItemAssetGroupType assets = ((RepositoryItemService)service).getItemAssetGroupType(item);
 		String fileContent = ((RepositoryItemService)service).getFileContentInRevision(item.getPath(), new Long(-1));
 		List<ChangeLogGroupModel> historyChangeLog = ((RepositoryItemService)service).getChangeLogInRepositoryItem(item);
 		
@@ -71,6 +73,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 		model.addAttribute("fileContent", fileContent);
 		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
 		model.addAttribute("historyChangeLog", historyChangeLog);
+		model.addAttribute("assets", assets);
 		
 		model.addAttribute("itemChangeLogFilter", ((RepositoryItemService)service).getItemChangeLogFilter());
 	}
