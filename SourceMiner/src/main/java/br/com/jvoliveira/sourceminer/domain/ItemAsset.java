@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -169,6 +168,14 @@ public class ItemAsset implements GenericAsset{
 	
 	public boolean isMethodAsset(){
 		return this.assetType.equals(AssetType.METHOD);
+	}
+	
+	public boolean isImportAsset(){
+		return this.assetType.equals(AssetType.IMPORT);
+	}
+	
+	public boolean isAttributeAsset(){
+		return this.assetType.equals(AssetType.FIELD);
 	}
 
 	public String getValue() {
