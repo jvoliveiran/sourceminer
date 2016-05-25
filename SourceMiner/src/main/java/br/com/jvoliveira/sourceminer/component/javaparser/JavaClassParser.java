@@ -132,6 +132,7 @@ public class JavaClassParser extends GenericClassParser{
 		CompilationUnit compUnit = new CompilationUnit();
 		fileContent = fileContent.replace("\u00bf", "");
 		fileContent = fileContent.replace("\ufffd", "");
+		fileContent = fileContent.replace("\'", "");
 		try {
 			compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "UTF8");
 		} catch (ParseException e) {
