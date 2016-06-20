@@ -281,9 +281,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
-		System.out.println("SINCRONIZANDO ASSETS...");
+		//System.out.println("SINCRONIZANDO ASSETS...");
 		
-		System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
+		//System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
 		for(ItemAsset asset : assetsToSync){
 			
 			if(asset.getId() == null){
@@ -317,7 +317,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			}
 			
 		}
-		System.out.println("ASSETS SINCRONIZADOS!!!");
+		//System.out.println("ASSETS SINCRONIZADOS!!!");
 	}
 
 	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {
