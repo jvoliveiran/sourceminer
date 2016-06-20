@@ -24,8 +24,8 @@ public class ClassParserHelper {
 		
 	}
 	
-	public List<ItemAsset> generateActualClassAssets(List<ItemAsset> actualAssets, String newFileContent){
-		List<ItemAsset> assetsInFileContent = getAllAssetsInFileContent(newFileContent);
+	public List<ItemAsset> generateActualClassAssets(List<ItemAsset> actualAssets, String newFileContent, String newFilePath){
+		List<ItemAsset> assetsInFileContent = getAllAssetsInFileContent(newFileContent, newFilePath);
 		List<ItemAsset> itemAssets = new ArrayList<ItemAsset>();
 		
 		itemAssets.addAll(getDiffAssets(actualAssets, assetsInFileContent));
@@ -84,8 +84,8 @@ public class ClassParserHelper {
 		assets.add(deletedAsset);
 	}
 
-	private List<ItemAsset> getAllAssetsInFileContent(String fileContent){
-		javaParser = new JavaClassParser(fileContent);
+	private List<ItemAsset> getAllAssetsInFileContent(String fileContent, String newFilePath){
+		javaParser = new JavaClassParser(fileContent, newFilePath);
 		return javaParser.getAll();
 	}
 	

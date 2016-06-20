@@ -19,6 +19,9 @@ public class ClassParserHelperTest {
 	private String oldFileContent;
 	private String newFileContent;
 	
+	private String oldFilePath;
+	private String newFilePath;
+	
 	@Before
 	public void setUp(){
 		try {
@@ -32,14 +35,14 @@ public class ClassParserHelperTest {
 			newFileContent = "";
 		}
 		
-		classParser = new JavaClassParser(oldFileContent);
+		classParser = new JavaClassParser(oldFileContent, oldFilePath);
 		parserHelper = new ClassParserHelper();
 	}
 	
 	@Test
 	public void testGenerateActualClassAssets(){
 		List<ItemAsset> metodosAntigos = classParser.getAll();
-		List<ItemAsset> newMethods = parserHelper.generateActualClassAssets(metodosAntigos, newFileContent);
+		List<ItemAsset> newMethods = parserHelper.generateActualClassAssets(metodosAntigos, newFileContent, newFilePath);
 		
 		Assert.assertTrue(newMethods.size() == 4);
 	}
