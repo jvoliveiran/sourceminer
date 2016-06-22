@@ -28,12 +28,13 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 public class JavaClassParser extends GenericClassParser{
 
 	private String fileContent;
+	private String filePath;
 	
 	private List<ItemAsset> methods;
 	private List<ItemAsset> fields;
 	private List<ItemAsset> imports;
 	
-	public JavaClassParser(String fileContent){
+	public JavaClassParser(String fileContent, String filePath){
 		setGenericClassVisitor(new JavaClassVisitor());
 		
 		methods = new ArrayList<ItemAsset>();
@@ -41,6 +42,7 @@ public class JavaClassParser extends GenericClassParser{
 		imports = new ArrayList<ItemAsset>();
 		
 		setFileContent(fileContent);
+		setFilePath(filePath);
 	}
 	
 	public List<ItemAsset> getAll(){
@@ -132,19 +134,22 @@ public class JavaClassParser extends GenericClassParser{
 		CompilationUnit compUnit = new CompilationUnit();
 		fileContent = fileContent.replace("\u00bf", "");
 		fileContent = fileContent.replace("\ufffd", "");
-		fileContent = fileContent.replace("\'", "");
-		fileContent = fileContent.replace("\\", "");
+		//fileContent = fileContent.replace("\'", "");
+		//fileContent = fileContent.replace("\\", "");
 		try {
 			compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "UTF8");
 		} catch (ParseException e) {
-			//TODO: Tratar exceção
+			System.err.println("File: " + getFilePath());
 			e.printStackTrace();
 		}catch(TokenMgrError tokenError){
 			try {
 				compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "ISO8859_1");
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}catch(TokenMgrError tokenISOError){
+				System.err.println("File: " + getFilePath());
+				tokenISOError.printStackTrace();
+				compUnit = new CompilationUnit();
 			}
 		}
 		return compUnit;
@@ -156,5 +161,13 @@ public class JavaClassParser extends GenericClassParser{
 	
 	public void setFileContent(String fileContent){
 		this.fileContent = fileContent;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 }

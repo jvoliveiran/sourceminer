@@ -42,6 +42,8 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 			return null;
 		}catch (NoResultException e) {
 			return null;
+		}catch (NullPointerException e){
+			return null;
 		}
 	}
 
