@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Universidade Federal do Rio Grande do Norte
  * Superintendência de Informática 
@@ -1763,6 +1764,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
  	}  
  	 
  }
+=======
+>>>>>>> branch 'master' of https://github.com/jvoliveiran/sourceminer.git
 /* 
   * Universidade Federal do Rio Grande do Norte 
   * Superintendncia de Informtica  

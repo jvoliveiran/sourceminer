@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hsqldb.HsqlException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,15 +132,15 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @return 
 	 */
 	private List<RepositoryItem> synchronizeRepositoryItem(Project project){
-		notifyObservers("SINCRONIZANDO ITENS...");
+		notifyObservers("CARREGANDO ARTEFATOS PARA SINCRONIZAÇÃO...");
 		List<RepositoryItem> items = connection.getConnection().getAllProjectItens(project);
 		
-		notifyObservers("ITENS PARA SINCRONIZAÇÃO: " + items.size());
+		notifyObservers("ARTEFATOS PARA SINCRONIZAÇÃO: " + items.size());
 		
 		for(RepositoryItem repositoryItem : items)
 			getSyncItem(project, repositoryItem);
 		
-		notifyObservers("ITENS SINCRONIZADOS!!!");
+		notifyObservers("ARTEFATOS SINCRONIZADOS!!!");
 		
 		return items;
 	}
@@ -158,7 +159,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		getConfig().setSyncStartRevision(revisionStartSync);
 		getConfig().setSyncEndRevision(-1);
 		
-		notifyObservers("SINCRONIZANDO ITENS COM REVISÕES...");
+		notifyObservers("CARREGANDO REVISÕES PARA SINCRONIZAÇÃO...");
 		
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, getConfig());
@@ -232,7 +233,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
 			
-			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
+			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
 			syncAssets(assetsToSync, revisionItem);
 			
@@ -260,7 +261,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			String fileContent = getFileContentInRevision(item.getPath(), -1L);
 			
-			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent);
+			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
 			syncAssets(assetsToSync, new RepositoryRevisionItem(item));
 			itemChangeProcessed++;
@@ -280,9 +281,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
-		System.out.println("SINCRONIZANDO ASSETS...");
+		//System.out.println("SINCRONIZANDO ASSETS...");
 		
-		System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
+		//System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
 		for(ItemAsset asset : assetsToSync){
 			
 			if(asset.getId() == null){
@@ -316,7 +317,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			}
 			
 		}
-		System.out.println("ASSETS SINCRONIZADOS!!!");
+		//System.out.println("ASSETS SINCRONIZADOS!!!");
 	}
 
 	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {
@@ -334,7 +335,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		else{
 			revision.setProject(project);
 			revision.setCreateAt(DateUtils.now());
-			revision = revisionRepository.save(revision);
+			try{
+				revision = revisionRepository.save(revision);
+			}catch(Exception hsqlException){
+				revision.setComment("Rev " + revision.getRevision());
+				revision = revisionRepository.save(revision);
+			}
 			return revision;
 		}
 	}

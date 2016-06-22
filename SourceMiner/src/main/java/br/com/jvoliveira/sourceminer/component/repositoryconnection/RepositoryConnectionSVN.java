@@ -125,8 +125,11 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 					listEntries( ( path.equals( "" ) ) ? entry.getName( ) : path + "/" + entry.getName( ), listEntries );
 				}else if(entry.getKind() == SVNNodeKind.FILE && entry.getName().contains(".java")){
 					RepositoryItem repositoryItem = parse.parseDirEntryToRepositoryItem(entry, path);
-					if(!listEntries.contains(repositoryItem))
+					if(!listEntries.contains(repositoryItem)){
 						listEntries.add(repositoryItem);
+						//TODO: Exibir na interface através do objeto
+						System.out.println("ARTEFATO ENCONTRADO: " + repositoryItem.getFullPath());
+					}
 				}
 				
 				
