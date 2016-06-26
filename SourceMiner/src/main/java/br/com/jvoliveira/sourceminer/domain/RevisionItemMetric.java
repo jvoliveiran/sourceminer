@@ -23,25 +23,33 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
  *
  */
 @Entity
-@Table(name="repository_sync_log")
-public class RepositorySyncLog implements ObjectDB{
+@Table(name="revision_item_metric")
+public class RevisionItemMetric implements ObjectDB{
 
 	@Id
-	@Column(name="id_repository_sync_log")
+	@Column(name="id_revision_item_metric")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Temporal(TemporalType.DATE)
-	@Column(name="create_at")
-	private Date createAt;
-	
-	@Column(name="head_revision")
-	private Long headRevision;
+	@ManyToOne
+	@JoinColumn(name="id_repository_revision_item")
+	private RepositoryRevisionItem revisionItem;
 	
 	@ManyToOne
-	@JoinColumn(name="id_project")
-	private Project project;
+	@JoinColumn(name="id_metric")
+	private Metric metric;
 	
+	@Column(name="value")
+	private Double value;
+	
+	@Column(name="create_at")
+	@Temporal(TemporalType.DATE)
+	private Date createAt;
+	
+	@Column(name="update_at")
+	@Temporal(TemporalType.DATE)
+	private Date updateAt;
+
 	@Override
 	public void setId(Long id) {
 		this.id = id;
@@ -64,28 +72,36 @@ public class RepositorySyncLog implements ObjectDB{
 
 	@Override
 	public void setUpdateAt(Date date) {
-		return;
+		this.updateAt = date;
 	}
 
 	@Override
 	public Date getUpdateAt() {
-		return null;
+		return this.updateAt;
 	}
 
-	public Long getHeadRevision() {
-		return headRevision;
+	public RepositoryRevisionItem getRevisionItem() {
+		return revisionItem;
 	}
 
-	public void setHeadRevision(Long headRevision) {
-		this.headRevision = headRevision;
+	public void setRevisionItem(RepositoryRevisionItem revisionItem) {
+		this.revisionItem = revisionItem;
 	}
 
-	public Project getProject() {
-		return project;
+	public Metric getMetric() {
+		return metric;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public void setMetric(Metric metric) {
+		this.metric = metric;
+	}
+
+	public Double getValue() {
+		return value;
+	}
+
+	public void setValue(Double value) {
+		this.value = value;
 	}
 
 }

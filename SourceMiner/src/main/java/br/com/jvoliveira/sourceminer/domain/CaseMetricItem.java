@@ -23,25 +23,33 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
  *
  */
 @Entity
-@Table(name="repository_sync_log")
-public class RepositorySyncLog implements ObjectDB{
-
+@Table(name="case_metric_item")
+public class CaseMetricItem implements ObjectDB{
+	
 	@Id
-	@Column(name="id_repository_sync_log")
+	@Column(name="id_case_metric_item")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Temporal(TemporalType.DATE)
-	@Column(name="create_at")
-	private Date createAt;
-	
-	@Column(name="head_revision")
-	private Long headRevision;
+	@ManyToOne
+	@JoinColumn(name="id_metric_case")
+	private MetricCase metricCase;
 	
 	@ManyToOne
-	@JoinColumn(name="id_project")
-	private Project project;
+	@JoinColumn(name="id_metric")
+	private Metric metric;
 	
+	@Column(name="threshold")
+	private Double threshold;
+	
+	@Column(name="create_at")
+	@Temporal(TemporalType.DATE)
+	private Date createAt;
+	
+	@Column(name="update_at")
+	@Temporal(TemporalType.DATE)
+	private Date updateAt;
+
 	@Override
 	public void setId(Long id) {
 		this.id = id;
@@ -64,28 +72,12 @@ public class RepositorySyncLog implements ObjectDB{
 
 	@Override
 	public void setUpdateAt(Date date) {
-		return;
+		this.updateAt = date;
 	}
 
 	@Override
 	public Date getUpdateAt() {
-		return null;
-	}
-
-	public Long getHeadRevision() {
-		return headRevision;
-	}
-
-	public void setHeadRevision(Long headRevision) {
-		this.headRevision = headRevision;
-	}
-
-	public Project getProject() {
-		return project;
-	}
-
-	public void setProject(Project project) {
-		this.project = project;
+		return this.updateAt;
 	}
 
 }

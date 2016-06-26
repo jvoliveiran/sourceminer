@@ -4,14 +4,14 @@
 package br.com.jvoliveira.sourceminer.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,25 +23,28 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
  *
  */
 @Entity
-@Table(name="repository_sync_log")
-public class RepositorySyncLog implements ObjectDB{
-
+@Table(name="metric_case")
+public class MetricCase implements ObjectDB{
+	
 	@Id
-	@Column(name="id_repository_sync_log")
+	@Column(name="id_metric_case")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Temporal(TemporalType.DATE)
+	@Column(name="name")
+	private String name;
+	
+	@OneToMany(mappedBy="metricCase")
+	private List<CaseMetricItem> caseMetricItems;
+	
 	@Column(name="create_at")
+	@Temporal(TemporalType.DATE)
 	private Date createAt;
 	
-	@Column(name="head_revision")
-	private Long headRevision;
-	
-	@ManyToOne
-	@JoinColumn(name="id_project")
-	private Project project;
-	
+	@Column(name="update_at")
+	@Temporal(TemporalType.DATE)
+	private Date updateAt;
+
 	@Override
 	public void setId(Long id) {
 		this.id = id;
@@ -64,28 +67,28 @@ public class RepositorySyncLog implements ObjectDB{
 
 	@Override
 	public void setUpdateAt(Date date) {
-		return;
+		this.updateAt = date;
 	}
 
 	@Override
 	public Date getUpdateAt() {
-		return null;
+		return this.updateAt;
 	}
 
-	public Long getHeadRevision() {
-		return headRevision;
+	public String getName() {
+		return name;
 	}
 
-	public void setHeadRevision(Long headRevision) {
-		this.headRevision = headRevision;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Project getProject() {
-		return project;
+	public List<CaseMetricItem> getCaseMetricItems() {
+		return caseMetricItems;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public void setCaseMetricItems(List<CaseMetricItem> caseMetricItems) {
+		this.caseMetricItems = caseMetricItems;
 	}
 
 }

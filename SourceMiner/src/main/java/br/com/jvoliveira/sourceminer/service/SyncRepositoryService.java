@@ -6,7 +6,6 @@ package br.com.jvoliveira.sourceminer.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hsqldb.HsqlException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
