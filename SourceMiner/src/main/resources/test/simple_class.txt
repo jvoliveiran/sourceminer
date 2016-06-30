@@ -1,0 +1,13 @@
+public class SimpleClass {
+
+	public void teste(){
+		
+	}
+
+	//Linhas de código: 4
+	/*
+	*teste
+	*
+	*/
+
+}

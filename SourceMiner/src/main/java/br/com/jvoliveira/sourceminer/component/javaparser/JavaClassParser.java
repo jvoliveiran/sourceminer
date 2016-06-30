@@ -3,7 +3,6 @@
  */
 package br.com.jvoliveira.sourceminer.component.javaparser;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -11,9 +10,6 @@ import java.util.Map.Entry;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -131,28 +127,7 @@ public class JavaClassParser extends GenericClassParser{
 	}
 	
 	private CompilationUnit getCompilationUnit(){
-		CompilationUnit compUnit = new CompilationUnit();
-		fileContent = fileContent.replace("\u00bf", "");
-		fileContent = fileContent.replace("\ufffd", "");
-		//fileContent = fileContent.replace("\'", "");
-		//fileContent = fileContent.replace("\\", "");
-		try {
-			compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "UTF8");
-		} catch (ParseException e) {
-			System.err.println("File: " + getFilePath());
-			e.printStackTrace();
-		}catch(TokenMgrError tokenError){
-			try {
-				compUnit = JavaParser.parse(new ByteArrayInputStream(fileContent.getBytes()), "ISO8859_1");
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}catch(TokenMgrError tokenISOError){
-				System.err.println("File: " + getFilePath());
-				tokenISOError.printStackTrace();
-				compUnit = new CompilationUnit();
-			}
-		}
-		return compUnit;
+		return CompilationUnitHelper.getCompilationUnit(fileContent, getFilePath());
 	}
 	
 	private JavaClassVisitor getClassVisitor(){
