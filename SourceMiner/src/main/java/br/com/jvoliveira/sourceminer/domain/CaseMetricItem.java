@@ -80,4 +80,28 @@ public class CaseMetricItem implements ObjectDB{
 		return this.updateAt;
 	}
 
+	public MetricCase getMetricCase() {
+		return metricCase;
+	}
+
+	public void setMetricCase(MetricCase metricCase) {
+		this.metricCase = metricCase;
+	}
+
+	public Metric getMetric() {
+		return metric;
+	}
+
+	public void setMetric(Metric metric) {
+		this.metric = metric;
+	}
+
+	public Double getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(Double threshold) {
+		this.threshold = threshold;
+	}
+
 }
