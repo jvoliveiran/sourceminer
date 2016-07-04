@@ -1,0 +1,53 @@
+<html layout:decorator="layouts/layout_admin">
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	
+	<div layout:fragment="admin_content">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title" th:text="${controllerTitle}"></h3>
+				  </div>
+				  
+				  <div class="panel-body">
+				  
+				  	<div class="row">
+						<div class="col-lg-12">
+							<a class="btn btn-primary" th:href="@{/metric_case/create}">
+								Novo <span th:text="${controllerTitle}"/>
+							</a>
+						</div>
+					</div>
+				  	
+				  	<hr />
+				  	
+				  	<div th:if="${#lists.isEmpty(list)}">
+						<i>Nenhum item localizado.</i>
+					</div>
+				  	
+				  	<table class="table table-striped" th:if="!${#lists.isEmpty(list)}">
+				  		<tr>
+							<th>Nome</th>
+							<th>Alterar</th>
+						</tr>
+						<tr th:each="item : ${list}">
+							<td th:text="${item.name}"></td>
+							<td>
+								<form action="#" th:action="@{/metric_case/edit}" method="post" >
+				    				<input type="hidden" name="idObj" th:value="${item.id}" />
+				    				<input type="submit" class="btn btn-primary btn-sm" value="Editar" />
+				    			</form>
+							</td>
+						</tr>
+				  	</table>
+				  	
+				  </div> 
+				</div>
+			</div>
+		</div>
+		
+</div>
+
+</html>

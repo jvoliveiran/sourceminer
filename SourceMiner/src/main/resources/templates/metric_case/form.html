@@ -1,0 +1,56 @@
+<html layout:decorator="layouts/layout_admin">
+<head>
+<meta charset="UTF-8" />
+</head>
+
+<div layout:fragment="admin_content">
+	<div th:if="${obj.id == null}">
+		<h3>
+			Cadastrar <span th:text="${controllerTitle}" />
+		</h3>
+	</div>
+
+	<div th:if="${obj.id != null}">
+		<h3>
+			Editar <span th:text="${controllerTitle}" />
+		</h3>
+	</div>
+
+	<form class="form-horizontal"
+		th:action="@{/metric_case/create}" th:object="${obj}"
+		action="#" method="post">
+
+		<div class="form-group">
+			<label for="name" class="col-sm-2 control-label">Nome: </label>
+			<div class="col-sm-10">
+				<input type="text" th:field="*{name}" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="name" class="col-sm-2 control-label">Métricas: </label>
+			<div class="col-sm-10">
+				<div th:each="metric : ${metrics}">
+					<input type="checkbox" th:field="*{caseMetricItems}" th:value="${metric.id}" />
+					<label th:text="${metric.name}">Métrica</label>
+				</div>
+			</div>
+		</div>
+
+		<!-- Atributo usado na alteraçao do obj.  -->
+		<input type="hidden" th:field="*{id}" />
+
+		<div class="form-group">
+			<div class="col-sm-3"></div>
+			<div class="col-sm-3">
+				<a class="btn btn-default" th:href="@{/metric_case/cancel}">Cancelar</a>
+			</div>
+			<div class="col-sm-3">
+				<button type="submit" class="btn btn-success">Salvar</button>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+	</form>
+</div>
+
+</html>
