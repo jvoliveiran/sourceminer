@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +45,10 @@ public class MetricCase implements ObjectDB{
 	@Column(name="update_at")
 	@Temporal(TemporalType.DATE)
 	private Date updateAt;
+	
+	public MetricCase(){
+		this.caseMetricItems = new ArrayList<CaseMetricItem>();
+	}
 
 	@Override
 	public void setId(Long id) {

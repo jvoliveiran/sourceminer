@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
+import br.com.jvoliveira.arq.utils.ArqUtils;
+import br.com.jvoliveira.sourceminer.domain.CaseMetricItem;
 import br.com.jvoliveira.sourceminer.domain.Metric;
 import br.com.jvoliveira.sourceminer.domain.MetricCase;
 import br.com.jvoliveira.sourceminer.repository.MetricCaseRepository;
@@ -34,7 +36,20 @@ public class MetricCaseService extends AbstractArqService<MetricCase>{
 		return (List<Metric>) metricRepository.findAll();
 	}
 	
+	private Object createNewItemMetric(Metric metric, List<CaseMetricItem> result) {
+		CaseMetricItem caseItem = new CaseMetricItem();
+		caseItem.setMetric(metric);
+		//caseItem.setId(ArqUtils.generateRandomNegative());
+		caseItem.setId(Long.parseLong(ArqUtils.generateRandomNegative().toString()));
+		result.add(caseItem);
+		return caseItem;
+	}
+
 	private MetricCaseRepository getRepository(){
 		return (MetricCaseRepository) this.repository;
+	}
+	
+	public Metric getMetric(Long idMetric){
+		return metricRepository.findOne(idMetric);
 	}
 }
