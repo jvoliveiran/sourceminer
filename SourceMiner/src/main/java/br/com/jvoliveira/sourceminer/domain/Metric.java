@@ -47,9 +47,6 @@ public class Metric implements ObjectDB{
 	@Column(name="metric_type")
 	private MetricType metricType;
 	
-	@OneToMany(mappedBy="metric")
-	private List<CaseMetricItem> caseMetricItems;
-	
 	@Column(name="create_at")
 	@Temporal(TemporalType.DATE)
 	private Date createAt;
@@ -118,14 +115,6 @@ public class Metric implements ObjectDB{
 
 	public void setMetricType(MetricType metricType) {
 		this.metricType = metricType;
-	}
-
-	public List<CaseMetricItem> getCaseMetricItems() {
-		return caseMetricItems;
-	}
-
-	public void setCaseMetricItems(List<CaseMetricItem> caseMetricItems) {
-		this.caseMetricItems = caseMetricItems;
 	}
 
 }

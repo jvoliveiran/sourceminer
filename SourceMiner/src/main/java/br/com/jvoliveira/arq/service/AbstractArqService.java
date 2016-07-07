@@ -80,7 +80,7 @@ public class AbstractArqService<T extends ObjectDB> {
 		return obj;
 	}
 
-	private T createObject(T obj) {
+	protected T createObject(T obj) {
 		obj = beforeCreate(obj);
 		obj.setCreateAt(DateUtils.now());
 		obj = repository.save(obj);
