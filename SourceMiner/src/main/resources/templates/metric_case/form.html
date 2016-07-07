@@ -28,7 +28,18 @@
 	            type: "POST",
 	            url: "/SourceMiner/metric_case/add_metric_case_item",
 	            data: { 'idMetric': idMetric, 'valueMetric': valueMetric  },
-	            success: reloadList,
+	            success: function(responce) {   
+	            	$.each( responce,function(key, item) {
+			        	var htmlrow = '<tr id="lineCase'+item.id+'" > '
+			        				+"<td>" + item.metric.description + "</td>"
+			        				+"<td>" + item.threshold + "</td>"
+			        				+"<td> "
+			        				+	'<input type="button" class="btn btn-danger" id="addMetric" value="Remover" onclick="removeMetricCase('+item.id+')" />'
+			        				+"</td>"
+			        				+"</tr>";  
+			    		$('#caseMetricTable').append(htmlrow);
+			    	});
+	            },
 	            error : function(e) {
 					console.log("ERROR: ", e);
 				},
@@ -38,9 +49,26 @@
 	        });
 		}
 		
-		function reloadList(){
-			console.log("Recarregando");
-			$('#metricSelected').load(document.URL +  ' #metricSelected');
+		function removeMetricCase(idMetricItemCase){
+			var lineId = "lineCase"+idMetricItemCase
+			console.log(lineId);
+			$('#'+lineId+'').remove();
+			/*
+			$.ajax({
+	            type: "POST",
+	            url: "/SourceMiner/metric_case/remove_metric_case_item",
+	            data: { 'idCaseMetricItem': idCaseMetricItem  },
+	            success: function(responce) { 
+			    		
+	            },
+	            error : function(e) {
+					console.log("ERROR: ", e);
+				},
+				done : function(e) {
+					console.log("DONE");
+				}
+	        });
+			*/
 		}
 	</script>
 </head>
@@ -75,8 +103,10 @@
 				<select class="form-control" id="metricID">
 					<option th:each="metric: ${metrics}"
 						th:value="${metric.id}"
-						th:text="${metric.name}">Métrica</option>
+						th:text="${metric.description}">Métrica</option>
 				</select>
+			</div>
+			<div class="col-sm-2">
 				<input type="number" id="metricValue" />
 			</div>
 			<div class="col-sm-2">
@@ -85,12 +115,13 @@
 		</div>
 		
 		<div class="form-group">
-			<table class="table table-striped">
+			<table class="table table-striped" id="caseMetricTable">
 				<tr>
 					<th>Nome</th>
 					<th>Valor</th>
+					<th>Remover</th>
 				</tr>
-				<tr th:each="item : *{caseMetricItems}">
+				<tr th:each="item : ${obj.caseMetricItems}">
 					<td th:text="${item.metric.name}"></td>
 					<td th:text="${item.threshold}"></td>
 				</tr>
