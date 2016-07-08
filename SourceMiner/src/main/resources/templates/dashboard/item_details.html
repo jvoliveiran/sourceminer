@@ -245,7 +245,14 @@
 						<div class="tab-content">
 							<div id="analise_estatisticas" class="tab-pane fade in active">
 						    	<h3>Estatísticas</h3>
-						    	<p>Área para itens de estatísticas da classe</p>
+						    	<p>
+						    		<table class="table table-striped">
+						    			<tr th:each="metric : ${metrics}">
+						    				<td th:text="${metric.metric.description}"></td>
+						    				<td th:text="${metric.value}"></td>
+						    			</tr>
+						    		</table>
+						    	</p>
 						  	</div>
 						  	<div id="analise_dependencias" class="tab-pane fade">
 						    	<h3>Dependências</h3>

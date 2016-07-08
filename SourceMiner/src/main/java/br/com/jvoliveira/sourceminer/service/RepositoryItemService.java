@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryCo
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
@@ -83,6 +85,11 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	
 	public ItemChangeLogFilter getItemChangeLogFilter(){
 		return (ItemChangeLogFilter) this.itemChangeLogSearch.getFilter();
+	}
+	
+	public List<RevisionItemMetric> getRevisionItemMetric(RepositoryItem item){
+		//TODO:
+		return new ArrayList<RevisionItemMetric>();
 	}
 	
 	@Autowired

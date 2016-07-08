@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 import br.com.jvoliveira.sourceminer.domain.enums.ChangeFileType;
 import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
@@ -67,6 +68,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 		ItemAssetGroupType assets = ((RepositoryItemService)service).getItemAssetGroupType(item);
 		String fileContent = ((RepositoryItemService)service).getFileContentInRevision(item.getPath(), new Long(-1));
 		List<ChangeLogGroupModel> historyChangeLog = ((RepositoryItemService)service).getChangeLogInRepositoryItem(item);
+		List<RevisionItemMetric> metrics = ((RepositoryItemService)service).getRevisionItemMetric(item);
 		
 		model.addAttribute("item", item);
 		model.addAttribute("project", item.getProject());
@@ -74,6 +76,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 		model.addAttribute("revisionsNumber", item.getAllRevisionsNumber());
 		model.addAttribute("historyChangeLog", historyChangeLog);
 		model.addAttribute("assets", assets);
+		model.addAttribute("metrics",metrics);
 		
 		model.addAttribute("itemChangeLogFilter", ((RepositoryItemService)service).getItemChangeLogFilter());
 	}
