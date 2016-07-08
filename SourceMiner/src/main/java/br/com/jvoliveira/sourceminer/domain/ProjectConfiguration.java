@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -48,6 +49,10 @@ public class ProjectConfiguration implements ObjectDB{
 	
 	@Column(name="full_asset_sync")
 	private boolean fullAssetSync;
+	
+	@ManyToOne
+	@JoinColumn(name="id_metric_case")
+	private MetricCase metricCase;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -163,6 +168,14 @@ public class ProjectConfiguration implements ObjectDB{
 
 	public void setSyncEndRevision(Integer syncEndRevision) {
 		this.syncEndRevision = syncEndRevision;
+	}
+
+	public MetricCase getMetricCase() {
+		return metricCase;
+	}
+
+	public void setMetricCase(MetricCase metricCase) {
+		this.metricCase = metricCase;
 	}
 
 	

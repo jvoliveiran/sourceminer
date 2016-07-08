@@ -63,6 +63,18 @@
 				</select>
 			</div>
 		</div>
+		
+		<div class="form-group">
+			<label for="name" class="col-sm-8 control-label">Case de Métricas: </label>
+			<div class="col-sm-4">
+				<select th:field="*{metricCase}" class="form-control">
+					<option value="">SELECIONE</option>
+					<option th:each="case : ${metricCases}"
+						th:value="${case.id}" 
+						th:text="${case.name}">Case de Métrica</option>
+				</select>
+			</div>
+		</div>
 
 		<!-- Atributo usado na alteraçao do obj.  -->
 		<input type="hidden" th:field="*{id}" />

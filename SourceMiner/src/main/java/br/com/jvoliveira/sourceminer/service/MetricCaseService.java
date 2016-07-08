@@ -67,10 +67,6 @@ public class MetricCaseService extends AbstractArqService<MetricCase>{
 		caseMetricItemRepository.save(item);
 		return item;
 	}
-
-	private MetricCaseRepository getRepository(){
-		return (MetricCaseRepository) this.repository;
-	}
 	
 	public Metric getMetric(Long idMetric){
 		return metricRepository.findOne(idMetric);

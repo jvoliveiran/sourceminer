@@ -42,6 +42,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 
 	private RepositoryConnectionSession connection;
 	
+	private RevisionItemMetricService revisionItemMetricService;
+	
 	private RepositorySyncLogRepository syncLogRepository;
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
@@ -232,6 +234,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
 			
+			revisionItemMetricService.generateSingleRevisionItemMetric(fileContent, revisionItem, this.config);
+			
 			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
 			syncAssets(assetsToSync, revisionItem);
@@ -412,6 +416,11 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	@Autowired
 	public void setProjectConfigurationRepository(ProjectConfigurationRepository repository){
 		this.projectConfigurationRepository = repository;
+	}
+	
+	@Autowired
+	public void setRevisionItemMetricService(RevisionItemMetricService service){
+		this.revisionItemMetricService = service;
 	}
 	
 	public void notifyObservers(String mensagem){

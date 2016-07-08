@@ -51,9 +51,7 @@
 		
 		function removeMetricCase(idMetricItemCase){
 			var lineId = "lineCase"+idMetricItemCase
-			console.log(lineId);
 			$('#'+lineId+'').remove();
-			/*
 			$.ajax({
 	            type: "POST",
 	            url: "/SourceMiner/metric_case/remove_metric_case_item",
@@ -68,7 +66,6 @@
 					console.log("DONE");
 				}
 	        });
-			*/
 		}
 	</script>
 </head>

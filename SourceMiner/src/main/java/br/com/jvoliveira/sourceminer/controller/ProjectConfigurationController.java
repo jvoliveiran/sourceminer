@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
+import br.com.jvoliveira.sourceminer.domain.MetricCase;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
+import br.com.jvoliveira.sourceminer.service.MetricCaseService;
 import br.com.jvoliveira.sourceminer.service.ProjectConfigurationService;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
@@ -26,13 +30,14 @@ import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 @RequestMapping("/project/configuration")
 public class ProjectConfigurationController extends AbstractArqController<ProjectConfiguration>{
 
-	
+	private MetricCaseService metricCaseService;
 	
 	@Autowired
-	public ProjectConfigurationController(ProjectConfigurationService service){
+	public ProjectConfigurationController(ProjectConfigurationService service, MetricCaseService metricCaseService){
 		this.path = "project/configuration";
 		this.title = "Configurações do Projeto";
 		this.service = service;
+		this.metricCaseService = metricCaseService;
 	}
 	
 	@Override
@@ -79,5 +84,10 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 			return syncObserver.getLabel();
 		else
 			return "Nenhuma sincronização ativa";
+	}
+	
+	@ModelAttribute("metricCases")
+	public List<MetricCase> getAllMetricCase(){
+		return metricCaseService.getAll();
 	}
 }
