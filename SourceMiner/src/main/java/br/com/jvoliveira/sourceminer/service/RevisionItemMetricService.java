@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.metric.MetricAnalizerHelper;
+import br.com.jvoliveira.sourceminer.domain.CaseMetricItem;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
+import br.com.jvoliveira.sourceminer.repository.CaseMetricItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RevisionItemMetricRepository;
 
 /**
@@ -22,16 +24,19 @@ import br.com.jvoliveira.sourceminer.repository.RevisionItemMetricRepository;
 @Service
 public class RevisionItemMetricService extends AbstractArqService<RevisionItemMetric> {
 
+	private CaseMetricItemRepository caseMetricItemRepository;
+	
 	@Autowired
-	public RevisionItemMetricService(RevisionItemMetricRepository repository){
+	public RevisionItemMetricService(RevisionItemMetricRepository repository, CaseMetricItemRepository caseMetricItemRepository){
 		this.repository = repository;
+		this.caseMetricItemRepository = caseMetricItemRepository;
 	}
 	
 	public List<RevisionItemMetric> generateSingleRevisionItemMetric(String fileContent, 
 			RepositoryRevisionItem revisionItem, ProjectConfiguration config){
 		
-		//TODO: Carregar metricas para evitar erro de lazy
-		List<RevisionItemMetric> metricResults = MetricAnalizerHelper.calculateMetrics(config.getMetricCase(), fileContent);
+		List<CaseMetricItem> caseMetricItems = caseMetricItemRepository.findByMetricCase(config.getMetricCase());
+		List<RevisionItemMetric> metricResults = MetricAnalizerHelper.calculateMetrics(caseMetricItems, fileContent);
 		
 		metricResults.stream().forEach(metricResult -> persistMetricResult(metricResult,revisionItem));
 		

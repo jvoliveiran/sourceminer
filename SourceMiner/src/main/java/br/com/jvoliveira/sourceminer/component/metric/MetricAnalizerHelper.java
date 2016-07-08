@@ -20,10 +20,9 @@ import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
  */
 public class MetricAnalizerHelper {
 	
-	public static List<RevisionItemMetric> calculateMetrics(MetricCase metricCase, String fileContent){
+	public static List<RevisionItemMetric> calculateMetrics(List<CaseMetricItem> caseMetricItens, String fileContent){
 		List<RevisionItemMetric> metricsResult = new ArrayList<RevisionItemMetric>();
 		
-		List<CaseMetricItem> caseMetricItens = metricCase.getCaseMetricItems();
 		Iterator<CaseMetricItem> iteratorCaseMetricItem = caseMetricItens.iterator();
 		
 		while(iteratorCaseMetricItem.hasNext()){
