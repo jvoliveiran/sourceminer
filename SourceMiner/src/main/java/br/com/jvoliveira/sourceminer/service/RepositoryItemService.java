@@ -13,13 +13,19 @@ import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.javaparser.ChangeLogGroupModel;
 import br.com.jvoliveira.sourceminer.component.javaparser.ClassParserHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.domain.CaseMetricItem;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
+import br.com.jvoliveira.sourceminer.domain.Metric;
+import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
+import br.com.jvoliveira.sourceminer.repository.CaseMetricItemRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
+import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
+import br.com.jvoliveira.sourceminer.repository.RevisionItemMetricRepository;
 import br.com.jvoliveira.sourceminer.repository.impl.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.search.ItemChangeLogSearch;
 import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
@@ -38,6 +44,9 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	
 	private ItemChageLogRepositoryImpl itemChangeLogRepository;
 	private ItemAssetRepository itemAssetRepository;
+	private RevisionItemMetricRepository itemMetricRepository;
+	private ProjectConfigurationRepository projectConfigRepository;
+	private CaseMetricItemRepository caseMetricRepository;
 	
 	@Autowired
 	public RepositoryItemService(RepositoryItemRepository repository,
@@ -88,10 +97,15 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	}
 	
 	public List<RevisionItemMetric> getRevisionItemMetric(RepositoryItem item){
-		//TODO: Buscar valor de métrica mais recente para cada métrica calculada
+		ProjectConfiguration projectConfig = projectConfigRepository.findOneByProject(item.getProject());
 		
+		List<CaseMetricItem> caseMetricItems = caseMetricRepository.findByMetricCase(projectConfig.getMetricCase());
 		
-		return new ArrayList<RevisionItemMetric>();
+		List<Metric> metrics = new ArrayList<>();
+		
+		caseMetricItems.stream().forEach(caseMetric -> metrics.add(caseMetric.getMetric()));
+		
+		return itemMetricRepository.findEachRecentMetric(item, metrics);
 	}
 	
 	@Autowired
@@ -107,5 +121,20 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	@Autowired
 	public void setItemAssetRepository(ItemAssetRepository repository){
 		this.itemAssetRepository = repository;
+	}
+	
+	@Autowired
+	public void setRevisionItemMetricRepository(RevisionItemMetricRepository repository){
+		this.itemMetricRepository = repository;
+	}
+	
+	@Autowired
+	public void setProjectConfigRepository(ProjectConfigurationRepository repository){
+		this.projectConfigRepository = repository;
+	}
+	
+	@Autowired
+	public void setCaseMetricItemRepository(CaseMetricItemRepository repository){
+		this.caseMetricRepository = repository;
 	}
 }

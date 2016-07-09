@@ -420,7 +420,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	public void notifyObservers(String mensagem){
-		if(observer != null);
+		if(observer != null)
 			observer.getNotification(mensagem);
 	}
 
