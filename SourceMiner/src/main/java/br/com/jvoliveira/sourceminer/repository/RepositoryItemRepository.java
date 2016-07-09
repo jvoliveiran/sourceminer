@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.repository.custom.RepositoryItemRepositoryCustom;
 
 /**
  * @author Joao Victor

@@ -23,13 +23,13 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
-import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.repository.impl.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
 /**
@@ -284,9 +284,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
-		//System.out.println("SINCRONIZANDO ASSETS...");
-		
-		//System.out.println("ASSETS PARA SINCRONIZAÇÃO: " + assetsToSync.size());
 		for(ItemAsset asset : assetsToSync){
 			
 			if(asset.getId() == null){
@@ -320,7 +317,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			}
 			
 		}
-		//System.out.println("ASSETS SINCRONIZADOS!!!");
 	}
 
 	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {

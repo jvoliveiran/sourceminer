@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.repository;
+package br.com.jvoliveira.sourceminer.repository.impl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.repository.custom.RepositoryItemRepositoryCustom;
 
 /**
  * @author Joao Victor

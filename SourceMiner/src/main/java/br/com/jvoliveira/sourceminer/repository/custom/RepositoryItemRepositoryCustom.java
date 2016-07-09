@@ -1,4 +1,4 @@
-package br.com.jvoliveira.sourceminer.repository;
+package br.com.jvoliveira.sourceminer.repository.custom;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;

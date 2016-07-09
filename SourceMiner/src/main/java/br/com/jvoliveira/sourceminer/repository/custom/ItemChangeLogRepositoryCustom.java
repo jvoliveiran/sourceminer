@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.repository;
+package br.com.jvoliveira.sourceminer.repository.custom;
 
 import java.util.List;
 

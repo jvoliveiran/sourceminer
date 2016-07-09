@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.repository;
+package br.com.jvoliveira.sourceminer.repository.impl;
 
 import java.util.List;
 
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.repository.ItemChangeLogRepository;
+import br.com.jvoliveira.sourceminer.repository.custom.ItemChangeLogRepositoryCustom;
 
 /**
  * @author Joao Victor

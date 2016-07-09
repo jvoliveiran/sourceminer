@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.sourceminer.repository;
+package br.com.jvoliveira.sourceminer.repository.impl;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
+import br.com.jvoliveira.sourceminer.repository.custom.ProjectRepositoryCustom;
 
 /**
  * @author Joao Victor

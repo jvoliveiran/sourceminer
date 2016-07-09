@@ -19,8 +19,8 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
-import br.com.jvoliveira.sourceminer.repository.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
+import br.com.jvoliveira.sourceminer.repository.impl.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.search.ItemChangeLogSearch;
 import br.com.jvoliveira.sourceminer.search.filter.ItemChangeLogFilter;
 
@@ -88,7 +88,9 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	}
 	
 	public List<RevisionItemMetric> getRevisionItemMetric(RepositoryItem item){
-		//TODO:
+		//TODO: Buscar valor de métrica mais recente para cada métrica calculada
+		
+		
 		return new ArrayList<RevisionItemMetric>();
 	}
 	

@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,14 @@ public class RevisionItemMetricService extends AbstractArqService<RevisionItemMe
 	
 	public List<RevisionItemMetric> generateSingleRevisionItemMetric(String fileContent, 
 			RepositoryRevisionItem revisionItem, ProjectConfiguration config){
+		List<RevisionItemMetric> metricResults = new ArrayList<RevisionItemMetric>();
 		
-		List<CaseMetricItem> caseMetricItems = caseMetricItemRepository.findByMetricCase(config.getMetricCase());
-		List<RevisionItemMetric> metricResults = MetricAnalizerHelper.calculateMetrics(caseMetricItems, fileContent);
-		
-		metricResults.stream().forEach(metricResult -> persistMetricResult(metricResult,revisionItem));
+		if(config.getMetricCase() != null){
+			List<CaseMetricItem> caseMetricItems = caseMetricItemRepository.findByMetricCase(config.getMetricCase());
+			metricResults = MetricAnalizerHelper.calculateMetrics(caseMetricItems, fileContent);
+			
+			metricResults.stream().forEach(metricResult -> persistMetricResult(metricResult,revisionItem));
+		}
 		
 		return metricResults;
 	}
