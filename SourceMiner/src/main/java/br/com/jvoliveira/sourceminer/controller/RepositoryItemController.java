@@ -66,7 +66,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 		
 		RepositoryItem item = ((RepositoryItemService)service).getItemById(idItem);
 		ItemAssetGroupType assets = ((RepositoryItemService)service).getItemAssetGroupType(item);
-		String fileContent = ((RepositoryItemService)service).getFileContentInRevision(item.getPath(), new Long(-1));
+		String fileContent = ((RepositoryItemService)service).getFileContentInLastRevision(item);
 		List<ChangeLogGroupModel> historyChangeLog = ((RepositoryItemService)service).getChangeLogInRepositoryItem(item);
 		List<RevisionItemMetric> metrics = ((RepositoryItemService)service).getRevisionItemMetric(item);
 		

@@ -10,7 +10,6 @@ import java.util.List;
 import br.com.jvoliveira.config.ApplicationContextProvider;
 import br.com.jvoliveira.sourceminer.domain.CaseMetricItem;
 import br.com.jvoliveira.sourceminer.domain.Metric;
-import br.com.jvoliveira.sourceminer.domain.MetricCase;
 import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 
 

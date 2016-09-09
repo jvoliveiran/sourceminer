@@ -35,6 +35,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryFileContentNotFoundException;
 
 /**
  * @author Joao Victor
@@ -252,13 +253,21 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 
 	@Override
-	public String getFileContent(String path, Long revision) {
+	public String getFileContent(String path, Long revision){
+		try {
+			return getFileContentInRepository(path, revision);
+		} catch (RepositoryFileContentNotFoundException e) {
+			return e.getMessage();
+		}
+	}
+
+	private String getFileContentInRepository(String path, Long revision)
+			throws RepositoryFileContentNotFoundException {
 		try {
 			SVNNodeKind nodeKind = repository.checkPath(path, revision);
 			
 			if(nodeKind != SVNNodeKind.FILE){
-				System.err.println("O caminho indicado não se refere a um arquivo");
-				throw new RuntimeException("O caminho indicado não se refere a um arquivo");
+				throw new RepositoryFileContentNotFoundException(path, revision);
 			}else{
 				SVNProperties svnProperties = new SVNProperties();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();

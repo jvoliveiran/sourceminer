@@ -21,6 +21,7 @@ import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RevisionItemMetric;
 import br.com.jvoliveira.sourceminer.domain.pojo.ItemAssetGroupType;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryFileContentNotFoundException;
 import br.com.jvoliveira.sourceminer.repository.CaseMetricItemRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
@@ -72,9 +73,18 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 	}
 	
 	public String getFileContentInRevision(String path, Long revision){
-		return this.connection.getConnection().getFileContent(path, revision);
+			return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
+	public String getFileContentInLastRevision(RepositoryItem item){
+		Long headRevision = getLastRevisionNumber(item);
+		return getFileContentInRevision(item.getPath(), headRevision);
+	}
+	
+	private Long getLastRevisionNumber(RepositoryItem item) {
+		return ((RepositoryItemRepository)this.repository).findLastRevisionInFile(item.getPath(),item.getProject().getId());
+	}
+
 	public List<ChangeLogGroupModel> getChangeLogInRepositoryItem(RepositoryItem item){
 		List<ItemChangeLog> changeLogs = null;
 		
