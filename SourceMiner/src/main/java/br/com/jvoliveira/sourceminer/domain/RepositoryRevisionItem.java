@@ -130,5 +130,9 @@ public class RepositoryRevisionItem implements ObjectDB{
 	public void setCommitType(CommitType commitType) {
 		this.commitType = commitType;
 	}
+	
+	public boolean existFileInRepository(){
+		return this.commitType.isAdded() || this.commitType.isModified();
+	}
 }
 

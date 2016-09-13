@@ -156,25 +156,15 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 				Set<String> changedPathsSet = revisionLog.getChangedPaths( ).keySet( );
 				
 				 for ( Iterator changedPaths = changedPathsSet.iterator( ); changedPaths.hasNext( ); ) {
-					 SVNLogEntryPath entryPath = ( SVNLogEntryPath ) revisionLog.getChangedPaths( ).get( changedPaths.next( ) );
+					 SVNLogEntryPath entryPath = ( SVNLogEntryPath ) revisionLog.getChangedPaths( ).get(changedPaths.next( ));
 					 
-					 if(isNewJavaFile(entryPath) || isUpdateJavaFile(entryPath)){
-						 RepositoryRevisionItem revisionItemLog = new RepositoryRevisionItem();
-						 
-						 revisionItemLog.setRepositoryRevision(parse.parseToRepositoryRevision(revisionLog));
-						 
-	                	 RepositoryItem item = parse.parseToRepositoryItem(entryPath);
-	                	 revisionItemLog.setRepositoryItem(item);
-	                	 
-	                	 if(entryPath.getType() == 'A')
-	                		 revisionItemLog.setCommitType(CommitType.ADD);
-	                	 else if(entryPath.getType() == 'M')
-	                		 revisionItemLog.setCommitType(CommitType.MOD);
-	                	 else if(entryPath.getType() == 'D')
-	                		 revisionItemLog.setCommitType(CommitType.DEL);
-	                	 
-	                	 revisionItemLogs.add(revisionItemLog);
-	                 }
+					 RepositoryRevisionItem revisionItemLog = new RepositoryRevisionItem();
+					 revisionItemLog.setRepositoryRevision(parse.parseToRepositoryRevision(revisionLog));
+					 
+					 if(isJavaFile(entryPath))
+						 processRepositoryItem(entryPath, revisionItemLog);
+					 
+					 revisionItemLogs.add(revisionItemLog);
 				 }
 			}
 		}
@@ -182,16 +172,21 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return revisionItemLogs;
 	}
 	
-	private boolean isNewJavaFile(SVNLogEntryPath entryPath){
-		return entryPath.getKind() == SVNNodeKind.FILE 
-       		 && entryPath.getPath().contains(".java")
-       		 && entryPath.getType() == 'A';
+	private void processRepositoryItem(SVNLogEntryPath entryPath, RepositoryRevisionItem revisionItemLog) { 
+	   	 RepositoryItem item = parse.parseToRepositoryItem(entryPath);
+	   	 revisionItemLog.setRepositoryItem(item);
+	   	 
+	   	 if(entryPath.getType() == 'A')
+	   		 revisionItemLog.setCommitType(CommitType.ADD);
+	   	 else if(entryPath.getType() == 'M')
+	   		 revisionItemLog.setCommitType(CommitType.MOD);
+	   	 else if(entryPath.getType() == 'D')
+	   		 revisionItemLog.setCommitType(CommitType.DEL);	  
 	}
-	
-	private boolean isUpdateJavaFile(SVNLogEntryPath entryPath){
+
+	private boolean isJavaFile(SVNLogEntryPath entryPath){
 		return entryPath.getKind() == SVNNodeKind.FILE 
-	       		 && entryPath.getPath().contains(".java")
-	       		 && entryPath.getType() == 'M';
+	       		 && entryPath.getPath().contains(".java");
 	}
 	
 	@Override
