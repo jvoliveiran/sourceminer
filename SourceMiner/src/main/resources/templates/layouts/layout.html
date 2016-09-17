@@ -54,6 +54,18 @@
  	</div>
  </div>
 
+<!--  Exibição de erros na view -->
+<div class="row">
+	<div class="col-lg-10 col-lg-offset-1">
+		<div class="alert alert-danger alert-dismissible" role="alert" th:if="!${#lists.isEmpty(arqErros)}">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<ul>
+  				<li th:each="error: ${arqErros}" th:text="${error}">Error</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
 <div class="row">
 	<div class="col-lg-10 col-lg-offset-1">
 	    <div layout:fragment="content">

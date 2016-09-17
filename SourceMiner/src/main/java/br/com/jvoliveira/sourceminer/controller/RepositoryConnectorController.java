@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
@@ -54,10 +55,11 @@ public class RepositoryConnectorController extends AbstractArqController<Reposit
 	}
 	
 	@RequestMapping("/start_connection/{idConnector}")
-	public String startConnection(@PathVariable Long idConnector){
+	public String startConnection(@PathVariable Long idConnector, Model model, RedirectAttributes redirectAttributes){
 		((RepositoryConnectorService) service).startConnectionWithRepository(idConnector);
 		
-		return redirectController("/home/index");
+		redirectAttributes.addFlashAttribute("arqError", getErrorMessages(model));
+		return redirectController("/home/index_redirect");
 	}
 	
 	@Override

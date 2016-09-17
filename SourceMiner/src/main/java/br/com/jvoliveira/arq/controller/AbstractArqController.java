@@ -4,6 +4,9 @@
 package br.com.jvoliveira.arq.controller;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -128,6 +131,29 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 	
 	protected String redirectController(String action){
 		return "redirect:/" + action;
+	}
+	
+	protected void addErrorMessage(Model model, String message){
+		Map<String,Object> mapModel;
+		List<String> arqErros;
+		if(model.containsAttribute("arqErros")){
+			mapModel = model.asMap();
+			arqErros = ((List<String>)mapModel.get("arqErros"));
+			arqErros.add(message);
+			model.addAttribute("arqErros",arqErros);
+		}else{
+			arqErros = new ArrayList<>();
+			arqErros.add(message);
+			model.addAttribute("arqErros", arqErros);
+		}
+	}
+	
+	protected List<String> getErrorMessages(Model model){
+		if(model.containsAttribute("arqErros")){
+			Map<String,Object> mapModel = model.asMap();
+			return ((List<String>)mapModel.get("arqErros"));
+		}
+		return null;
 	}
 	
 	@ModelAttribute("controllerTitle")
