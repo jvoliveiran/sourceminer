@@ -71,6 +71,23 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		return this.parse;
 	}
 	
+	@Override
+	public boolean testConnection(){
+		try{
+			openConnection();
+			SVNDirEntry entry = repository.getDir("", -1, false, null);
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Erro ao estabelecer conexão com o repositório");
+			return false;
+		}finally{
+			if(isConnectionOpened())
+				closeConnection();
+		}
+		
+		return true;
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void openConnection() {

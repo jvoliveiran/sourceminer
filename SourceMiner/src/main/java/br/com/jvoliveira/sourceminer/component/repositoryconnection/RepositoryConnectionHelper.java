@@ -24,8 +24,12 @@ public class RepositoryConnectionHelper {
 		factory = new RepositoryConnectionFactory();
 	}
 	
+	public RepositoryConnection getRepositoryConnectionByConnector(RepositoryConnector connector){
+		return factory.buildRepositoryConnection(connector);
+	}
+	
 	public void loadRepositoryInSession(RepositoryConnector connector){
-		RepositoryConnection repositoryConnection = factory.buildRepositoryConnection(connector);
+		RepositoryConnection repositoryConnection = getRepositoryConnectionByConnector(connector);
 		repositoryConnection.openConnection();
 		repositoryConnectionSession.setConnection(repositoryConnection);
 	}

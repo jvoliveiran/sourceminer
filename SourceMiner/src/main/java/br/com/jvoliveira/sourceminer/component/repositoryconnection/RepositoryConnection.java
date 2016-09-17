@@ -28,6 +28,8 @@ public interface RepositoryConnection {
 	
 	void closeConnection();
 	
+	boolean testConnection();
+	
 	Boolean isConnectionOpened();
 	
 	Boolean isGit();

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
@@ -49,7 +50,12 @@ public class RepositoryConnectorService
 	
 	public void startConnectionWithRepository(Long idConnector){
 		RepositoryConnector connector = repository.findOne(idConnector);
-		repositoryHelper.loadRepositoryInSession(connector);
+		RepositoryConnection connectionWithRepository = repositoryHelper.getRepositoryConnectionByConnector(connector);
+		
+		if(connectionWithRepository.testConnection())
+			repositoryHelper.loadRepositoryInSession(connector);
+		else
+			System.err.println("Erro na conexão ao repositório");
 	}
 	
 	public void closeConnection(RepositoryConnectionSession repositoryConnetionSession){
