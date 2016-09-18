@@ -1,0 +1,107 @@
+<html layout:decorator="layouts/layout">
+	<head>
+		<meta charset="UTF-8"/>
+		
+	</head>
+	
+	<div layout:fragment="content">
+			<div class="col-lg-10">
+				<h3>Dashboard - Detalhes Projeto</h3>
+			</div>
+			<div class="col-lg-2">
+				<form action="#" th:action="@{/dashboard/project_dashboard}" method="post">
+					<input type="hidden" name="idProject" th:value="${project.id}" />
+					<input type="submit" class="btn btn-primary" value="Dashboard" />
+				</form>
+			</div>
+		
+		<!-- Primeira linha -->
+		<div class="row">
+			<div class="col-lg-12">
+			
+				<div class="panel panel-default" style="height: 150px">
+				  <div class="panel-heading">
+				  	<h3 class="panel-title">Informações do Projeto</h3>
+				  </div>
+				  <div class="panel-body">
+				  
+				  	<div class="row">
+					    <div class="col-lg-3">
+					    	<b>Repositório:</b>
+					    </div>
+					    <div class="col-lg-9">
+					    	<span th:text="${repositoryConnetionSession.connectionName}"></span>
+					    </div>
+				    </div>
+				    
+				    <div class="row">
+					    <div class="col-lg-3">
+					    	<b>Projeto:</b>
+					    </div>
+					    <div class="col-lg-9">
+					    	<span th:text="${project.name}"></span>
+					    </div>
+				    </div>
+				    
+				  </div>
+				</div>
+			</div>
+		</div>
+		
+		<hr />
+		
+		<!-- Segunda linha -->
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+				
+					<div class="row">
+						<div class="col-lg-4 col-lg-offset-6">
+							<canvas id="myChart" width="20px" height="20px"></canvas>
+						</div>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+		
+		<script th:inline="javascript">
+		function getData(){
+			var chartData = [[${chartData}]];
+			return {
+				    labels: [
+				        "Red",
+				        "Blue",
+				        "Yellow"
+				    ],
+				    datasets: [
+				        {
+				            data: chartData,
+				            backgroundColor: [
+				                "#FF6384",
+				                "#36A2EB",
+				                "#FFCE56"
+				            ],
+				            hoverBackgroundColor: [
+				                "#FF6384",
+				                "#36A2EB",
+				                "#FFCE56"
+				            ]
+				        }]
+				};
+		}
+		
+		var ctx = $("#myChart").get(0).getContext("2d");
+		var myDoughnutChart = new Chart(ctx, {
+		    type: 'doughnut',
+		    data: getData(),
+		    options: { 
+		    	animation:{
+		        	animateScale:true
+		    	}
+		    }
+		});
+		</script>
+		
+	</div>
+</html>

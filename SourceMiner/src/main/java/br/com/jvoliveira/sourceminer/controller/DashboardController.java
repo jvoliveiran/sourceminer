@@ -48,6 +48,16 @@ public class DashboardController extends AbstractArqController<Project>{
 		return forward("project_dashboard");
 	}
 	
+	@RequestMapping(value="project_dashboard_details", method=RequestMethod.POST)
+	public String projectDashboardDetails(@RequestParam Long idProject, Model model){
+		obj = service.getOneById(idProject);
+		model.addAttribute("project", obj);
+		
+		model.addAttribute("chartData", new Integer[]{300,100,200});
+		
+		return forward("project_details");
+	}
+	
 	@RequestMapping(value = "/search_item", method = RequestMethod.POST)
 	public String searchItem(@Validated RepositoryItemFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);
