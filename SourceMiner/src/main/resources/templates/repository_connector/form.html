@@ -33,7 +33,7 @@
 				<label for="versionManager" class="col-sm-2 control-label">Repositório: </label>
 				<div class="col-sm-10">
 					<select th:field="*{repositoryLocation}" class="form-control">
-					    <option value="NONE">---- SELECIONE ----</option>
+					    <option value="0">---- SELECIONE ----</option>
 					    <option th:each="repositoryLocation : ${repositoryLocations}"
 					            th:value="${repositoryLocation.id}"
 					            th:text="${repositoryLocation.name}">NULL</option>
@@ -64,7 +64,10 @@
 					<a class="btn btn-default" th:href="@{/repository_connector/cancel}">Cancelar</a>
 				</div>
 				<div class="col-sm-3">
-					<button type="submit" class="btn btn-success">Cadastrar</button>
+					<button type="submit" class="btn btn-success">
+						<span th:if="${obj.id == null}">Cadastrar</span>
+						<span th:if="${obj.id != null}">Editar</span>
+					</button>
 				</div>
 				<div class="col-sm-3"></div>
 			</div>

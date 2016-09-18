@@ -86,21 +86,24 @@
 									<hr />
 									
 									<div class="row">
-										<div class="col-lg-4">
+										<div class="col-lg-6">
 											<a class="btn btn-success btn-sm" th:href="@{'/repository_connector/start_connection/{id}'(id=${repositorio.id})}">
 												Conectar
 											</a>
 										</div>
-										<div class="col-md-4">
-											<a class="btn btn-default btn-sm">
-												Editar
-											</a>
+										<div class="col-lg-6">
+											<form action="#" th:action="@{/repository_connector/edit}" method="post" >
+							    				<input type="hidden" name="idObj" th:value="${repositorio.id}" />
+							    				<input type="submit" class="btn btn-default btn-sm" value="Editar" />
+							    			</form>
 										</div>
+										<!-- 
 										<div class="col-md-4">
 											<a class="btn btn-danger btn-sm">
 												Desconectar
 											</a>
 										</div>
+										 -->
 									</div>
 								</div>
 							</div>

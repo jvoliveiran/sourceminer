@@ -11,6 +11,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 
 /**
  * @author Joao Victor
@@ -24,11 +25,11 @@ public interface RepositoryConnection {
 	
 	RepositoryParse getParse();
 	
-	void openConnection();
+	void openConnection() throws RepositoryConnectionException;
 	
 	void closeConnection();
 	
-	boolean testConnection();
+	boolean testConnection() throws RepositoryConnectionException;
 	
 	Boolean isConnectionOpened();
 	

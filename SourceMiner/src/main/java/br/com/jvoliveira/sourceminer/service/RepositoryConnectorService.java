@@ -8,11 +8,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.jvoliveira.arq.exception.BusinessException;
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionHelper;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 import br.com.jvoliveira.sourceminer.repository.RepositoryConnectorRepository;
 
 /**
@@ -48,14 +50,16 @@ public class RepositoryConnectorService
 		return obj;
 	}
 	
-	public void startConnectionWithRepository(Long idConnector){
+	public void startConnectionWithRepository(Long idConnector) throws BusinessException{
 		RepositoryConnector connector = repository.findOne(idConnector);
 		RepositoryConnection connectionWithRepository = repositoryHelper.getRepositoryConnectionByConnector(connector);
 		
-		if(connectionWithRepository.testConnection())
-			repositoryHelper.loadRepositoryInSession(connector);
-		else
-			System.err.println("Erro na conexão ao repositório");
+		try {
+			if(connectionWithRepository.testConnection())
+				repositoryHelper.loadRepositoryInSession(connector);
+		} catch (RepositoryConnectionException e) {
+			throw new BusinessException(e.getMessage());
+		}
 	}
 	
 	public void closeConnection(RepositoryConnectionSession repositoryConnetionSession){

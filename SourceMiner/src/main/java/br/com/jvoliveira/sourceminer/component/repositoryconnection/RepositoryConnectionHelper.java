@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 
 /**
  * @author Joao Victor
@@ -28,7 +29,7 @@ public class RepositoryConnectionHelper {
 		return factory.buildRepositoryConnection(connector);
 	}
 	
-	public void loadRepositoryInSession(RepositoryConnector connector){
+	public void loadRepositoryInSession(RepositoryConnector connector) throws RepositoryConnectionException{
 		RepositoryConnection repositoryConnection = getRepositoryConnectionByConnector(connector);
 		repositoryConnection.openConnection();
 		repositoryConnectionSession.setConnection(repositoryConnection);

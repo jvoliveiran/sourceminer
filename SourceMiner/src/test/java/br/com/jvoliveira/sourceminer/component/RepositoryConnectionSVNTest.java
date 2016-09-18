@@ -18,6 +18,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.enums.RepositoryLocationType;
 import br.com.jvoliveira.sourceminer.domain.enums.RepositoryVersionManager;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 
 /**
  * @author Joao Victor
@@ -54,7 +55,11 @@ public class RepositoryConnectionSVNTest {
 	
 	@Test
 	public void testOpenConnection(){
-		connection.openConnection();
+		try {
+			connection.openConnection();
+		} catch (RepositoryConnectionException e) {
+			e.printStackTrace();
+		}
 		Assert.assertTrue(connection.isConnectionOpened());
 	}
 	

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.tmatesoft.svn.core.SVNAuthenticationException;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
@@ -35,6 +36,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
+import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 import br.com.jvoliveira.sourceminer.exceptions.RepositoryFileContentNotFoundException;
 
 /**
@@ -72,13 +74,13 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 	
 	@Override
-	public boolean testConnection(){
+	public boolean testConnection() throws RepositoryConnectionException{
 		try{
 			openConnection();
 			SVNDirEntry entry = repository.getDir("", -1, false, null);
+		} catch(SVNAuthenticationException authException){
+			throw new RepositoryConnectionException("Falha na autenticação. Verifique credenciais de acesso ao repositório");
 		}catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Erro ao estabelecer conexão com o repositório");
 			return false;
 		}finally{
 			if(isConnectionOpened())
@@ -90,7 +92,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public void openConnection() {
+	public void openConnection() throws RepositoryConnectionException {
 		try {
 			if(connector.getRepositoryLocation().getLocationType().isLocal())
 				FSRepositoryFactory.setup();
@@ -111,10 +113,10 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 			
 			repository.setAuthenticationManager(authManager);
 			
-		} catch (SVNException e) {
-			//TODO: Tratar exceção
-			e.printStackTrace();
-			System.err.println("Não foi possível estabelecer conexão com o repositório");
+		} catch(SVNAuthenticationException authException){
+			throw new RepositoryConnectionException("Falha na autenticação. Verifique credenciais de acesso ao repositório");
+		}catch (SVNException e) {
+			throw new RepositoryConnectionException("Não foi possível estabelecer conexão com o repositório");
 		}
 	}
 
