@@ -148,12 +148,8 @@ public class ItemChangeLog implements ObjectDB{
 		this.revisionItem = revisionItem;
 	}
 	
-	public Long getRevision(){
-		try{
-			return this.revisionItem.getRepositoryRevision().getRevision();
-		}catch(NullPointerException e){
-			return 0L;
-		}
+	public String getRevision(){
+		return this.revisionItem.getRepositoryRevision().getRevision();
 	}
 		
 	public String getBackgroundColorHexa(){

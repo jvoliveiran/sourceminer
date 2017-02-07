@@ -11,7 +11,12 @@ import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.errors.CorruptObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -27,6 +32,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
+import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
 import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 
 /**
@@ -175,7 +181,6 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 
 	        RevCommit commit = walk.parseCommit(head.getObjectId());
 	        RevTree tree = commit.getTree();
-	        System.out.println("Having tree: " + tree);
 	        
 	        // now use a TreeWalk to iterate over all files in the Tree recursively
 	        // you can set Filters to narrow down the results if needed
@@ -201,38 +206,99 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		return treeWalk.getNameString().contains(".java");
 	}
 	
-	@Override
-	public List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision) {
-		// TODO Auto-generated method stub
-		return null;
+	private TreeWalk getTreeWalkFromCommit(RevCommit commit) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException{
+		RevTree tree = commit.getTree();
+		TreeWalk treeWalk = new TreeWalk(gitSource.getRepository());
+		treeWalk.addTree(tree);
+		return treeWalk;
 	}
 
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config) {
-		// TODO Auto-generated method stub
-		return null;
+		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<>();
+		ObjectId objFrom = ObjectId.fromString(config.getSyncStartRevision());
+		ObjectId objUntil = ObjectId.fromString(config.getSyncEndRevision());
+		try {
+			Iterable<RevCommit> commits = gitSource.log().addRange(objFrom, objUntil).call();
+			for(RevCommit commit : commits){
+				System.out.println("LogCommit: " + commit);
+				
+				RepositoryRevisionItem revisionItemLog = new RepositoryRevisionItem();
+				revisionItemLog.setRepositoryRevision(parse.parseToRepositoryRevision(commit));
+				
+				TreeWalk treeWalk = getTreeWalkFromCommit(commit);
+				while (treeWalk.next()) {
+					if(isJavaFile(treeWalk))
+						processRepositoryItem(treeWalk,revisionItemLog);
+					revisionItemLogs.add(revisionItemLog);
+				}
+				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		
+		return revisionItemLogs;
+	}
+	
+	private void processRepositoryItem(TreeWalk treeWalk, RepositoryRevisionItem revisionItemLog){
+		RepositoryItem item = parse.parseTreeWalkToRepositoryItem(treeWalk);
+		revisionItemLog.setRepositoryItem(item);
+		//FIXME: Definir valor correto utilizando DIFF: http://stackoverflow.com/questions/28785364/jgit-list-of-files-changed-between-commits/28793479#28793479
+		revisionItemLog.setCommitType(CommitType.ADD);
 	}
 
 	@Override
 	public List<RepositoryRevision> getAllProjectRevision(Project project) {
-		// TODO Auto-generated method stub
+		List<RepositoryRevision> revisions = new ArrayList<>();
+		try {
+			Iterable<RevCommit> commits = gitSource.log().call();
+			for(RevCommit commit : commits)
+				revisions.add(parse.parseToRepositoryRevision(commit));
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		
+		return revisions;
+	}
+
+	@Override
+	public List<RepositoryRevision> getRevisionsInRange(Project project, String start, String end) {
+		ObjectId objFrom = ObjectId.fromString(start);
+		ObjectId objUntil = ObjectId.fromString(end);
+		List<RepositoryRevision> revisions = new ArrayList<>();
+		try {
+			Iterable<RevCommit> commits = gitSource.log().addRange(objFrom, objUntil).call();
+			for(RevCommit commit : commits)
+				revisions.add(parse.parseToRepositoryRevision(commit));
+			
+		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
+			e.printStackTrace();
+		}
+		
+		return revisions;
+	}
+
+	@Override
+	public String getLastRevisionNumber(Project project) {
+		
+		try {
+			Repository repository = gitSource.getRepository();
+			Ref head = repository.getRef("HEAD");
+	        return head.getObjectId().getName();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
-	public List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getLastRevisionNumber(Project project) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getFileContent(String path, Long revision) {
+	public String getFileContent(String path, String revision) {
 		// TODO Auto-generated method stub
 		return null;
 	}

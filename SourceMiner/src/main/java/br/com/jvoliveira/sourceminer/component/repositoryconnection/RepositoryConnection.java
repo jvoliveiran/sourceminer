@@ -43,16 +43,14 @@ public interface RepositoryConnection {
 	
 	List<RepositoryItem> getAllProjectItens(Project project);
 	
-	List<RepositoryItem> getItensInRevision(Project project, Integer startRevision, Integer endRevision);
-	
 	List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config);
 	
 	List<RepositoryRevision> getAllProjectRevision(Project project);
 	
-	List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end);
+	List<RepositoryRevision> getRevisionsInRange(Project project, String start, String end);
 	
-	Long getLastRevisionNumber(Project project);
+	String getLastRevisionNumber(Project project);
 	
-	String getFileContent(String path, Long revision);
+	String getFileContent(String path, String revision);
 	
 }

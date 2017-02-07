@@ -99,7 +99,7 @@ public class DashboardService extends AbstractArqService<Project>{
 		return syncLogRepository.findFirstByProjectOrderByIdDesc(project);
 	}
 	
-	public String getFileContentInRevision(String path, Long revision){
+	public String getFileContentInRevision(String path, String revision){
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	

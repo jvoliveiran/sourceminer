@@ -36,7 +36,7 @@ public class RepositorySyncLog implements ObjectDB{
 	private Date createAt;
 	
 	@Column(name="head_revision")
-	private Long headRevision;
+	private String headRevision;
 	
 	@ManyToOne
 	@JoinColumn(name="id_project")
@@ -72,11 +72,11 @@ public class RepositorySyncLog implements ObjectDB{
 		return null;
 	}
 
-	public Long getHeadRevision() {
+	public String getHeadRevision() {
 		return headRevision;
 	}
 
-	public void setHeadRevision(Long headRevision) {
+	public void setHeadRevision(String headRevision) {
 		this.headRevision = headRevision;
 	}
 

@@ -164,8 +164,10 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config){
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<RepositoryRevisionItem>();
+		Integer syncStartRevision = new Integer(config.getSyncStartRevision());
+		Integer syncEndRevision = new Integer(config.getSyncEndRevision());
 		
-		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), config.getSyncStartRevision(), config.getSyncEndRevision(), !config.isJoinParentBrach());
+		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), syncStartRevision, syncEndRevision, !config.isJoinParentBrach());
 		
 		Iterator<SVNLogEntry> iteratorEntries = entries.iterator();
 		
@@ -214,15 +216,17 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 	
 	@Override
-	public List<RepositoryRevision> getRevisionsInRange(Project project, Integer start, Integer end) {
-		return listRevisions(project.getPath(), start, end);
+	public List<RepositoryRevision> getRevisionsInRange(Project project, String start, String end) {
+		Integer startRev = Integer.valueOf(start);
+		Integer endRev = Integer.valueOf(end);
+		return listRevisions(project.getPath(), startRev, endRev);
 	}
 	
 	@Override
-	public Long getLastRevisionNumber(Project project){
+	public String getLastRevisionNumber(Project project){
 		try {
 			SVNDirEntry entry = repository.getDir(project.getPath(), -1, false, null);
-			return entry.getRevision();
+			return String.valueOf(entry.getRevision());
 		} catch (SVNException e) {
 			e.printStackTrace();
 		}
@@ -267,7 +271,7 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	}
 
 	@Override
-	public String getFileContent(String path, Long revision){
+	public String getFileContent(String path, String revision){
 		try {
 			return getFileContentInRepository(path, revision);
 		} catch (RepositoryFileContentNotFoundException e) {
@@ -275,18 +279,19 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 		}
 	}
 
-	private String getFileContentInRepository(String path, Long revision)
+	private String getFileContentInRepository(String path, String revision)
 			throws RepositoryFileContentNotFoundException {
 		try {
-			SVNNodeKind nodeKind = repository.checkPath(path, revision);
+			Long rev = Long.valueOf(revision);
+;			SVNNodeKind nodeKind = repository.checkPath(path, rev);
 			
 			if(nodeKind != SVNNodeKind.FILE){
-				throw new RepositoryFileContentNotFoundException(path, revision);
+				throw new RepositoryFileContentNotFoundException(path, rev);
 			}else{
 				SVNProperties svnProperties = new SVNProperties();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				
-				repository.getFile(path, revision, svnProperties, baos);
+				repository.getFile(path, rev, svnProperties, baos);
 				
 				return StringUtils.getFromCharBuffer(baos);
 			}
@@ -323,13 +328,6 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public Boolean isCVS() {
 		return false;
-	}
-
-	@Override
-	public List<RepositoryItem> getItensInRevision(Project project,
-			Integer startRevision, Integer endRevision) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

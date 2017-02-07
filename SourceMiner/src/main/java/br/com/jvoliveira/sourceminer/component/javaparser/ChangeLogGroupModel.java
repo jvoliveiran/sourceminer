@@ -16,22 +16,22 @@ import br.com.jvoliveira.sourceminer.domain.ItemChangeLog;
  */
 public class ChangeLogGroupModel {
 
-	private Long revision;
+	private String revision;
 	
 	private List<ItemChangeLog> changeLogs;
 	
 	//TODO: Adicionar métodos contadores. Ex: número de [TipoAsset] na situacao [ADD/EDIT/DELET]
 	
-	public ChangeLogGroupModel(Long revision){
+	public ChangeLogGroupModel(String revision){
 		this.revision = revision;
 		this.changeLogs = new ArrayList<ItemChangeLog>();
 	}
 
-	public Long getRevision() {
+	public String getRevision() {
 		return revision;
 	}
 
-	public void setRevision(Long revision) {
+	public void setRevision(String revision) {
 		this.revision = revision;
 	}
 

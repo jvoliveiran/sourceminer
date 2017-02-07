@@ -169,8 +169,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		if(revisionStartSync == 0)
 			return null;
 		
-		getConfig().setSyncStartRevision(revisionStartSync);
-		getConfig().setSyncEndRevision(-1);
+		getConfig().setSyncStartRevision(String.valueOf(revisionStartSync));
+		getConfig().setSyncEndRevision(String.valueOf(-1));
 		
 		notifyObservers("CARREGANDO REVISÕES PARA SINCRONIZAÇÃO...");
 		
@@ -200,13 +200,14 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 */
 	private Integer getRevisionToStartSync(Project project) {
 		Integer revisionStartSync = 1;
-		Long revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
+		String revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
 		RepositorySyncLog lastSyncLog = getLastSync(project);
 		
 		if(lastSyncLog != null){
-			Long revisionLastSync = lastSyncLog.getHeadRevision();
-			if(revisionLastSync < revisionLastCommit)
-				revisionStartSync = revisionLastSync.intValue() + 1;
+			String revisionLastSync = lastSyncLog.getHeadRevision();
+			//FIXME: Remvoer Long.valeuOf para uma solução que aceite o hashcode do git
+			if(Long.valueOf(revisionLastSync) < Long.valueOf(revisionLastCommit))
+				revisionStartSync = Integer.parseInt(revisionLastSync) + 1;
 			else
 				return 0;
 		}
@@ -232,7 +233,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryRevisionItem revisionItem : revisionRevisionItensInDatabase){
-			Long revisionNumber = revisionItem.getRepositoryRevision().getRevision();
+			String revisionNumber = revisionItem.getRepositoryRevision().getRevision();
 			RepositoryItem item = revisionItem.getRepositoryItem();
 			String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
 			
@@ -261,7 +262,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryItem item : itensInDatabase){
-			String fileContent = getFileContentInRevision(item.getPath(), -1L);
+			String fileContent = getFileContentInRevision(item.getPath(), String.valueOf(-1));
 			
 			List<ItemAsset> actualItemAssets = getActualAssetsByItem(item);
 			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
@@ -280,7 +281,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	
-	public String getFileContentInRevision(String path, Long revision){
+	public String getFileContentInRevision(String path, String revision){
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
@@ -332,7 +333,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
-		Long revisionNumber = revision.getRevision();
+		String revisionNumber = revision.getRevision();
 		RepositoryRevision revisionFromDB = revisionRepository.findByProjectAndRevision(project,revisionNumber);
 		
 		if(revisionFromDB != null)

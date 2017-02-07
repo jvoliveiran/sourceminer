@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import br.com.jvoliveira.arq.utils.StringUtils;
@@ -34,8 +35,14 @@ public class RepositoryParseGIT implements RepositoryParse{
 
 	@Override
 	public <T> RepositoryRevision parseToRepositoryRevision(T entry) {
-		// TODO Auto-generated method stub
-		return null;
+		RevCommit commit = (RevCommit) entry;
+		RepositoryRevision repositoryRevision = new RepositoryRevision();
+		
+		repositoryRevision.setRevision(commit.getId().name());
+		repositoryRevision.setAuthor(commit.getAuthorIdent().getName());
+		repositoryRevision.setDateRevision(commit.getAuthorIdent().getWhen());
+		
+		return repositoryRevision;
 	}
 
 	@Override

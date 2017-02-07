@@ -138,7 +138,7 @@ public class RepositoryItem implements ObjectDB{
 		List<Long> revisionsNumber = new ArrayList<>();
 		if(this.revisionItem != null && this.revisionItem.size() > 0){
 			for(RepositoryRevisionItem revisionItem : this.revisionItem)
-				revisionsNumber.add(revisionItem.getRepositoryRevision().getRevision());
+				revisionsNumber.add(Long.valueOf(revisionItem.getRepositoryRevision().getRevision()));
 			
 			Comparator<Long> comparator = (revision1, revision2) -> revision1.compareTo(revision2);
 			revisionsNumber.sort(comparator.reversed());

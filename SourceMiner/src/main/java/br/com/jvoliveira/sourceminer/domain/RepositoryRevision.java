@@ -34,7 +34,7 @@ public class RepositoryRevision implements ObjectDB{
 	private Long id;
 	
 	@Column(name="revision", unique=true)
-	private Long revision;
+	private String revision;
 	
 	@Column(name="comment", length=3000)
 	private String comment;
@@ -93,11 +93,11 @@ public class RepositoryRevision implements ObjectDB{
 		return this.updateAt;
 	}
 
-	public Long getRevision() {
+	public String getRevision() {
 		return revision;
 	}
 
-	public void setRevision(Long revision) {
+	public void setRevision(String revision) {
 		this.revision = revision;
 	}
 

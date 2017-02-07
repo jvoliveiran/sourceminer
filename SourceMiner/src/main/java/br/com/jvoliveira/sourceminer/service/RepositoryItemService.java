@@ -71,16 +71,16 @@ public class RepositoryItemService extends AbstractArqService<RepositoryItem>{
 			this.itemChangeLogSearch.setFilter(filter);
 	}
 	
-	public String getFileContentInRevision(String path, Long revision){
+	public String getFileContentInRevision(String path, String revision){
 			return this.connection.getConnection().getFileContent(path, revision);
 	}
 	
 	public String getFileContentInLastRevision(RepositoryItem item){
-		Long headRevision = getLastRevisionNumber(item);
+		String headRevision = getLastRevisionNumber(item);
 		return getFileContentInRevision(item.getPath(), headRevision);
 	}
 	
-	private Long getLastRevisionNumber(RepositoryItem item) {
+	private String getLastRevisionNumber(RepositoryItem item) {
 		return ((RepositoryItemRepository)this.repository).findLastRevisionInFile(item.getPath(),item.getProject().getId());
 	}
 

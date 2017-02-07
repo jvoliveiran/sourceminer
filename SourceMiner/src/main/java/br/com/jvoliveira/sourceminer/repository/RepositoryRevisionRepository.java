@@ -21,7 +21,7 @@ public interface RepositoryRevisionRepository extends CrudRepository<RepositoryR
 	
 	List<RepositoryRevision> findTop10ByProjectOrderByIdDesc(Project project);
 	
-	RepositoryRevision findByProjectAndRevision(Project project, Long revision);
+	RepositoryRevision findByProjectAndRevision(Project project, String revision);
 	
 	@Query("SELECT count(rr) FROM RepositoryRevision rr WHERE rr.project = ?1")
 	Integer countTotalItensByProject(Project project);

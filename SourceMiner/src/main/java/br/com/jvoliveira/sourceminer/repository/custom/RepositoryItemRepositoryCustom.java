@@ -10,5 +10,5 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 public interface RepositoryItemRepositoryCustom {
 
 	public RepositoryItem findItemByFullPath(String importPath, Project project, String extension); 
-	public Long findLastRevisionInFile(String filePath, Long idProject);
+	public String findLastRevisionInFile(String filePath, Long idProject);
 }

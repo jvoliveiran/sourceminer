@@ -83,7 +83,7 @@ public class RepositoryItemController extends AbstractArqController<RepositoryIt
 	
 	@ResponseBody
 	@RequestMapping(value = "/file_content_revision", method = RequestMethod.POST)
-	public String getFileContentInRevision(@RequestParam Long revisionNumber, @RequestParam String path){
+	public String getFileContentInRevision(@RequestParam String revisionNumber, @RequestParam String path){
 		return ((RepositoryItemService)service).getFileContentInRevision(path, revisionNumber);
 	}
 	

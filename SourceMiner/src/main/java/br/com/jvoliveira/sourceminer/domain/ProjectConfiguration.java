@@ -63,10 +63,10 @@ public class ProjectConfiguration implements ObjectDB{
 	private Date updateAt;
 	
 	@Transient
-	private Integer syncStartRevision;
+	private String syncStartRevision;
 	
 	@Transient
-	private Integer syncEndRevision;
+	private String syncEndRevision;
 	
 	public ProjectConfiguration() {
 		defaultConfiguration();
@@ -154,19 +154,19 @@ public class ProjectConfiguration implements ObjectDB{
 		this.published = published;
 	}
 
-	public Integer getSyncStartRevision() {
+	public String getSyncStartRevision() {
 		return syncStartRevision;
 	}
 
-	public void setSyncStartRevision(Integer syncStartRevision) {
+	public void setSyncStartRevision(String syncStartRevision) {
 		this.syncStartRevision = syncStartRevision;
 	}
 
-	public Integer getSyncEndRevision() {
+	public String getSyncEndRevision() {
 		return syncEndRevision;
 	}
 
-	public void setSyncEndRevision(Integer syncEndRevision) {
+	public void setSyncEndRevision(String syncEndRevision) {
 		this.syncEndRevision = syncEndRevision;
 	}
 

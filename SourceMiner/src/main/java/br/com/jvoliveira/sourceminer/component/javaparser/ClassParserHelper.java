@@ -96,7 +96,7 @@ public class ClassParserHelper {
 				.sorted((item1, item2) -> (-1)*(item1.getId().compareTo(item2.getId())))
 				.collect(Collectors.toList());
 		
-		Long revisionGroup = 0L;
+		String revisionGroup = "0";
 		for(ItemChangeLog changeLog : itemChangeLogs){	
 			if(revisionGroup != changeLog.getRevision()){
 				modelList.add(new ChangeLogGroupModel(changeLog.getRevision()));

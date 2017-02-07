@@ -25,7 +25,7 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 	private EntityManager entityManager;
 	
 	@Override
-	public Long findLastRevisionInFile(String filePath, Long idProject){
+	public String findLastRevisionInFile(String filePath, Long idProject){
 		String hql = "SELECT repositoryRevision.revision FROM RepositoryRevisionItem repositoryRevisionItem "
 				+ " INNER JOIN repositoryRevisionItem.repositoryRevision AS repositoryRevision"
 				+ " INNER JOIN repositoryRevisionItem.repositoryItem AS repositoryItem"
@@ -35,7 +35,7 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		query.setParameter("filePath", filePath);
 		query.setParameter("idProject", idProject);
 		
-		return (Long) query.getSingleResult();
+		return (String) query.getSingleResult();
 	}
 	
 	@Override

@@ -77,8 +77,8 @@ public class RepositoryConnectionSVNTest {
 	
 	@Test
 	public void testGetLastProjectRevision(){
-		List<RepositoryRevision> repositoryRevision = connection.getRevisionsInRange(project, -1, -1);
-		Long lastRevision = repositoryRevision.get(0).getRevision();
+		List<RepositoryRevision> repositoryRevision = connection.getRevisionsInRange(project, String.valueOf(-1), String.valueOf(-1));
+		Long lastRevision = Long.valueOf(repositoryRevision.get(0).getRevision());
 		Assert.assertNotNull(repositoryRevision);
 		Assert.assertEquals((new Long(15)).longValue(), lastRevision.longValue());
 	}

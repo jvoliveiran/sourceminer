@@ -46,7 +46,7 @@ public class RepositoryParseSVN implements RepositoryParse{
 		SVNLogEntry logEntry = (SVNLogEntry) entry;
 		RepositoryRevision repositoryRevision = new RepositoryRevision();
 		
-		repositoryRevision.setRevision(logEntry.getRevision());
+		repositoryRevision.setRevision(String.valueOf(logEntry.getRevision()));
 		repositoryRevision.setDateRevision(logEntry.getDate());
 		repositoryRevision.setComment(logEntry.getMessage());
 		repositoryRevision.setAuthor(logEntry.getAuthor());
