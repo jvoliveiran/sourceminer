@@ -126,4 +126,17 @@ public class RepositoryConnectionGITTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGetFileContent(){
+		String filePath = "SourceMiner/src/main/java/br/com/jvoliveira/sourceminer/component/repositoryconnection/RepositoryConnection.java";
+		String revision = "6a4fc9196530eddd732ac1241bbd0e77fd3c3933";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getFileContent(filePath, revision);
+			Assert.assertNotNull(result);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 }

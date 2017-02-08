@@ -3,21 +3,25 @@
  */
 package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -26,28 +30,27 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.JGitUtils;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.PathModel;
-import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.PathModel.PathChangeModel;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
-import br.com.jvoliveira.sourceminer.domain.enums.CommitType;
 import br.com.jvoliveira.sourceminer.exceptions.RepositoryConnectionException;
 
 /**
  * @author Joao Victor
  *
  */
-public class RepositoryConnectionGIT implements RepositoryConnection{
-	
+public class RepositoryConnectionGIT implements RepositoryConnection {
+
 	private RepositoryConnector connector;
 	private Git gitSource;
-	
+
 	private RepositoryParseGIT parse = new RepositoryParseGIT();
 
 	@Override
@@ -67,12 +70,12 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 
 	@Override
 	public void openConnection() throws RepositoryConnectionException {
-		if(connector.getRepositoryLocation().getLocationType().isLocal())
+		if (connector.getRepositoryLocation().getLocationType().isLocal())
 			gitSource = openLocalConnection(connector.getRepositoryLocation().getUrl());
-		
-		else if(connector.getRepositoryLocation().getLocationType().isRemote())
+
+		else if (connector.getRepositoryLocation().getLocationType().isRemote())
 			gitSource = openRemoteConnection();
-		
+
 	}
 
 	private Git openRemoteConnection() {
@@ -80,27 +83,24 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		String username = connector.getUsername();
 		String password = connector.getPassword();
 		String sourcePath = connector.getRepositoryLocation().getUrl();
-		String localPath = "/Users/MacBook/sourcermine_git_repo/"+connector.getName();
-		
-		if(isExistLocalRepository())
+		String localPath = "/Users/MacBook/sourcermine_git_repo/" + connector.getName();
+
+		if (isExistLocalRepository())
 			return openLocalConnection(localPath);
-		
+
 		CredentialsProvider credential = new UsernamePasswordCredentialsProvider(username, password);
 		try {
-			git = Git.cloneRepository()
-					  .setDirectory(new File(localPath))
-					  .setURI(sourcePath)
-					  .setCredentialsProvider(credential)
-					  .call();
+			git = Git.cloneRepository().setDirectory(new File(localPath)).setURI(sourcePath)
+					.setCredentialsProvider(credential).call();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
 		return git;
 	}
-	
-	private boolean isExistLocalRepository(){
-		String localPath = "/Users/MacBook/sourcermine_git_repo/"+connector.getName();
-		
+
+	private boolean isExistLocalRepository() {
+		String localPath = "/Users/MacBook/sourcermine_git_repo/" + connector.getName();
+
 		File varTmpDir = new File(localPath);
 		return varTmpDir.exists();
 	}
@@ -108,7 +108,7 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 	private Git openLocalConnection(String localPath) {
 		Git git = null;
 		try {
-			git = Git.open(new File(localPath) );
+			git = Git.open(new File(localPath));
 			git.pull().call();
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
@@ -118,13 +118,13 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 
 	@Override
 	public void closeConnection() {
-		if(gitSource != null)
+		if (gitSource != null)
 			gitSource.close();
 	}
 
 	@Override
 	public boolean testConnection() throws RepositoryConnectionException {
-		try{
+		try {
 			openConnection();
 			showGitStatus();
 		} catch (NoWorkTreeException e) {
@@ -133,25 +133,25 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 			return false;
-		}finally{
-			if(isConnectionOpened())
+		} finally {
+			if (isConnectionOpened())
 				closeConnection();
 		}
 		return true;
 	}
 
 	private void showGitStatus() throws NoWorkTreeException, GitAPIException {
-		 Status status = gitSource.status().call();
-         System.out.println("Added: " + status.getAdded());
-         System.out.println("Changed: " + status.getChanged());
-         System.out.println("Conflicting: " + status.getConflicting());
-         System.out.println("ConflictingStageState: " + status.getConflictingStageState());
-         System.out.println("IgnoredNotInIndex: " + status.getIgnoredNotInIndex());
-         System.out.println("Missing: " + status.getMissing());
-         System.out.println("Modified: " + status.getModified());
-         System.out.println("Removed: " + status.getRemoved());
-         System.out.println("Untracked: " + status.getUntracked());
-         System.out.println("UntrackedFolders: " + status.getUntrackedFolders());
+		Status status = gitSource.status().call();
+		System.out.println("Added: " + status.getAdded());
+		System.out.println("Changed: " + status.getChanged());
+		System.out.println("Conflicting: " + status.getConflicting());
+		System.out.println("ConflictingStageState: " + status.getConflictingStageState());
+		System.out.println("IgnoredNotInIndex: " + status.getIgnoredNotInIndex());
+		System.out.println("Missing: " + status.getMissing());
+		System.out.println("Modified: " + status.getModified());
+		System.out.println("Removed: " + status.getRemoved());
+		System.out.println("Untracked: " + status.getUntracked());
+		System.out.println("UntrackedFolders: " + status.getUntrackedFolders());
 	}
 
 	@Override
@@ -181,24 +181,26 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		Ref head;
 		try {
 			head = repository.getRef(project.getPath());
-			  // a RevWalk allows to walk over commits based on some filtering that is defined
-	        RevWalk walk = new RevWalk(repository);
+			// a RevWalk allows to walk over commits based on some filtering
+			// that is defined
+			RevWalk walk = new RevWalk(repository);
 
-	        RevCommit commit = walk.parseCommit(head.getObjectId());
-	        RevTree tree = commit.getTree();
-	        
-	        // now use a TreeWalk to iterate over all files in the Tree recursively
-	        // you can set Filters to narrow down the results if needed
+			RevCommit commit = walk.parseCommit(head.getObjectId());
+			RevTree tree = commit.getTree();
+
+			// now use a TreeWalk to iterate over all files in the Tree
+			// recursively
+			// you can set Filters to narrow down the results if needed
 			TreeWalk treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
 			treeWalk.setRecursive(false);
 			while (treeWalk.next()) {
-			    if (treeWalk.isSubtree())
-			        treeWalk.enterSubtree();
-			    else if(isJavaFile(treeWalk))
-			    	resultItem.add(parse.parseToRepositoryItem(treeWalk));
+				if (treeWalk.isSubtree())
+					treeWalk.enterSubtree();
+				else if (isJavaFile(treeWalk))
+					resultItem.add(parse.parseToRepositoryItem(treeWalk));
 			}
-	        
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -219,12 +221,12 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 			Iterator<RevCommit> i = commits.iterator();
 			RevCommit commit = null;
 			RevWalk walk = new RevWalk(gitSource.getRepository());
-			while(i.hasNext()){
-				commit = walk.parseCommit( i.next() );
+			while (i.hasNext()) {
+				commit = walk.parseCommit(i.next());
 				PathModel commitObj = JGitUtils.getFilesInPath(gitSource.getRepository(), null, commit).get(0);
 				commitObj.setChangedFiles(JGitUtils.getFilesInCommit(gitSource.getRepository(), commit));
-				
-			    revisionItemLogs.addAll(parse.parsePathModelToRepositoryRevisionItem(commitObj));
+
+				revisionItemLogs.addAll(parse.parsePathModelToRepositoryRevisionItem(commitObj));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -233,7 +235,7 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-		
+
 		return revisionItemLogs;
 	}
 
@@ -242,12 +244,12 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		List<RepositoryRevision> revisions = new ArrayList<>();
 		try {
 			Iterable<RevCommit> commits = gitSource.log().call();
-			for(RevCommit commit : commits)
+			for (RevCommit commit : commits)
 				revisions.add(parse.parseToRepositoryRevision(commit));
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-		
+
 		return revisions;
 	}
 
@@ -258,34 +260,57 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		List<RepositoryRevision> revisions = new ArrayList<>();
 		try {
 			Iterable<RevCommit> commits = gitSource.log().addRange(objFrom, objUntil).call();
-			for(RevCommit commit : commits)
+			for (RevCommit commit : commits)
 				revisions.add(parse.parseToRepositoryRevision(commit));
-			
+
 		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
 			e.printStackTrace();
 		}
-		
+
 		return revisions;
 	}
 
 	@Override
 	public String getLastRevisionNumber(Project project) {
-		
+
 		try {
 			Repository repository = gitSource.getRepository();
 			Ref head = repository.getRef("HEAD");
-	        return head.getObjectId().getName();
+			return head.getObjectId().getName();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public String getFileContent(String path, String revision) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			RevWalk revWalk = new RevWalk(gitSource.getRepository());
+			ObjectId commitRevision = ObjectId.fromString(revision);
+			RevCommit commit = revWalk.parseCommit(commitRevision);
+			
+			// and using commit's tree find the path
+			RevTree tree = commit.getTree();
+			TreeWalk treeWalk = new TreeWalk(gitSource.getRepository());
+			treeWalk.addTree(tree);
+			treeWalk.setRecursive(true);
+			treeWalk.setFilter(PathFilter.create(path));
+			if (!treeWalk.next()) {
+			  return null;
+			}
+			ObjectId objectId = treeWalk.getObjectId(0);
+			ObjectLoader loader = gitSource.getRepository().open(objectId);
+			// and then one can use either
+			InputStream in = loader.openStream();
+			String result = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
+			
+			System.out.println(result);
+			return result;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
-
 }

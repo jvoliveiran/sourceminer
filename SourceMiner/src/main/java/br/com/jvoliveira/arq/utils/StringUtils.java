@@ -9,6 +9,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Joao Victor
@@ -56,5 +66,44 @@ public class StringUtils {
 
 	public static boolean isEmpty(String value) {
 		return value == null || value.trim().length() == 0;
+	}
+
+	/**
+	 * Decodes a string by trying several charsets until one does not throw a
+	 * coding exception. Last resort is to interpret as UTF-8 with illegal
+	 * character substitution.
+	 * 
+	 * @param content
+	 * @param charsets
+	 *            optional
+	 * @return a string
+	 */
+	public static String decodeString(byte[] content, String... charsets) {
+		Set<String> sets = new LinkedHashSet<String>();
+		if ((charsets != null)) {
+			sets.addAll(Arrays.asList(charsets));
+		}
+		String value = null;
+		sets.addAll(Arrays.asList("UTF-8", "ISO-8859-1", Charset.defaultCharset().name()));
+		for (String charset : sets) {
+			try {
+				Charset cs = Charset.forName(charset);
+				CharsetDecoder decoder = cs.newDecoder();
+				CharBuffer buffer = decoder.decode(ByteBuffer.wrap(content));
+				value = buffer.toString();
+				break;
+			} catch (CharacterCodingException e) {
+				// ignore and advance to the next charset
+			} catch (IllegalCharsetNameException e) {
+				// ignore illegal charset names
+			} catch (UnsupportedCharsetException e) {
+				// ignore unsupported charsets
+			}
+		}
+		if (value.startsWith("\uFEFF")) {
+			// strip UTF-8 BOM
+			return value.substring(1);
+		}
+		return value;
 	}
 }

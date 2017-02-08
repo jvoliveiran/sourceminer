@@ -1,7 +1,9 @@
 package br.com.jvoliveira.sourceminer.component.repositoryconnection.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +15,15 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.FileMode;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevObject;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import br.com.jvoliveira.arq.utils.StringUtils;
@@ -154,7 +160,8 @@ public class JGitUtils {
 				tw.addTree(commit.getTree());
 				while (tw.next()) {
 					list.add(new PathChangeModel(tw.getPathString(), tw.getPathString(), 0, tw.getRawMode(0),
-							tw.getObjectId(0).getName(), commit.getId().getName(), ChangeType.ADD, commit.getAuthorIdent().getName(),commit.getAuthorIdent().getWhen()));
+							tw.getObjectId(0).getName(), commit.getId().getName(), ChangeType.ADD,
+							commit.getAuthorIdent().getName(), commit.getAuthorIdent().getWhen()));
 				}
 				tw.release();
 			} else {
@@ -177,11 +184,11 @@ public class JGitUtils {
 					} else if (diff.getChangeType().equals(ChangeType.RENAME)) {
 						list.add(new PathChangeModel(diff.getOldPath(), diff.getNewPath(), 0,
 								diff.getNewMode().getBits(), objectId, commit.getId().getName(), diff.getChangeType(),
-								commit.getAuthorIdent().getName(),commit.getAuthorIdent().getWhen()));
+								commit.getAuthorIdent().getName(), commit.getAuthorIdent().getWhen()));
 					} else {
 						list.add(new PathChangeModel(diff.getNewPath(), diff.getNewPath(), 0,
 								diff.getNewMode().getBits(), objectId, commit.getId().getName(), diff.getChangeType(),
-								commit.getAuthorIdent().getName(),commit.getAuthorIdent().getWhen()));
+								commit.getAuthorIdent().getName(), commit.getAuthorIdent().getWhen()));
 					}
 				}
 			}
@@ -219,6 +226,72 @@ public class JGitUtils {
 		}
 		return new PathModel(name, tw.getPathString(), size, tw.getFileMode(0).getBits(), objectId.getName(),
 				commit.getName());
+	}
+
+	/**
+	 * Returns the UTF-8 string content of a file in the specified tree.
+	 * 
+	 * @param repository
+	 * @param tree
+	 *            if null, the RevTree from HEAD is assumed.
+	 * @param blobPath
+	 * @param charsets
+	 *            optional
+	 * @return UTF-8 string content
+	 */
+	public static String getStringContent(Repository repository, RevTree tree, String blobPath, String... charsets) {
+		byte[] content = getByteContent(repository, tree, blobPath);
+		if (content == null) {
+			return null;
+		}
+		return StringUtils.decodeString(content, charsets);
+	}
+
+	/**
+	 * Retrieves the raw byte content of a file in the specified tree.
+	 * 
+	 * @param repository
+	 * @param tree
+	 *            if null, the RevTree from HEAD is assumed.
+	 * @param path
+	 * @return content as a byte []
+	 */
+	public static byte[] getByteContent(Repository repository, RevTree tree, final String path) {
+		RevWalk rw = new RevWalk(repository);
+		TreeWalk tw = new TreeWalk(repository);
+		tw.setFilter(PathFilterGroup.createFromStrings(Collections.singleton(path)));
+		byte[] content = null;
+		try {
+			tw.reset(tree);
+			while (tw.next()) {
+				if (tw.isSubtree() && !path.equals(tw.getPathString())) {
+					tw.enterSubtree();
+					continue;
+				}
+				ObjectId entid = tw.getObjectId(0);
+				FileMode entmode = tw.getFileMode(0);
+				if (entmode != FileMode.GITLINK) {
+					RevObject ro = rw.lookupAny(entid, entmode.getObjectType());
+					rw.parseBody(ro);
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					ObjectLoader ldr = repository.open(ro.getId(), Constants.OBJ_BLOB);
+					byte[] tmp = new byte[4096];
+					InputStream in = ldr.openStream();
+					int n;
+					while ((n = in.read(tmp)) > 0) {
+						os.write(tmp, 0, n);
+					}
+					in.close();
+					content = os.toByteArray();
+				}
+			}
+		} catch (Throwable t) {
+			System.out.println(repository + " can't find " + path + " in tree " + tree.name());
+		} finally {
+			rw.dispose();
+			tw.release();
+		}
+		return content;
 	}
 
 }
