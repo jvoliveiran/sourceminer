@@ -205,7 +205,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		if(lastSyncLog != null){
 			String revisionLastSync = lastSyncLog.getHeadRevision();
-			//FIXME: Remvoer Long.valeuOf para uma solução que aceite o hashcode do git
+			//FIXME: Rempver Long.valeuOf para uma solução que aceite o hashcode do git
 			if(Long.valueOf(revisionLastSync) < Long.valueOf(revisionLastCommit))
 				revisionStartSync = Integer.parseInt(revisionLastSync) + 1;
 			else

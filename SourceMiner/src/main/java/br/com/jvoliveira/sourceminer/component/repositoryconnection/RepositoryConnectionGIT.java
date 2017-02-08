@@ -6,6 +6,7 @@ package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -26,6 +27,9 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.JGitUtils;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.PathModel;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.utils.PathModel.PathChangeModel;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
@@ -105,7 +109,8 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		Git git = null;
 		try {
 			git = Git.open(new File(localPath) );
-		} catch (IOException e) {
+			git.pull().call();
+		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 		return git;
@@ -190,10 +195,8 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 			while (treeWalk.next()) {
 			    if (treeWalk.isSubtree())
 			        treeWalk.enterSubtree();
-			    else if(isJavaFile(treeWalk)){
-			    	resultItem.add(parse.parseTreeWalkToRepositoryItem(treeWalk));
-			        System.out.println("file: " + treeWalk.getPathString());
-			    }
+			    else if(isJavaFile(treeWalk))
+			    	resultItem.add(parse.parseToRepositoryItem(treeWalk));
 			}
 	        
 		} catch (IOException e) {
@@ -205,13 +208,6 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 	private boolean isJavaFile(TreeWalk treeWalk) {
 		return treeWalk.getNameString().contains(".java");
 	}
-	
-	private TreeWalk getTreeWalkFromCommit(RevCommit commit) throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException{
-		RevTree tree = commit.getTree();
-		TreeWalk treeWalk = new TreeWalk(gitSource.getRepository());
-		treeWalk.addTree(tree);
-		return treeWalk;
-	}
 
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config) {
@@ -220,19 +216,15 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		ObjectId objUntil = ObjectId.fromString(config.getSyncEndRevision());
 		try {
 			Iterable<RevCommit> commits = gitSource.log().addRange(objFrom, objUntil).call();
-			for(RevCommit commit : commits){
-				System.out.println("LogCommit: " + commit);
+			Iterator<RevCommit> i = commits.iterator();
+			RevCommit commit = null;
+			RevWalk walk = new RevWalk(gitSource.getRepository());
+			while(i.hasNext()){
+				commit = walk.parseCommit( i.next() );
+				PathModel commitObj = JGitUtils.getFilesInPath(gitSource.getRepository(), null, commit).get(0);
+				commitObj.setChangedFiles(JGitUtils.getFilesInCommit(gitSource.getRepository(), commit));
 				
-				RepositoryRevisionItem revisionItemLog = new RepositoryRevisionItem();
-				revisionItemLog.setRepositoryRevision(parse.parseToRepositoryRevision(commit));
-				
-				TreeWalk treeWalk = getTreeWalkFromCommit(commit);
-				while (treeWalk.next()) {
-					if(isJavaFile(treeWalk))
-						processRepositoryItem(treeWalk,revisionItemLog);
-					revisionItemLogs.add(revisionItemLog);
-				}
-				
+			    revisionItemLogs.addAll(parse.parsePathModelToRepositoryRevisionItem(commitObj));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -243,13 +235,6 @@ public class RepositoryConnectionGIT implements RepositoryConnection{
 		}
 		
 		return revisionItemLogs;
-	}
-	
-	private void processRepositoryItem(TreeWalk treeWalk, RepositoryRevisionItem revisionItemLog){
-		RepositoryItem item = parse.parseTreeWalkToRepositoryItem(treeWalk);
-		revisionItemLog.setRepositoryItem(item);
-		//FIXME: Definir valor correto utilizando DIFF: http://stackoverflow.com/questions/28785364/jgit-list-of-files-changed-between-commits/28793479#28793479
-		revisionItemLog.setCommitType(CommitType.ADD);
 	}
 
 	@Override
