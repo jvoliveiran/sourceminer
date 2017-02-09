@@ -53,4 +53,6 @@ public interface RepositoryConnection {
 	
 	String getFileContent(String path, String revision);
 	
+	String getNextRevisionToSync(Project project, String revisionLastSync);
+	
 }

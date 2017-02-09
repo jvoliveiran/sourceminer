@@ -25,6 +25,7 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -302,7 +303,7 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			}
 			ObjectId objectId = treeWalk.getObjectId(0);
 			ObjectLoader loader = gitSource.getRepository().open(objectId);
-			// and then one can use either
+			
 			InputStream in = loader.openStream();
 			String result = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
 			
@@ -312,5 +313,35 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	@Override
+	public String getNextRevisionToSync(Project project, String revisionLastSync) {
+		try {
+			RevWalk walk = new RevWalk(gitSource.getRepository());
+			walk.markStart(walk.parseCommit(ObjectId.fromString(getLastRevisionNumber(project))));
+			
+			if(revisionLastSync.equals(getLastRevisionNumber(project)))
+				return "0";
+			else if(revisionLastSync.equals("")){
+				walk.sort(RevSort.REVERSE);
+				return walk.next().getName();
+			}	
+			
+			boolean isItLastSyncRev = false;
+			String nextRevisionToSync = null;
+			
+			while(!isItLastSyncRev){
+				RevCommit commit = walk.next();
+				if(!commit.getName().equals(revisionLastSync))
+					nextRevisionToSync = commit.getName();
+				else
+					return nextRevisionToSync;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }

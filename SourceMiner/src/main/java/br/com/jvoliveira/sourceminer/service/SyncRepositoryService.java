@@ -164,13 +164,13 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @return 
 	 */
 	private List<RepositoryRevisionItem> synchronizeRepositoryRevision(Project project){
-		Integer revisionStartSync = getRevisionToStartSync(project);
+		String revisionStartSync = getRevisionToStartSync(project);
 		
-		if(revisionStartSync == 0)
+		if(revisionStartSync == "0")
 			return null;
 		
-		getConfig().setSyncStartRevision(String.valueOf(revisionStartSync));
-		getConfig().setSyncEndRevision(String.valueOf(-1));
+		getConfig().setSyncStartRevision(revisionStartSync);
+		getConfig().setSyncEndRevision(connection.getConnection().getLastRevisionNumber(project));
 		
 		notifyObservers("CARREGANDO REVISÕES PARA SINCRONIZAÇÃO...");
 		
@@ -198,19 +198,15 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param project
 	 * @return
 	 */
-	private Integer getRevisionToStartSync(Project project) {
-		Integer revisionStartSync = 1;
-		String revisionLastCommit = connection.getConnection().getLastRevisionNumber(project);
+	private String getRevisionToStartSync(Project project) {
+		String revisionStartSync = "";
 		RepositorySyncLog lastSyncLog = getLastSync(project);
 		
 		if(lastSyncLog != null){
 			String revisionLastSync = lastSyncLog.getHeadRevision();
-			//FIXME: Rempver Long.valeuOf para uma solução que aceite o hashcode do git
-			if(Long.valueOf(revisionLastSync) < Long.valueOf(revisionLastCommit))
-				revisionStartSync = Integer.parseInt(revisionLastSync) + 1;
-			else
-				return 0;
+			revisionStartSync = connection.getConnection().getNextRevisionToSync(project, revisionLastSync);
 		}
+		
 		return revisionStartSync;
 	}
 	

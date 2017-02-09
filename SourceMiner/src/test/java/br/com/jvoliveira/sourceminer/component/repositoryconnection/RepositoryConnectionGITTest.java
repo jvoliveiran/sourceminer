@@ -139,4 +139,46 @@ public class RepositoryConnectionGITTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGetNextRevisionToSync(){
+		String revision = "6a4fc9196530eddd732ac1241bbd0e77fd3c3933";
+		String expectedResult = "5940597901a44789084b0a060f39f7e36ed10b16";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getNextRevisionToSync(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetNextRevisionToSyncAgainstHeadRevision(){
+		String revision = "fa40133b723bdc1aaef8ac5f64f052d111edca35";
+		String expectedResult = "0";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getNextRevisionToSync(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetNextRevisionToSyncAgainstFirstRevision(){
+		String revision = "";
+		String expectedResult = "134c4e0bb11407dc3d93fc6742f825b6a56a7ded";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getNextRevisionToSync(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 }

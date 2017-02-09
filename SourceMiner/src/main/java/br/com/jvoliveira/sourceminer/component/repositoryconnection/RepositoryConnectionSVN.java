@@ -329,5 +329,15 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	public Boolean isCVS() {
 		return false;
 	}
+
+	@Override
+	public String getNextRevisionToSync(Project project, String revisionLastSync) {
+		if(revisionLastSync.equals(""))
+			return "1";
+		if(Long.valueOf(revisionLastSync) < Long.valueOf(getLastRevisionNumber(project)))
+			return String.valueOf(Integer.parseInt(revisionLastSync) + 1);
+		else
+			return "0";
+	}
 	
 }
