@@ -72,7 +72,7 @@ public class DashboardService extends AbstractArqService<Project>{
 		if(revisionSearch.hasResult())
 			return revisionSearch.getResult();
 		else
-			return revisionRepository.findTop10ByProjectOrderByIdDesc(project);
+			return revisionRepository.findTop10ByProjectOrderByDateRevisionDesc(project);
 	}
 	
 	public void searchRepositoryItem(Project project, RepositoryItemFilter filter){

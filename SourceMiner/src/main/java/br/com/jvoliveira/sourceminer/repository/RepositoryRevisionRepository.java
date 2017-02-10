@@ -19,7 +19,7 @@ public interface RepositoryRevisionRepository extends CrudRepository<RepositoryR
 	
 	List<RepositoryRevision> findByProject(Project project);
 	
-	List<RepositoryRevision> findTop10ByProjectOrderByIdDesc(Project project);
+	List<RepositoryRevision> findTop10ByProjectOrderByDateRevisionDesc(Project project);
 	
 	RepositoryRevision findByProjectAndRevision(Project project, String revision);
 	

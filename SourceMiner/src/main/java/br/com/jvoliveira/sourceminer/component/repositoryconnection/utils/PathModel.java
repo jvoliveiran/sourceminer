@@ -22,7 +22,6 @@ public class PathModel implements Serializable, Comparable<PathModel> {
 	public final String path;
 	public final long size;
 	public final int mode;
-	public final String objectId;
 	public final String commitId;
 	public boolean isParentPath;
 	public final String author;
@@ -34,21 +33,19 @@ public class PathModel implements Serializable, Comparable<PathModel> {
 		this.path = path;
 		this.size = size;
 		this.mode = mode;
-		this.objectId = objectId;
 		this.commitId = commitId;
 		this.author = null;
 		this.date = null;
 	}
 	
-	public PathModel(String name, String path, long size, int mode, String objectId, String commitId, String author, Date date) {
+	public PathModel(String name, String path, long size, int mode, String objectId, String author, Date date) {
 		this.name = name;
 		this.path = path;
 		this.size = size;
 		this.mode = mode;
-		this.objectId = objectId;
-		this.commitId = commitId;
 		this.author = author;
 		this.date = date;
+		this.commitId = objectId;
 	}
 
 	public boolean isSubmodule() {
@@ -117,7 +114,7 @@ public class PathModel implements Serializable, Comparable<PathModel> {
 
 		public PathChangeModel(String name, String path, long size, int mode, String objectId, String commitId,
 				ChangeType type, String author, Date date) {
-			super(name, path, size, mode, objectId, commitId, author, date);
+			super(name, path, size, mode, objectId, author, date);
 			this.changeType = type;
 		}
 

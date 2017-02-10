@@ -134,13 +134,13 @@ public class RepositoryItem implements ObjectDB{
 		this.revisionItem = revisionItem;
 	}
 
-	public List<Long> getAllRevisionsNumber(){
-		List<Long> revisionsNumber = new ArrayList<>();
+	public List<String> getAllRevisionsNumber(){
+		List<String> revisionsNumber = new ArrayList<>();
 		if(this.revisionItem != null && this.revisionItem.size() > 0){
 			for(RepositoryRevisionItem revisionItem : this.revisionItem)
-				revisionsNumber.add(Long.valueOf(revisionItem.getRepositoryRevision().getRevision()));
+				revisionsNumber.add(revisionItem.getRepositoryRevision().getRevision());
 			
-			Comparator<Long> comparator = (revision1, revision2) -> revision1.compareTo(revision2);
+			Comparator<String> comparator = (revision1, revision2) -> revision1.compareTo(revision2);
 			revisionsNumber.sort(comparator.reversed());
 		}
 		return revisionsNumber;

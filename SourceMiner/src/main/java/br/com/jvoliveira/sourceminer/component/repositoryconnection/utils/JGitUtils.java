@@ -213,13 +213,7 @@ public class JGitUtils {
 	 * @return a path model of the current file in the treewalk
 	 */
 	private static PathModel getPathModel(TreeWalk tw, String basePath, RevCommit commit) {
-		String name;
 		long size = 0;
-		if (StringUtils.isEmpty(basePath)) {
-			name = tw.getPathString();
-		} else {
-			name = tw.getPathString().substring(basePath.length() + 1);
-		}
 		ObjectId objectId = tw.getObjectId(0);
 		try {
 			if (!tw.isSubtree() && (tw.getFileMode(0) != FileMode.GITLINK)) {
@@ -228,8 +222,8 @@ public class JGitUtils {
 		} catch (Throwable t) {
 			System.out.println("failed to retrieve blob size for " + tw.getPathString());
 		}
-		return new PathModel(name, tw.getPathString(), size, tw.getFileMode(0).getBits(), objectId.getName(),
-				commit.getName());
+		return new PathModel(commit.getFullMessage(), tw.getPathString(), size, tw.getFileMode(0).getBits(),
+				commit.getName(), commit.getAuthorIdent().getName(), commit.getAuthorIdent().getWhen());
 	}
 
 	/**

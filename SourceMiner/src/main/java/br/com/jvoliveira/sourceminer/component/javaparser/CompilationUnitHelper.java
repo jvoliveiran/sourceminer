@@ -21,6 +21,8 @@ public class CompilationUnitHelper {
 	}
 	
 	public static CompilationUnit getCompilationUnit(String fileContent, String filePath){
+		if(fileContent == null)
+			fileContent = "";
 		CompilationUnit compUnit = new CompilationUnit();
 		fileContent = fileContent.replace("\u00bf", "");
 		fileContent = fileContent.replace("\ufffd", "");

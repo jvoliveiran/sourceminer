@@ -20,6 +20,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -53,6 +54,14 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 	private Git gitSource;
 
 	private RepositoryParseGIT parse = new RepositoryParseGIT();
+	
+	public RepositoryConnectionGIT(){
+		
+	}
+	
+	public RepositoryConnectionGIT(RepositoryConnector connector){
+		this.connector = connector;
+	}
 
 	@Override
 	public RepositoryConnector getConnector() {
@@ -215,6 +224,12 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config) {
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<>();
+		
+		if(config.getSyncEndRevision() == null)
+			config.setSyncEndRevision(getLastRevisionNumber(project));
+		if(config.getSyncStartRevision() == null || config.getSyncStartRevision().equals(""))
+			config.setSyncStartRevision(getFirstRevisionNumber(project));
+		
 		ObjectId objFrom = ObjectId.fromString(config.getSyncStartRevision());
 		ObjectId objUntil = ObjectId.fromString(config.getSyncEndRevision());
 		try {
@@ -287,12 +302,16 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 
 	@Override
 	public String getFileContent(String path, String revision) {
-		try {
+		ObjectId commitRevision = null;
+		try {			
+			if(revision.equals("-1"))
+				commitRevision = gitSource.getRepository().resolve(Constants.HEAD);
+			else
+				commitRevision = ObjectId.fromString(revision);
+			
 			RevWalk revWalk = new RevWalk(gitSource.getRepository());
-			ObjectId commitRevision = ObjectId.fromString(revision);
 			RevCommit commit = revWalk.parseCommit(commitRevision);
 			
-			// and using commit's tree find the path
 			RevTree tree = commit.getTree();
 			TreeWalk treeWalk = new TreeWalk(gitSource.getRepository());
 			treeWalk.addTree(tree);
@@ -306,8 +325,9 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			
 			InputStream in = loader.openStream();
 			String result = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
+			if(result == null)
+				return "";
 			
-			System.out.println(result);
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -342,6 +362,18 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			e.printStackTrace();
 		}
 		
+		return null;
+	}
+	
+	public String getFirstRevisionNumber(Project project){
+		try {
+			RevWalk walk = new RevWalk(gitSource.getRepository());
+			walk.markStart(walk.parseCommit(ObjectId.fromString(getLastRevisionNumber(project))));
+			walk.sort(RevSort.REVERSE);
+			return walk.next().getName();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 }

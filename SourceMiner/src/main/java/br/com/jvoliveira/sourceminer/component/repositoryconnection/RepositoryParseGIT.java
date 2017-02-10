@@ -52,15 +52,22 @@ public class RepositoryParseGIT implements RepositoryParse{
 		List<PathChangeModel> changedFiles = pathModel.getChangedFiles();
 		List<RepositoryRevisionItem> result = new ArrayList<>();
 		for(PathChangeModel changedFile : changedFiles){
-			RepositoryRevisionItem revisionItem = new RepositoryRevisionItem();
+			if(!isJavaFile(changedFile))
+				continue;
 			
-			revisionItem.setRepositoryItem(parsePathChangeModelToRepositoryItem(changedFile));
+			RepositoryRevisionItem revisionItem = new RepositoryRevisionItem();
 			revisionItem.setRepositoryRevision(parsePathModelToRepositoryRevision(pathModel));
+			revisionItem.setRepositoryItem(parsePathChangeModelToRepositoryItem(changedFile));
 			revisionItem.setCommitType(getCommitTypeByPathChangeModel(changedFile));
+			
 			result.add(revisionItem);
 		}
 		
 		return result;
+	}
+	
+	public boolean isJavaFile(PathChangeModel changedFile){
+		return changedFile.name.contains(".java");
 	}
 	
 	public CommitType getCommitTypeByPathChangeModel(PathChangeModel changedFile) {
@@ -78,6 +85,7 @@ public class RepositoryParseGIT implements RepositoryParse{
 		revision.setRevision(pathModel.commitId);
 		revision.setAuthor(pathModel.author);
 		revision.setDateRevision(pathModel.date);
+		revision.setComment(pathModel.name);
 		
 		return revision;
 	}
@@ -85,7 +93,7 @@ public class RepositoryParseGIT implements RepositoryParse{
 	public RepositoryItem parsePathChangeModelToRepositoryItem(PathChangeModel pathModel){
 		RepositoryItem repositoryItem = new RepositoryItem();
 		
-		repositoryItem.setName(pathModel.name);
+		repositoryItem.setName(StringUtils.getFileNameInPath(pathModel.name, "/"));
 		repositoryItem.setPath(pathModel.path);
 		repositoryItem.setExtension(StringUtils.getExtensionInFileName(pathModel.path));
 		
