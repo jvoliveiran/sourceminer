@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
-import br.com.jvoliveira.security.domain.User;
+import br.com.jvoliveira.sourceminer.domain.User;
 import br.com.jvoliveira.sourceminer.service.ProjectService;
 import br.com.jvoliveira.sourceminer.service.RepositoryConnectorService;
 

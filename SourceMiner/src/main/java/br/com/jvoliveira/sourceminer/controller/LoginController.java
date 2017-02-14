@@ -1,4 +1,4 @@
-package br.com.jvoliveira.security.controller;
+package br.com.jvoliveira.sourceminer.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

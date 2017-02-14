@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.service.AbstractArqService;
-import br.com.jvoliveira.security.domain.User;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.domain.User;
 
 
 /**

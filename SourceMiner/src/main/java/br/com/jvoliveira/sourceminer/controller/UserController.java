@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
-import br.com.jvoliveira.security.domain.User;
-import br.com.jvoliveira.security.service.UserService;
+import br.com.jvoliveira.sourceminer.domain.User;
+import br.com.jvoliveira.sourceminer.service.UserService;
 
 /**
  * @author joao

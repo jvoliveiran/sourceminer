@@ -1,4 +1,4 @@
-package br.com.jvoliveira.security.domain;
+package br.com.jvoliveira.sourceminer.domain;
 
 import java.util.Collection;
 import java.util.Date;

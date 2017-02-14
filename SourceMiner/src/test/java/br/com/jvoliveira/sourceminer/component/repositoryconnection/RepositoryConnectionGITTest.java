@@ -181,4 +181,18 @@ public class RepositoryConnectionGITTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGetParentRevisionNumber(){
+		String revision = "ef415ae004c730062d083eba5a220a1a45bbfc20";
+		String expectedResult = "7e57de0cf5188cd6014280322e3d5913f7a3a793";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getParentRevisionNumber(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 }

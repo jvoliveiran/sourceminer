@@ -225,10 +225,7 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config) {
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<>();
 		
-		if(config.getSyncEndRevision() == null)
-			config.setSyncEndRevision(getLastRevisionNumber(project));
-		if(config.getSyncStartRevision() == null || config.getSyncStartRevision().equals(""))
-			config.setSyncStartRevision(getFirstRevisionNumber(project));
+		validateSyncRevisionInterval(config,project);
 		
 		ObjectId objFrom = ObjectId.fromString(config.getSyncStartRevision());
 		ObjectId objUntil = ObjectId.fromString(config.getSyncEndRevision());
@@ -253,6 +250,17 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 		}
 
 		return revisionItemLogs;
+	}
+
+	private void validateSyncRevisionInterval(ProjectConfiguration config, Project project) {
+		if(config.getSyncEndRevision() == null)
+			config.setSyncEndRevision(getLastRevisionNumber(project));
+		if(config.getSyncStartRevision() == null || config.getSyncStartRevision().equals(""))
+			config.setSyncStartRevision(getFirstRevisionNumber(project));
+		
+		if(config.getSyncEndRevision().equals(config.getSyncStartRevision()))
+			config.setSyncStartRevision(getParentRevisionNumber(project, config.getSyncEndRevision()));
+		
 	}
 
 	@Override
@@ -375,5 +383,17 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public String getParentRevisionNumber(Project project, String revision){
+		RevWalk revWalk = new RevWalk(gitSource.getRepository());
+		try {
+			revWalk.markStart(revWalk.parseCommit(ObjectId.fromString(revision)));
+			revWalk.next();
+			return revWalk.next().getName();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 }

@@ -1,44 +1,56 @@
-package br.com.jvoliveira.security.domain;
+package br.com.jvoliveira.sourceminer.domain;
 
-import java.beans.Transient;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
 /**
- * Classe de domínio que representa as permissões de acesso
  * @author Joao Victor
  *
  */
+
 @Entity
-@Table(name = "permission")
-public class Permission implements GrantedAuthority, ObjectDB{
+@Table(name = "role")
+public class Role implements GrantedAuthority, ObjectDB{
 
 	private static final long serialVersionUID = 0L;
 
 	@Id
-	@Column(name = "id_permission")
+	@Column(name = "id_role")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	@NotBlank
 	@Column(name = "name")
 	private String name;
 	
 	@Column(name = "ativo")
 	private Boolean ativo = true;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "role_permission",
+			joinColumns = { @JoinColumn(name = "id_role") },
+			inverseJoinColumns = { @JoinColumn(name = "id_permission") }
+			)
+	private List<Permission> permissions = new ArrayList<Permission>();
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
@@ -72,6 +84,14 @@ public class Permission implements GrantedAuthority, ObjectDB{
 		this.name = name;
 	}
 
+	public List<Permission> getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(List<Permission> permissions) {
+		this.permissions = permissions;
+	}
+
 	public Boolean getAtivo() {
 		return ativo;
 	}
@@ -99,5 +119,4 @@ public class Permission implements GrantedAuthority, ObjectDB{
 	public Date getUpdateAt() {
 		return this.updateAt;
 	}
-	
 }

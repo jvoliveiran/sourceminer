@@ -64,10 +64,6 @@ public class StringUtils {
 		}
 	}
 
-	public static boolean isEmpty(String value) {
-		return value == null || value.trim().length() == 0;
-	}
-
 	/**
 	 * Decodes a string by trying several charsets until one does not throw a
 	 * coding exception. Last resort is to interpret as UTF-8 with illegal
@@ -105,5 +101,13 @@ public class StringUtils {
 			return value.substring(1);
 		}
 		return value;
+	}
+	
+	public static boolean isEmpty(String str){
+		return str == null || str.trim().equals("") || str.trim().length() == 0;
+	}
+	
+	public static boolean isNotEmpty(String str){
+		return !isEmpty(str);
 	}
 }

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import br.com.jvoliveira.security.domain.User;
 import br.com.jvoliveira.sourceminer.domain.RepositoryConnector;
+import br.com.jvoliveira.sourceminer.domain.User;
 
 /**
  * @author Joao Victor

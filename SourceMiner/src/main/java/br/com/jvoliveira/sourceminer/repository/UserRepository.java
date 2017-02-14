@@ -1,11 +1,11 @@
 /**
  * 
  */
-package br.com.jvoliveira.security.repository;
+package br.com.jvoliveira.sourceminer.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import br.com.jvoliveira.security.domain.User;
+import br.com.jvoliveira.sourceminer.domain.User;
 
 /**
  * @author Joao Victor

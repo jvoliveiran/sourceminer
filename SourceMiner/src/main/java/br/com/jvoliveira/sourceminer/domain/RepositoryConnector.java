@@ -17,7 +17,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
-import br.com.jvoliveira.security.domain.User;
 
 /**
  * @author Joao Victor

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.jvoliveira.security.service;
+package br.com.jvoliveira.sourceminer.service;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
-import br.com.jvoliveira.security.domain.Role;
-import br.com.jvoliveira.security.domain.User;
-import br.com.jvoliveira.security.repository.UserRepository;
+import br.com.jvoliveira.sourceminer.domain.Role;
+import br.com.jvoliveira.sourceminer.domain.User;
+import br.com.jvoliveira.sourceminer.repository.UserRepository;
 
 /**
  * @author Joao Victor

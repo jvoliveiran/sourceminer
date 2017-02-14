@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import br.com.jvoliveira.arq.dao.GenericDAO;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.utils.DateUtils;
-import br.com.jvoliveira.security.domain.User;
+import br.com.jvoliveira.sourceminer.domain.User;
 
 /**
  * @author Joao Victor
