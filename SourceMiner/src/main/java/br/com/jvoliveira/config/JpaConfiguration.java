@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  */
 @Configuration
-@EnableJpaRepositories(basePackages = "br.com.jvoliveira.sourceminer.repository",
+@EnableJpaRepositories(basePackages = {"br.com.jvoliveira.sourceminer.repository"},
 entityManagerFactoryRef = "entityManagerFactory",
 transactionManagerRef = "transactionManager")
 @EnableTransactionManagement

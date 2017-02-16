@@ -7,13 +7,15 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+
 /**
  * 
  * @author João Victor
  *
  */
 @Configuration
-@EnableNeo4jRepositories(basePackages = "br.com.jvoliveira.sourceminer.neo4j.repository")
+@EnableNeo4jRepositories(basePackages = "br.com.jvoliveira.sourceminer.neo4j.repository",
+transactionManagerRef = "neo4jTransactionManager")
 @EnableTransactionManagement
 public class Neo4jConfiguration{
 
@@ -32,7 +34,7 @@ public class Neo4jConfiguration{
 	}
 
 	@Bean
-	public Neo4jTransactionManager transactionManager() {
+	public Neo4jTransactionManager neo4jTransactionManager() {
 		return new Neo4jTransactionManager(sessionFactory());
 	}
 }

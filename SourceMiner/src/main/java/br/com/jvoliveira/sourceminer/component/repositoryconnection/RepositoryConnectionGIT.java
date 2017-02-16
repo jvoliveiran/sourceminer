@@ -343,8 +343,19 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 		return "";
 	}
 
+	/**
+	 * Em repositórios GIT a sincronização em um intervalo deve sempre considerar a partir
+	 * da revisão anterior ao intervalo de revisões desejados
+	 */
 	@Override
 	public String getNextRevisionToSync(Project project, String revisionLastSync) {
+		if(revisionLastSync == null || revisionLastSync.trim().equals("") || revisionLastSync.trim().equals("0"))
+			return getNextOutOfSyncRevision(project,revisionLastSync);
+		else
+			return revisionLastSync;
+	}
+	
+	public String getNextOutOfSyncRevision(Project project, String revisionLastSync) {
 		try {
 			RevWalk walk = new RevWalk(gitSource.getRepository());
 			walk.markStart(walk.parseCommit(ObjectId.fromString(getLastRevisionNumber(project))));

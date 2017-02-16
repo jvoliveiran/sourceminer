@@ -97,7 +97,7 @@ public class RepositoryConnectionGITTest {
 		try {
 			repoGit.openConnection();
 			List<RepositoryRevision> result = repoGit.getAllProjectRevision(null);
-			Assert.assertThat(result.size(), is(equalTo(119)));
+			Assert.assertThat(result.size(), is(greaterThan(119)));
 		} catch (RepositoryConnectionException e) {
 			e.printStackTrace();
 		}
@@ -121,7 +121,7 @@ public class RepositoryConnectionGITTest {
 		try {
 			repoGit.openConnection();
 			String result = repoGit.getLastRevisionNumber(null);
-			Assert.assertThat(result, is(equalTo("6a4fc9196530eddd732ac1241bbd0e77fd3c3933")));
+			Assert.assertThat(result, is(equalTo("afbc97e5b7f392250cdf199bde2f77e0692f3a1b")));
 		} catch (RepositoryConnectionException e) {
 			e.printStackTrace();
 		}
@@ -141,12 +141,12 @@ public class RepositoryConnectionGITTest {
 	}
 	
 	@Test
-	public void testGetNextRevisionToSync(){
+	public void testGetNextOutOfSyncRevisionToSync(){
 		String revision = "6a4fc9196530eddd732ac1241bbd0e77fd3c3933";
 		String expectedResult = "5940597901a44789084b0a060f39f7e36ed10b16";
 		try{
 			repoGit.openConnection();
-			String result = repoGit.getNextRevisionToSync(null, revision);
+			String result = repoGit.getNextOutOfSyncRevision(null, revision);
 			Assert.assertNotNull(result);
 			Assert.assertThat(result, is(equalTo(expectedResult)));
 		}catch(Exception e){
@@ -155,12 +155,12 @@ public class RepositoryConnectionGITTest {
 	}
 	
 	@Test
-	public void testGetNextRevisionToSyncAgainstHeadRevision(){
-		String revision = "fa40133b723bdc1aaef8ac5f64f052d111edca35";
+	public void testGetNextOutOfSyncRevisionToSyncAgainstHeadRevision(){
+		String revision = "afbc97e5b7f392250cdf199bde2f77e0692f3a1b";
 		String expectedResult = "0";
 		try{
 			repoGit.openConnection();
-			String result = repoGit.getNextRevisionToSync(null, revision);
+			String result = repoGit.getNextOutOfSyncRevision(null, revision);
 			Assert.assertNotNull(result);
 			Assert.assertThat(result, is(equalTo(expectedResult)));
 		}catch(Exception e){
@@ -169,12 +169,12 @@ public class RepositoryConnectionGITTest {
 	}
 	
 	@Test
-	public void testGetNextRevisionToSyncAgainstFirstRevision(){
+	public void testGetNextOutOfSyncRevisionToSyncAgainstFirstRevision(){
 		String revision = "";
 		String expectedResult = "134c4e0bb11407dc3d93fc6742f825b6a56a7ded";
 		try{
 			repoGit.openConnection();
-			String result = repoGit.getNextRevisionToSync(null, revision);
+			String result = repoGit.getNextOutOfSyncRevision(null, revision);
 			Assert.assertNotNull(result);
 			Assert.assertThat(result, is(equalTo(expectedResult)));
 		}catch(Exception e){
@@ -189,6 +189,34 @@ public class RepositoryConnectionGITTest {
 		try{
 			repoGit.openConnection();
 			String result = repoGit.getParentRevisionNumber(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetNextRevisionToSync(){
+		String revision = "1b0f8e4fceb2e189af574c353cf5b7cbca35f240";
+		String expectedResult = "1b0f8e4fceb2e189af574c353cf5b7cbca35f240";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getNextRevisionToSync(null, revision);
+			Assert.assertNotNull(result);
+			Assert.assertThat(result, is(equalTo(expectedResult)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetNextRevisionToSyncFromBeginning(){
+		String revision = "";
+		String expectedResult = "134c4e0bb11407dc3d93fc6742f825b6a56a7ded";
+		try{
+			repoGit.openConnection();
+			String result = repoGit.getNextRevisionToSync(null, revision);
 			Assert.assertNotNull(result);
 			Assert.assertThat(result, is(equalTo(expectedResult)));
 		}catch(Exception e){

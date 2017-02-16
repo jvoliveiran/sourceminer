@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
@@ -31,7 +31,7 @@ public class GenericDAOImpl implements GenericDAO{
 		return (T) entityManager.find(entityClass, id);
 	}
 	
-	@Transactional
+	@Transactional("transactionManager")
 	@Override
 	public <T extends ObjectDB> T update(T obj){
 		return entityManager.merge(obj);
