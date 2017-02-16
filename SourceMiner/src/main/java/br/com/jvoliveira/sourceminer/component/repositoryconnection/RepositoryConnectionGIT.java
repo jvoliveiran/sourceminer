@@ -257,10 +257,7 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 			config.setSyncEndRevision(getLastRevisionNumber(project));
 		if(config.getSyncStartRevision() == null || config.getSyncStartRevision().equals(""))
 			config.setSyncStartRevision(getFirstRevisionNumber(project));
-		
-		if(config.getSyncEndRevision().equals(config.getSyncStartRevision()))
-			config.setSyncStartRevision(getParentRevisionNumber(project, config.getSyncEndRevision()));
-		
+			
 	}
 
 	@Override
@@ -349,6 +346,12 @@ public class RepositoryConnectionGIT implements RepositoryConnection {
 	 */
 	@Override
 	public String getNextRevisionToSync(Project project, String revisionLastSync) {
+		try {
+			gitSource.pull().call();
+		} catch (GitAPIException e) {
+			System.err.println("Erro ao atualizar repositório local a partir do repositório remoto");
+			e.printStackTrace();
+		}
 		if(revisionLastSync == null || revisionLastSync.trim().equals("") || revisionLastSync.trim().equals("0"))
 			return getNextOutOfSyncRevision(project,revisionLastSync);
 		else
