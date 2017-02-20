@@ -36,6 +36,9 @@ public class RepositoryItem implements ObjectDB{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@Column(name="graph_node_id")
+	private Long graphNodeId;
+	
 	@Column(name="name")
 	private String name;
 	
@@ -144,5 +147,13 @@ public class RepositoryItem implements ObjectDB{
 			revisionsNumber.sort(comparator.reversed());
 		}
 		return revisionsNumber;
+	}
+
+	public Long getGraphNodeId() {
+		return graphNodeId;
+	}
+
+	public void setGraphNodeId(Long graphNodeId) {
+		this.graphNodeId = graphNodeId;
 	}
 }

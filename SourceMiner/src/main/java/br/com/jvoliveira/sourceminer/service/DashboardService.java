@@ -14,6 +14,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
+import br.com.jvoliveira.sourceminer.neo4j.service.SyncGraphService;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
@@ -40,6 +41,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	private RepositoryRevisionSearch revisionSearch;
 	
 	private SyncRepositoryService syncService;
+	private SyncGraphService graphService;
 	
 	@Autowired
 	public DashboardService(ProjectRepository repository,  RepositoryConnectionSession connection){
@@ -105,6 +107,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	private void sincronyzeRepositoryDatabase(Project project){
 		syncService.synchronizeRepositoryUsingConfiguration(project);
+		graphService.synchronizeGraphUsingConfiguration(project);
 	}
 	
 	public RepositoryRevisionFilter getRevisionFilter(){
@@ -153,5 +156,10 @@ public class DashboardService extends AbstractArqService<Project>{
 	@Autowired
 	public void setSyncRepositoryService(SyncRepositoryService service){
 		this.syncService = service;
+	}
+	
+	@Autowired
+	public void setSyncGraphService(SyncGraphService graphService){
+		this.graphService = graphService;
 	}
 }

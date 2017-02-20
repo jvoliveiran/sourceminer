@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.repository.impl;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -65,6 +67,17 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 	@Autowired
 	public void setEntityManager(EntityManager manager){
 		this.entityManager = manager;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<RepositoryItem> findItemWithoutNode(Project project) {
+		String hql = " FROM RepositoryItem WHERE graphNodeId IS NULL AND project.id = :idProject ";
+		
+		Query query = entityManager.createQuery(hql);
+		query.setParameter("idProject", project.getId());
+		
+		return query.getResultList();
 	}
 	
 }

@@ -13,6 +13,7 @@ import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryCo
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.ProjectConfiguration;
 import br.com.jvoliveira.sourceminer.domain.RepositoryLocation;
+import br.com.jvoliveira.sourceminer.neo4j.service.SyncGraphService;
 import br.com.jvoliveira.sourceminer.repository.ProjectConfigurationRepository;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
@@ -24,6 +25,7 @@ import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 public class ProjectConfigurationService extends AbstractArqService<ProjectConfiguration>{
 
 	private SyncRepositoryService syncService;	
+	private SyncGraphService graphService;
 	private SyncRepositoryObserver observer;
 	
 	@Autowired
@@ -51,6 +53,8 @@ public class ProjectConfigurationService extends AbstractArqService<ProjectConfi
 		
 		//TODO: Refatorar método de validação de conexão aberta. Não usar bean de sessão
 		syncService.synchronizeRepositoryUsingConfigurationObserver(project,observer,connection);
+		
+		graphService.syncGraphUsingConfigurationObserver(project, observer, connection);
 	}
 	
 	private boolean validateSyncUsingConfiguration(RepositoryConnectionSession connSession, Project project){
@@ -68,6 +72,11 @@ public class ProjectConfigurationService extends AbstractArqService<ProjectConfi
 	@Autowired
 	public void setSyncService(SyncRepositoryService syncService){
 		this.syncService = syncService;
+	}
+	
+	@Autowired
+	public void setSyncGraphService(SyncGraphService graphService){
+		this.graphService = graphService;
 	}
 	
 	public SyncRepositoryObserver getObserver() {

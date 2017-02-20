@@ -10,6 +10,8 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+
 /**
  * Nós do grafo que serão representações referentes à RepositoryItem
  * 
@@ -44,6 +46,12 @@ public class ClassNode {
 	public ClassNode(Long repositoryItemId, String name){
 		this.repositoryItemId = repositoryItemId;
 		this.name = name;
+	}
+	
+	public ClassNode(RepositoryItem item){
+		this.repositoryItemId = item.getId();
+		this.name = item.getName();
+		this.fullPath = item.getFullPath();
 	}
 
 	public Long getId() {
