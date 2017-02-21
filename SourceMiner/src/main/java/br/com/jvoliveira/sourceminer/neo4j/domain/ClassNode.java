@@ -52,6 +52,8 @@ public class ClassNode {
 		this.repositoryItemId = item.getId();
 		this.name = item.getName();
 		this.fullPath = item.getFullPath();
+		if(item.getGraphNodeId() != null)
+			this.id = item.getGraphNodeId();
 	}
 
 	public Long getId() {

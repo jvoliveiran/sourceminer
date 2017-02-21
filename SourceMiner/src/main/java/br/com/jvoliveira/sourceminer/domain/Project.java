@@ -124,4 +124,12 @@ public class Project implements ObjectDB{
 			return "Não sincronizado";
 		}
 	}
+	
+	public boolean isGit(){
+		return this.repositoryLocation.getVersionManager().isGITManager();
+	}
+	
+	public boolean isSVN(){
+		return this.repositoryLocation.getVersionManager().isSVNManager();
+	}
 }

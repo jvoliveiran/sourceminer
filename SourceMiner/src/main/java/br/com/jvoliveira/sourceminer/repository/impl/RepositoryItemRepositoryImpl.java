@@ -43,8 +43,7 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 	@Override
 	public RepositoryItem findItemByFullPath(String importPath, Project project, String extension) {
 		try{
-			importPath = importPath.replace(".", "/");
-			importPath = project.getPath() + "/%/" + importPath + "." + extension;
+			importPath = generateImportPath(importPath, project, extension);
 			
 			String hql = " FROM RepositoryItem "
 					+ " WHERE path LIKE :path AND project.id = :idProject ";
@@ -62,6 +61,15 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		}catch (NullPointerException e){
 			return null;
 		}
+	}
+	
+	private String generateImportPath(String importPath, Project project, String extension){
+		String fullPath = importPath.replace(".", "/");
+		if(project.isGit())
+			fullPath = project.getName() + "/%/" + fullPath + "." + extension;
+		else
+			fullPath = project.getPath() + "/%/" + fullPath + "." + extension;
+		return fullPath;
 	}
 
 	@Autowired
