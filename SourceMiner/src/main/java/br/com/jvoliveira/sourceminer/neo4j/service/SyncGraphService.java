@@ -34,7 +34,6 @@ import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 @Service
 public class SyncGraphService extends AbstractArqService<Project>{
 
-	//ATRIBUTOS
 	private RepositoryConnectionSession connection;
 	private SyncRepositoryObserver observer;
 	
@@ -98,7 +97,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		List<MethodCall> result = new ArrayList<>();
 		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(item, true, AssetType.IMPORT);
 		for(ItemAsset asset : dependencies){
-			RepositoryItem importItem = itemRepository.findItemByFullPath(asset.getSignature(), item.getProject(), item.getExtension());
+			RepositoryItem importItem = asset.getImportRepositoryItem();
 			if(importItem != null){
 				MethodCall relation = new MethodCall(classNode, new ClassNode(importItem));
 				methodCallRepository.save(relation);

@@ -321,7 +321,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 		}
 	}
-	//FIXME: Não funcionou durante sincronização de projeto no GIT. Debugar e verificar
+	
 	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {
 		RepositoryItem importItem = itemRepository.findItemByFullPath(asset.getSignature(), revisionItem.getProject(), revisionItem.getRepositoryItem().getExtension());
 		if(importItem != null)

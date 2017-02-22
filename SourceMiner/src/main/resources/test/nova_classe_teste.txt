@@ -27,6 +27,7 @@ public class JavaClassParserTest {
 	
 	@Before
 	public void setUp(){
+		String testString = "teste";
 		String fileContent;
 		try {
 			fileContent = new String(Files.readAllBytes(Paths.get("duke.java")));
@@ -34,11 +35,18 @@ public class JavaClassParserTest {
 			fileContent = "";
 		}
 		classParser = new JavaClassParser(fileContent);
+		testString = "teste novo";
 	}
 	
 	@Test
 	public void testGetMethods(){
 		List<ItemAsset> assets = classParser.parserMethods();
+		
+		for(ItemAsset asset : assets){
+			ItemChangeLog itemChageLog = new ItemChangeLog();
+			asset.setItemChangeLog(itemChangeLog);
+			asset.getSignature();
+		}
 		
 		Assert.assertNotNull(assets);
 		Assert.assertTrue(assets.size() > 0);

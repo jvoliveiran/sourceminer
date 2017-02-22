@@ -5,6 +5,7 @@ package br.com.jvoliveira.sourceminer.component.javaparser;
 
 import java.util.List;
 
+import br.com.jvoliveira.sourceminer.component.javaparser.visitor.GenericClassVisitor;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 
 /**

@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import br.com.jvoliveira.sourceminer.domain.ItemAsset;
-import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.MethodCallExpr;
+
+import br.com.jvoliveira.sourceminer.component.javaparser.visitor.JavaClassVisitor;
+import br.com.jvoliveira.sourceminer.domain.ItemAsset;
+import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 
 
 /**
@@ -107,16 +107,6 @@ public class JavaClassParser extends GenericClassParser{
 			}
 		}
 		return imports;
-	}
-	
-	public List<String> parseMethodCall(){
-		loadClassVisitor();
-		List<String> nameMethodsCalled = new ArrayList<String>();
-		
-		for (MethodCallExpr methodCall : getClassVisitor().getMethodCall())
-			nameMethodsCalled.add(methodCall.getName());
-		
-		return nameMethodsCalled;
 	}
 	
 	private void loadClassVisitor(){
