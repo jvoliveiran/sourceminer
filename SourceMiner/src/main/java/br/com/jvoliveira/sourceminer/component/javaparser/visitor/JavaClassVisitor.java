@@ -15,16 +15,21 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
+import br.com.jvoliveira.sourceminer.component.javaparser.JavaParserUtils;
+
 /**
  * @author Joao Victor
  *
  */
 public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements GenericClassVisitor {
 
+	private String classBasePackage;
 	private Map<String, FieldDeclaration> fields;
 	private Map<String, MethodDeclaration> methods;
 	private List<ImportDeclaration> imports;
 
+	private List<String> possibleClassesInSamePackage;
+	
 	boolean ready;
 
 	public JavaClassVisitor() {
@@ -36,17 +41,20 @@ public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements Gene
 		this.fields = new HashMap<>();
 		this.methods = new HashMap<>();
 		this.imports = new ArrayList<>();
-
+		this.possibleClassesInSamePackage = new ArrayList<>();
+		
 		ready = false;
 	}
 	
 	@Override
 	public void execute(CompilationUnit compUnit, Object arg, Map<String,Object> resultMap) {
+		classBasePackage = compUnit.getPackage().getName().toString();
 		this.visit(compUnit, arg);
 	}
 
 	@Override
 	public void visit(CompilationUnit compUnit, Object arg) {
+		classBasePackage = compUnit.getPackage().getName().toString();
 		super.visit(compUnit, arg);
 		ready = true;
 	}
@@ -65,7 +73,22 @@ public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements Gene
 	public void visit(FieldDeclaration fieldDeclaration, Object arg) {
 		for (VariableDeclarator variableDeclaration : fieldDeclaration.getVariables()) {
 			fields.put(variableDeclaration.getId().getName(), fieldDeclaration);
+			verifyClassTypeSamePackage(fieldDeclaration);
 		}
+	}
+
+	private void verifyClassTypeSamePackage(FieldDeclaration fieldDeclaration) {
+		String fieldType = fieldDeclaration.getType().toString();
+		
+		if(JavaParserUtils.isJavaClassType(fieldType))
+			return;
+		
+		String generatedPartialNamePath = "." + fieldType + ";";
+		for(ImportDeclaration importDeclaration : imports){
+			if(importDeclaration.getName().getName().contains(generatedPartialNamePath))
+				return;
+		}
+		getPossibleClassesInSamePackage().add(classBasePackage + generatedPartialNamePath);
 	}
 
 	public Map<String, FieldDeclaration> getFields() {
@@ -83,6 +106,14 @@ public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements Gene
 	@Override
 	public boolean isReady() {
 		return ready;
+	}
+
+	public String getClassBasePackage() {
+		return classBasePackage;
+	}
+
+	public List<String> getPossibleClassesInSamePackage() {
+		return possibleClassesInSamePackage;
 	}
 	
 }

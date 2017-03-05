@@ -109,6 +109,18 @@ public class JavaClassParser extends GenericClassParser{
 		return imports;
 	}
 	
+	public List<ItemAsset> parserPossibleClassesInSamePackage(){
+		for(String classFullName : getClassVisitor().getPossibleClassesInSamePackage()){
+			ItemAsset itemAsset = new ItemAsset();
+			
+			itemAsset.setName(null);
+			itemAsset.setSignature(classFullName);
+			itemAsset.setAssetType(AssetType.IMPORT);
+			imports.add(itemAsset);
+		}
+		return imports;
+	}
+	
 	private void loadClassVisitor(){
 		if(!getClassVisitor().isReady()){
 			CompilationUnit compUnit = getCompilationUnit();

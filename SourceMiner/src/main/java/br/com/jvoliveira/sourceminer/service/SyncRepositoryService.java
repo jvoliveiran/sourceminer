@@ -288,6 +288,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 */
 	private void syncAssets(List<ItemAsset> assetsToSync, RepositoryRevisionItem revisionItem) {
 		for(ItemAsset asset : assetsToSync){
+			if(!isValidItemAsset(asset, revisionItem))
+				continue;
 			
 			if(asset.getId() == null){
 				asset.setCreateAt(DateUtils.now());
@@ -322,6 +324,25 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		}
 	}
 	
+	private boolean isValidItemAsset(ItemAsset asset, RepositoryRevisionItem revisionItem) {
+		if(asset.isImportAsset())
+			return isValidItemAssetImport(asset, revisionItem);
+		else
+			return true;
+	}
+
+	private boolean isValidItemAssetImport(ItemAsset asset, RepositoryRevisionItem revisionItem) {
+		if(!asset.getName().equals(null))
+			return true;
+		
+		RepositoryItem item = itemRepository.findItemByFullPath(asset.getSignature(), revisionItem.getProject(), revisionItem.getRepositoryItem().getExtension());
+		if(item != null){
+			asset.setName(asset.getSignature());
+			return true;
+		}else
+			return false;
+	}
+
 	private void setImportRepositoryItem(ItemAsset asset, RepositoryRevisionItem revisionItem) {
 		RepositoryItem importItem = itemRepository.findItemByFullPath(asset.getSignature(), revisionItem.getProject(), revisionItem.getRepositoryItem().getExtension());
 		if(importItem != null)
