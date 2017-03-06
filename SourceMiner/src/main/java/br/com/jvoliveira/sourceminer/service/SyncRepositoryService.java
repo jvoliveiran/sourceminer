@@ -332,7 +332,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 
 	private boolean isValidItemAssetImport(ItemAsset asset, RepositoryRevisionItem revisionItem) {
-		if(!asset.getName().equals(null))
+		if(asset.getName() != null)
 			return true;
 		
 		RepositoryItem item = itemRepository.findItemByFullPath(asset.getSignature(), revisionItem.getProject(), revisionItem.getRepositoryItem().getExtension());

@@ -54,7 +54,11 @@ public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements Gene
 
 	@Override
 	public void visit(CompilationUnit compUnit, Object arg) {
-		classBasePackage = compUnit.getPackage().getName().toString();
+		try{
+			classBasePackage = compUnit.getPackage().getName().toString();
+		}catch (NullPointerException npe) {
+			classBasePackage = "";
+		}
 		super.visit(compUnit, arg);
 		ready = true;
 	}
@@ -83,9 +87,9 @@ public class JavaClassVisitor extends VoidVisitorAdapter<Object> implements Gene
 		if(JavaParserUtils.isJavaClassType(fieldType))
 			return;
 		
-		String generatedPartialNamePath = "." + fieldType + ";";
+		String generatedPartialNamePath = "." + fieldType;
 		for(ImportDeclaration importDeclaration : imports){
-			if(importDeclaration.getName().getName().contains(generatedPartialNamePath))
+			if(importDeclaration.getName().toString().endsWith(generatedPartialNamePath))
 				return;
 		}
 		getPossibleClassesInSamePackage().add(classBasePackage + generatedPartialNamePath);

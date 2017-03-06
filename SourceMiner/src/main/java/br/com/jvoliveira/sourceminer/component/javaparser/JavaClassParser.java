@@ -47,6 +47,7 @@ public class JavaClassParser extends GenericClassParser{
 		allAssets.addAll(parserMethods());
 		allAssets.addAll(parserField());
 		allAssets.addAll(parserImport());
+		allAssets.addAll(parserPossibleClassesInSamePackage());
 		
 		return allAssets;
 	}
