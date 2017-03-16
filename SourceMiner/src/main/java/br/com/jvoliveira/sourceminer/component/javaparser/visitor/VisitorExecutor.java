@@ -44,7 +44,12 @@ public class VisitorExecutor {
 		for(GenericClassVisitor visitor : executeQueue){
 			visitor.init();
 			visitor.execute(compUnit, arg, resultMap);
+			afterVisitorExecute();
 		}
+	}
+	
+	protected void afterVisitorExecute(){
+		//TODO: Not implemented
 	}
 	
 	private CompilationUnit getCompilationUnit(String fileContent, String filePath){

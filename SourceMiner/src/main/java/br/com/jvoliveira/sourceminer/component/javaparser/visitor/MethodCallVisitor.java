@@ -22,6 +22,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Object> implements Gen
 
 	private boolean ready;
 	private List<MethodCallExpr> methodCall;
+	private Map<String,Object> resultMap;
 
 	public MethodCallVisitor() {
 		this.methodCall = new ArrayList<MethodCallExpr>();
@@ -39,6 +40,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Object> implements Gen
 
 	@Override
 	public void execute(CompilationUnit compUnit, Object arg, Map<String,Object> resultMap) {
+		this.resultMap = resultMap;
 		super.visit(compUnit, arg);
 		
 		ready = true;
@@ -47,9 +49,20 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Object> implements Gen
 	@Override
 	public void visit(MethodCallExpr methodCall, Object arg) {
 		this.methodCall.add(methodCall);
+		this.resultMap.put("MethodCallExpr_"+methodCall.getName(), methodCall.getScope());
+		System.out.println("Method Name: " + methodCall.getName() + " | variable: " + getVariableSimpleName(methodCall.getScope()));
 		List<Expression> args = methodCall.getArgs();
 		if (args != null)
 			handleExpressions(args);
+	}
+	
+	
+
+	private String getVariableSimpleName(Expression scope) {
+		if(scope == null)
+			return "null";
+		String variableName = scope.toString();
+		return variableName.replaceAll("this.", "");
 	}
 
 	private void handleExpressions(List<Expression> expressions) {

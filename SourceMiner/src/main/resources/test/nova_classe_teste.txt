@@ -24,6 +24,7 @@ public class JavaClassParserTest {
 	private String fileContent;
 
 	private String fieldTeste;
+	private ChangelogGroupModel changeLogGroupModel;
 	
 	@Before
 	public void setUp(){
@@ -43,7 +44,7 @@ public class JavaClassParserTest {
 		List<ItemAsset> assets = classParser.parserMethods();
 		
 		for(ItemAsset asset : assets){
-			ItemChangeLog itemChageLog = new ItemChangeLog();
+			ItemChangeLog itemChangeLog = new ItemChangeLog();
 			asset.setItemChangeLog(itemChangeLog);
 			asset.getSignature();
 		}

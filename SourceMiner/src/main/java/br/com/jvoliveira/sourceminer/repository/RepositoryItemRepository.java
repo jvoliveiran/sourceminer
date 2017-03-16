@@ -24,6 +24,8 @@ public interface RepositoryItemRepository extends CrudRepository<RepositoryItem,
 	
 	RepositoryItem findByPathAndName(String path, String name);
 	
+	RepositoryItem findByName(String name);
+	
 	@Query("SELECT count(ri) FROM RepositoryItem ri WHERE ri.project = ?1")
 	Integer countTotalItensByProject(Project project);
 }
