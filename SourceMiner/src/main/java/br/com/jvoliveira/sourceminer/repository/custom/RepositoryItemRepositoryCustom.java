@@ -16,4 +16,6 @@ public interface RepositoryItemRepositoryCustom {
 	public String findLastRevisionInFile(String filePath, Long idProject);
 	
 	public List<RepositoryItem> findItemWithoutNode(Project project);
+	
+	public List<RepositoryItem> findItemsChangedInRevisions(Project project, List<String> revisions);
 }

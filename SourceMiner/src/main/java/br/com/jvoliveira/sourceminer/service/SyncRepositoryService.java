@@ -28,7 +28,7 @@ import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
-import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.repository.SyncLogRepository;
 import br.com.jvoliveira.sourceminer.repository.impl.ItemChageLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
@@ -44,7 +44,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	
 	private RevisionItemMetricService revisionItemMetricService;
 	
-	private RepositorySyncLogRepository syncLogRepository;
+	private SyncLogRepository syncLogRepository;
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
 	private RepositoryRevisionItemRepository revisionItemRepository;
@@ -419,7 +419,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	@Autowired
-	public void setSyncLogRepository(RepositorySyncLogRepository syncLogRepository){
+	public void setSyncLogRepository(SyncLogRepository syncLogRepository){
 		this.syncLogRepository = syncLogRepository;
 	}
 	

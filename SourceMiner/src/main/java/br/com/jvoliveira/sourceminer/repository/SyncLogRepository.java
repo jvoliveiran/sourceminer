@@ -12,7 +12,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
  * @author Joao Victor
  *
  */
-public interface RepositorySyncLogRepository extends CrudRepository<RepositorySyncLog, Long>{
+public interface SyncLogRepository extends CrudRepository<RepositorySyncLog, Long>{
 
 	RepositorySyncLog findFirstByProjectOrderByIdDesc(Project project);
 	

@@ -31,7 +31,7 @@ public class RepositorySyncLog implements ObjectDB{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="create_at")
 	private Date createAt;
 	

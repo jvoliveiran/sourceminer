@@ -108,9 +108,9 @@ public class RepositoryConnectionGITTest {
 		try {
 			repoGit.openConnection();
 			String from = "69adbcc323f35ceafdfe256bdb9d065e53896a93";
-			String until = "073dde90d2592fc9bc26a79ecef5b2b0fe4bb396";
+			String until = "5940597901a44789084b0a060f39f7e36ed10b16";
 			List<RepositoryRevision> result = repoGit.getRevisionsInRange(null,from,until);
-			Assert.assertThat(result.size(), is(equalTo(1)));
+			Assert.assertThat(result.size(), is(equalTo(3)));
 		} catch (RepositoryConnectionException e) {
 			e.printStackTrace();
 		}

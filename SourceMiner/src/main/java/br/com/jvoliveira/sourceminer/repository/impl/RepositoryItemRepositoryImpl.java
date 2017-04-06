@@ -88,4 +88,19 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		return query.getResultList();
 	}
 	
+	public List<RepositoryItem> findItemsChangedInRevisions(Project project, List<String> revisions){
+		String hql = "SELECT DISTINCT repoItem "
+				+ " FROM RepositoryRevisionItem repRevItem "
+				+ " JOIN repRevItem.repositoryRevision repoRev "
+				+ " JOIN repRevItem.repositoryItem repoItem "
+				+ " WHERE repoItem.project.id = :idProject "
+				+ " AND repoRev.headRevision IN (:revisions) ";
+		
+		Query query = entityManager.createQuery(hql);
+		query.setParameter("idProject", project.getId());
+		query.setParameter("revisions",revisions);
+		
+		return query.getResultList();
+	}
+	
 }

@@ -17,9 +17,11 @@ import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.javaparser.visitor.CallGraphVisitorExecutor;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
+import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryRevisionItemHelper;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 import br.com.jvoliveira.sourceminer.neo4j.domain.ClassNode;
 import br.com.jvoliveira.sourceminer.neo4j.domain.MethodCall;
@@ -27,6 +29,7 @@ import br.com.jvoliveira.sourceminer.neo4j.repository.ClassNodeRepository;
 import br.com.jvoliveira.sourceminer.neo4j.repository.MethodCallRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
+import br.com.jvoliveira.sourceminer.repository.impl.SyncLogRepositoryImpl;
 import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 
 /**
@@ -43,6 +46,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	private ItemAssetRepository itemAssetRepository;
 	private ClassNodeRepository nodeRepository;
 	private MethodCallRepository methodCallRepository;
+	private SyncLogRepositoryImpl syncLogRepository;
 	
 	public void syncGraphUsingConfigurationObserver(Project project, SyncRepositoryObserver observer, RepositoryConnection connection){
 		if(observer.isInSync())
@@ -62,19 +66,34 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		this.observer.closeSync();
 	}
 
+	//TODO: Passo 3: Criar método como serviço para remover methodCalls de Assets desativados
+	//TODO: Passo 4: Criar método como serviço para remover ClassNode e respectivos methodCalls para classes removidas.
 	public void synchronizeGraphUsingConfiguration(Project project) {
-		//Passo 1: Criar novos nós
+		itemsForFirstSync(project);
+		if(!isFirstSync(project)){
+			Map<RepositoryItem,ClassNode> itemNode = getItensChangedAfterLastSync(project);
+			createRelationshipInGraph(itemNode,true);
+		}
+	}
+	
+	private Map<RepositoryItem, ClassNode> getItensChangedAfterLastSync(Project project) {
+		List<String> twoLastRevisions = syncLogRepository.findTwoMostRecentRevisions(project);
+		List<RepositoryRevision> revisions = connection.getConnection().getRevisionsInRange(project, twoLastRevisions.get(0), twoLastRevisions.get(1));
+		List<String> revisionsHash = (List<String>) RepositoryRevisionItemHelper.getRevisions(revisions);
+		
+		List<RepositoryItem> itemsChangeInRevisions = itemRepository.findItemsChangedInRevisions(project, revisionsHash);
+		return RepositoryRevisionItemHelper.loadRepositoryItemWithClassNode(itemsChangeInRevisions, nodeRepository);
+	}
+
+	private boolean isFirstSync(Project project){
+		return syncLogRepository.countSyncLogByProject(project) <= 1;
+	}
+	
+	private void itemsForFirstSync(Project project){
 		List<RepositoryItem> itemWithoutNode = itemRepository.findItemWithoutNode(project);
 		Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(itemWithoutNode);
 		
-		//TODO: Utilizar a mesma lista de items para sincronizar chamada de métodos
-		createRelationshipInGraph(itemNode);
-		
-		//TODO: Passo 2: Criar methodCalls para novos assets em nós já existentes
-		
-		//TODO: Passo 3: Criar método como serviço para remover methodCalls de Assets desativados
-		//TODO: Passo 4: Criar método como serviço para remover ClassNode e respectivos methodCalls para classes removidas.
-		
+		createRelationshipInGraph(itemNode, false);
 	}
 
 	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(List<RepositoryItem> itemWithouNode) {
@@ -90,27 +109,31 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		return result;
 	}
 	
-	private void createRelationshipInGraph(Map<RepositoryItem,ClassNode> itemNode) {
+	private void createRelationshipInGraph(Map<RepositoryItem,ClassNode> itemNode, boolean searchForMethodsCall) {
 		Iterator<RepositoryItem> repositoryItems = itemNode.keySet().iterator();
 		
 		while(repositoryItems.hasNext()){
 			RepositoryItem item = repositoryItems.next();
 			ClassNode classNode = itemNode.get(item);
-//			List<MethodCall> relations = identifyRelationWithDependency(classNode, item);
-			List<MethodCall> callGraph = processCallGraph(classNode,item);
+			
+			Collection<MethodCall> methodsCall = new ArrayList<>();
+			if(searchForMethodsCall)
+				methodsCall.addAll(methodCallRepository.findAllMethodsCallFromNode(item.getId()));
+			
+			processCallGraph(classNode,item,methodsCall);
 		}
 		
 	}
 	
-	//TODO: Pendente teste de sincronização.
-	private List<MethodCall> processCallGraph(ClassNode classNode, RepositoryItem item) {
+	private List<MethodCall> processCallGraph(ClassNode classNode, RepositoryItem item, Collection<MethodCall> methodsCall) {
 		String headRevision = "-1";
 		String fileContent = this.connection.getConnection().getFileContent(item.getFullPath(), headRevision);
 		Map<String,Collection<String>> resultMap = CallGraphVisitorExecutor.processCallGraph(fileContent, item.getPath());
-		return identifyRelationWithMethodCall(classNode,item,resultMap);
+		return identifyRelationWithMethodCall(classNode,item,resultMap,methodsCall);
 	}
 	
-	private List<MethodCall> identifyRelationWithMethodCall(ClassNode classNode, RepositoryItem item, Map<String,Collection<String>> resultMap) {
+	private List<MethodCall> identifyRelationWithMethodCall(ClassNode classNode, RepositoryItem item, Map<String,Collection<String>> resultMap,
+			Collection<MethodCall> methodsCall) {
 		List<MethodCall> result = new ArrayList<>();
 		
 		Iterator<String> iteratorResultMap = resultMap.keySet().iterator();
@@ -118,49 +141,43 @@ public class SyncGraphService extends AbstractArqService<Project>{
 			String className = iteratorResultMap.next();
 			Collection<String> methodsCalledInClass = resultMap.get(className);
 			for(String methodCalledInClass : methodsCalledInClass)
-				result.addAll(createAndPersistMethodCall(className, methodCalledInClass,classNode));
+				result.addAll(createAndPersistMethodCall(className, methodCalledInClass,classNode,methodsCall));
 		}
 		
 		return result;
 	}
 
-	private List<MethodCall> createAndPersistMethodCall(String className, String methodCalledInClass, ClassNode classNode) {
+	private List<MethodCall> createAndPersistMethodCall(String className, String methodCalledInClass, ClassNode classNode,
+			Collection<MethodCall> methodsCall) {
 		RepositoryItem itemCalled = itemRepository.findByName(className);
 		if(itemCalled == null)
 			return null;
 		
 		List<MethodCall> methodsCalled = new ArrayList<>();
-		//TODO: Verificar para criar apenas methodCall de novos assets. Opção incluir campo com número de sincronização nos Assets
 		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(itemCalled, true,AssetType.METHOD);
 		for (ItemAsset asset : dependencies) {
-			MethodCall relation = new MethodCall(classNode, new ClassNode(itemCalled));
-			relation.setItemAssetId(asset.getId());
-			relation.setMethodName(asset.getName());
-			relation.setMethodSignature(asset.getSignature());
-			methodCallRepository.save(relation);
-			methodsCalled.add(relation);
+			ClassNode nodeCalled = new ClassNode(itemCalled);
+			if(!isExistsMethodCall(classNode,nodeCalled,asset,methodsCall)){
+				MethodCall relation = new MethodCall(classNode, nodeCalled);
+				relation.setItemAssetId(asset.getId());
+				relation.setMethodName(asset.getName());
+				relation.setMethodSignature(asset.getSignature());
+				methodCallRepository.save(relation);
+				methodsCalled.add(relation);
+			}
 		}
 		return methodsCalled;
 	}
 
-	/**
-	 * Not used for now
-	 * @param classNode
-	 * @param item
-	 * @return
-	 */
-	private List<MethodCall> identifyRelationWithDependency(ClassNode classNode, RepositoryItem item) {
-		List<MethodCall> result = new ArrayList<>();
-		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(item, true, AssetType.IMPORT);
-		for(ItemAsset asset : dependencies){
-			RepositoryItem importItem = asset.getImportRepositoryItem();
-			if(importItem != null){
-				MethodCall relation = new MethodCall(classNode, new ClassNode(importItem));
-				methodCallRepository.save(relation);
-				result.add(relation);
-			}
+	private boolean isExistsMethodCall(ClassNode classNode, ClassNode nodeCalled, ItemAsset asset,
+			Collection<MethodCall> methodsCall) {
+		for(MethodCall method : methodsCall){
+			if(method.getCalled().getId() == nodeCalled.getId()
+					&& method.getCaller().getId() == classNode.getId()
+					&& method.getItemAssetId() == asset.getId())
+				return true;
 		}
-		return result;
+		return false;
 	}
 
 	@Autowired
@@ -181,5 +198,10 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	@Autowired
 	public void setMethodCallRepository(MethodCallRepository methodCallRepository){
 		this.methodCallRepository = methodCallRepository;
+	}
+	
+	@Autowired
+	public void setSyncLogRepository(SyncLogRepositoryImpl syncLogRepository){
+		this.syncLogRepository = syncLogRepository;
 	}
 }

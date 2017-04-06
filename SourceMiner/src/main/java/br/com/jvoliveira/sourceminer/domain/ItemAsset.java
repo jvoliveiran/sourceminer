@@ -52,11 +52,11 @@ public class ItemAsset implements GenericAsset{
 	@JoinColumn(name="id_import_repository_item", referencedColumnName="id_repository_item")
 	private RepositoryItem importRepositoryItem;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="create_at")
 	private Date createAt;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="update_at")
 	private Date updateAt;
 	

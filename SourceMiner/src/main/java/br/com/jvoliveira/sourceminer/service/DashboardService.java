@@ -18,7 +18,7 @@ import br.com.jvoliveira.sourceminer.neo4j.service.SyncGraphService;
 import br.com.jvoliveira.sourceminer.repository.ProjectRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryRevisionRepository;
-import br.com.jvoliveira.sourceminer.repository.RepositorySyncLogRepository;
+import br.com.jvoliveira.sourceminer.repository.SyncLogRepository;
 import br.com.jvoliveira.sourceminer.search.RepositoryItemSearch;
 import br.com.jvoliveira.sourceminer.search.RepositoryRevisionSearch;
 import br.com.jvoliveira.sourceminer.search.filter.RepositoryItemFilter;
@@ -35,7 +35,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	private RepositoryRevisionRepository revisionRepository;
 	private RepositoryItemRepository itemRepository;
-	private RepositorySyncLogRepository syncLogRepository;
+	private SyncLogRepository syncLogRepository;
 	
 	private RepositoryItemSearch itemSearch;
 	private RepositoryRevisionSearch revisionSearch;
@@ -129,7 +129,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	@Autowired
-	public void setSyncLogRepository(RepositorySyncLogRepository syncLogRepository){
+	public void setSyncLogRepository(SyncLogRepository syncLogRepository){
 		this.syncLogRepository = syncLogRepository;
 	}
 	
