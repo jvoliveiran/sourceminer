@@ -46,9 +46,9 @@ public class SyncLogRepositoryImpl implements SyncLogRepositoryCustom{
 	@Override
 	public Integer countSyncLogByProject(Project project) {
 		String sql = "SELECT count(*) FROM repository_sync_log WHERE id_project = :idProject";
-		Query query = manager.createNamedQuery(sql);
+		Query query = manager.createNativeQuery(sql);
 		query.setParameter("idProject", project.getId());
-		return (Integer) query.setMaxResults(1).getSingleResult();
+		return query.getFirstResult();
 	}
 
 }

@@ -49,4 +49,10 @@ public class SyncLogRepositoryTest {
 		List<String> result = repository.findTwoMostRecentRevisions(project);
 		Assert.assertThat(result.size(), is(equalTo(1)));
 	}
+	
+	@Test
+	public void countSyncLogByProjectTest(){
+		Integer total = repository.countSyncLogByProject(project);
+		Assert.assertNotNull(total);
+	}
 }

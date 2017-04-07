@@ -17,7 +17,7 @@ import br.com.jvoliveira.sourceminer.neo4j.domain.MethodCall;
  */
 public interface MethodCallRepository extends Neo4jRepository<MethodCall, Long>{
 
-	@Query("MATCH (n:ClassNode)-[k:MethodCall]->(m:ClassNode) WHERE n.repositoryItemId = :idItem RETURN k")
+	@Query("MATCH (n:ClassNode)-[k]->(m:ClassNode) WHERE n.repositoryItemId = :idItem RETURN k")
 	List<MethodCall> findAllMethodsCallFromNode(@Param("idItem") Long idItem);
 	
 }

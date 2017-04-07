@@ -140,8 +140,11 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		while(iteratorResultMap.hasNext()){
 			String className = iteratorResultMap.next();
 			Collection<String> methodsCalledInClass = resultMap.get(className);
-			for(String methodCalledInClass : methodsCalledInClass)
-				result.addAll(createAndPersistMethodCall(className, methodCalledInClass,classNode,methodsCall));
+			for(String methodCalledInClass : methodsCalledInClass){
+				List<MethodCall> methodsCalled = createAndPersistMethodCall(className, methodCalledInClass,classNode,methodsCall);
+				if(methodsCalled != null)
+					result.addAll(methodsCalled);
+			}
 		}
 		
 		return result;
@@ -149,7 +152,8 @@ public class SyncGraphService extends AbstractArqService<Project>{
 
 	private List<MethodCall> createAndPersistMethodCall(String className, String methodCalledInClass, ClassNode classNode,
 			Collection<MethodCall> methodsCall) {
-		RepositoryItem itemCalled = itemRepository.findByName(className);
+		//TODO: Refatorar concatenação de extensão
+		RepositoryItem itemCalled = itemRepository.findFirstByName(className+".java");
 		if(itemCalled == null)
 			return null;
 		
