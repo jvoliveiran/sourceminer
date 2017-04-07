@@ -88,6 +88,7 @@ public class JpaConfiguration {
         properties.put("hibernate.dialect", environment.getRequiredProperty("spring.jpa.properties.hibernate.dialect"));
         properties.put("hibernate.show_sql", environment.getRequiredProperty("spring.jpa.show-sql"));
         properties.put("hibernate.format_sql", environment.getRequiredProperty("spring.jpa.format-sql"));
+        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("spring.jpa.hibernate.ddl-auto"));
         return properties;
     }
  

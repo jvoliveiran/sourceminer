@@ -180,6 +180,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		notifyObservers("ITENS COM REVISÃO PARA SINCRONIZAÇÃO: " + repositoryItens.size());
 		
 		for(RepositoryRevisionItem item : repositoryItens){
+			if(item.getRepositoryItem() == null || item.getRepositoryRevision() == null)
+				continue;
 			item.setCreateAt(DateUtils.now());
 			item.setProject(project);
 			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
@@ -229,10 +231,20 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryRevisionItem revisionItem : revisionRevisionItensInDatabase){
+			if(revisionItem.getRepositoryItem() == null)
+				continue;
 			String revisionNumber = revisionItem.getRepositoryRevision().getRevision();
 			RepositoryItem item = revisionItem.getRepositoryItem();
-			String fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
+			String fileContent = "";
+			try{
+				fileContent = getFileContentInRevision(item.getPath(), revisionNumber);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			
+			if(revisionItem.getCommitType() == null)
+				System.out.println(revisionItem.getId());
+				
 			if(revisionItem.existFileInRepository())
 				revisionItemMetricService.generateSingleRevisionItemMetric(fileContent, revisionItem, this.config);
 			
@@ -258,6 +270,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryItem item : itensInDatabase){
+			if(item == null)
+				continue;
 			String fileContent = getFileContentInRevision(item.getPath(), String.valueOf(-1));
 			
 			List<ItemAsset> actualItemAssets = getActualAssetsByItem(item);
@@ -297,8 +311,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				
 				if(asset.isAbleToSetImportRepositoryItem())
 					setImportRepositoryItem(asset, revisionItem);
-				
-				itemAssetRepository.save(asset);
+				try{
+					itemAssetRepository.save(asset);
+				}catch(Exception e){
+					e.printStackTrace();
+					continue;
+				}
 			}else if(asset.getItemChageLog().getChangeType().isDelete()){
 				asset.setUpdateAt(DateUtils.now());
 				asset.setEnable(false);

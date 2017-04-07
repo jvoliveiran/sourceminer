@@ -164,8 +164,16 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	@Override
 	public List<RepositoryRevisionItem> getRevisionItensInProjectRange(Project project, ProjectConfiguration config){
 		List<RepositoryRevisionItem> revisionItemLogs = new ArrayList<RepositoryRevisionItem>();
-		Integer syncStartRevision = new Integer(config.getSyncStartRevision());
-		Integer syncEndRevision = new Integer(config.getSyncEndRevision());
+		Integer syncStartRevision = null;
+		Integer syncEndRevision = null;
+		if(config.getSyncStartRevision() != null && !config.getSyncStartRevision().trim().equals(""))
+				syncStartRevision = new Integer(config.getSyncStartRevision());
+		else
+				syncStartRevision = 0;
+		if(config.getSyncEndRevision() != null && !config.getSyncEndRevision().trim().equals(""))
+			syncEndRevision = new Integer(config.getSyncEndRevision());
+		else
+			syncEndRevision = -1;
 		
 		Collection<SVNLogEntry> entries = getSVNLogEntryByRevision(project.getPath(), syncStartRevision, syncEndRevision, !config.isJoinParentBrach());
 		

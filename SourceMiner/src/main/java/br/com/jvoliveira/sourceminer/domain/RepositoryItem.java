@@ -39,10 +39,10 @@ public class RepositoryItem implements ObjectDB{
 	@Column(name="graph_node_id")
 	private Long graphNodeId;
 	
-	@Column(name="name")
+	@Column(name="name", length=500)
 	private String name;
 	
-	@Column(name="path")
+	@Column(name="path", length=800)
 	private String path;
 	
 	@Column(name="extension")
