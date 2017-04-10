@@ -72,7 +72,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		itemsForFirstSync(project);
 		if(!isFirstSync(project)){
 			Map<RepositoryItem,ClassNode> itemNode = getItensChangedAfterLastSync(project);
-			createRelationshipInGraph(itemNode,true);
+			createRelationshipInGraph(project,itemNode,true);
 		}
 	}
 	
@@ -91,15 +91,16 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	
 	private void itemsForFirstSync(Project project){
 		List<RepositoryItem> itemWithoutNode = itemRepository.findItemWithoutNode(project);
-		Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(itemWithoutNode);
+		Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(project,itemWithoutNode);
 		
-		createRelationshipInGraph(itemNode, false);
+		createRelationshipInGraph(project, itemNode, false);
 	}
 
-	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(List<RepositoryItem> itemWithouNode) {
+	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(Project project, List<RepositoryItem> itemWithouNode) {
 		Map<RepositoryItem,ClassNode> result = new HashMap<>();
 		for(RepositoryItem item : itemWithouNode){
 			ClassNode newClassNode = new ClassNode(item);
+			newClassNode.setProjectId(project.getId());
 			nodeRepository.save(newClassNode);
 			
 			item.setGraphNodeId(newClassNode.getId());
@@ -109,7 +110,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		return result;
 	}
 	
-	private void createRelationshipInGraph(Map<RepositoryItem,ClassNode> itemNode, boolean searchForMethodsCall) {
+	private void createRelationshipInGraph(Project project, Map<RepositoryItem,ClassNode> itemNode, boolean searchForMethodsCall) {
 		Iterator<RepositoryItem> repositoryItems = itemNode.keySet().iterator();
 		
 		while(repositoryItems.hasNext()){
@@ -141,7 +142,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 			String className = iteratorResultMap.next();
 			Collection<String> methodsCalledInClass = resultMap.get(className);
 			for(String methodCalledInClass : methodsCalledInClass){
-				List<MethodCall> methodsCalled = createAndPersistMethodCall(className, methodCalledInClass,classNode,methodsCall);
+				List<MethodCall> methodsCalled = createAndPersistMethodCall(item.getProject(), className, methodCalledInClass,classNode,methodsCall);
 				if(methodsCalled != null)
 					result.addAll(methodsCalled);
 			}
@@ -150,9 +151,9 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		return result;
 	}
 
-	private List<MethodCall> createAndPersistMethodCall(String className, String methodCalledInClass, ClassNode classNode,
+	private List<MethodCall> createAndPersistMethodCall(Project project, String className, String methodCalledInClass, ClassNode classNode,
 			Collection<MethodCall> methodsCall) {
-		//TODO: Refatorar concatenação de extensão
+		//TODO: Refatorar concatenação de extensão. Sugestão: Selecionar extensão de arquivos para sincronização nas configurações do projeto.
 		RepositoryItem itemCalled = itemRepository.findFirstByName(className+".java");
 		if(itemCalled == null)
 			return null;

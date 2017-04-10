@@ -20,6 +20,8 @@ public class MethodCall {
 	
 	private Long itemAssetId;
 	
+	private Long projectId;
+	
 	private String methodName;
 	
 	private String methodSignature;
@@ -85,6 +87,14 @@ public class MethodCall {
 
 	public void setCalled(ClassNode called) {
 		this.called = called;
+	}
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 	
 }

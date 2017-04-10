@@ -26,6 +26,8 @@ public class ClassNode {
 	
 	private Long repositoryItemId;
 	
+	private Long projectId;
+	
 	private String name;
 	
 	private String fullPath;
@@ -102,6 +104,14 @@ public class ClassNode {
 
 	public void setDependents(List<ClassNode> dependents) {
 		this.dependents = dependents;
+	}
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 	
 }

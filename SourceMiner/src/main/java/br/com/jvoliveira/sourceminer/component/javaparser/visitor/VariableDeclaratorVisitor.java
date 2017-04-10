@@ -43,10 +43,8 @@ public class VariableDeclaratorVisitor extends VoidVisitorAdapter<Object> implem
 	public void visit(VariableDeclarationExpr n, Object arg) {
 		List<VariableDeclarator> myVars = n.getVars();
 		for (VariableDeclarator vars : myVars) {
-			if(JavaParserUtils.isCustomClassType(n.getType().toString())){
+			if(JavaParserUtils.isCustomClassType(n.getType().toString()))
 				this.resultMap.put("VariableDeclaration_"+vars.getId().getName(), n.getType().toString());
-				System.out.println("Variable Name: " + vars.getId().getName() + " | type: " + n.getType());
-			}
 		}
 	}
 	

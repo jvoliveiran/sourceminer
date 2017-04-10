@@ -50,21 +50,11 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Object> implements Gen
 	public void visit(MethodCallExpr methodCall, Object arg) {
 		this.methodCall.add(methodCall);
 		this.resultMap.put("MethodCallExpr_"+methodCall.getName(), methodCall.getScope());
-		System.out.println("Method Name: " + methodCall.getName() + " | variable: " + getVariableSimpleName(methodCall.getScope()));
 		List<Expression> args = methodCall.getArgs();
 		if (args != null)
 			handleExpressions(args);
 	}
 	
-	
-
-	private String getVariableSimpleName(Expression scope) {
-		if(scope == null)
-			return "null";
-		String variableName = scope.toString();
-		return variableName.replaceAll("this.", "");
-	}
-
 	private void handleExpressions(List<Expression> expressions) {
 		for (Expression expr : expressions) {
 			if (expr instanceof MethodCallExpr)
