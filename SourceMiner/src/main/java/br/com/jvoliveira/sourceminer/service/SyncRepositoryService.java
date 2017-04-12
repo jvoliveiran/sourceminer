@@ -84,8 +84,11 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		this.observer = observer;
 		this.observer.startSync();
+		notifyObservers("Iniciando sincronização de repositório");
 		
 		synchronizeRepositoryUsingConfiguration(project);
+		
+		notifyObservers("Finalizando sincronização de repositório");
 		
 		this.observer.closeSync();
 	}
@@ -145,15 +148,15 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @return 
 	 */
 	private List<RepositoryItem> synchronizeAllRepositoryItemByProject(Project project){
-		notifyObservers("CARREGANDO ARTEFATOS PARA SINCRONIZAÇÃO...");
+		notifyObservers("[1-3] Carregando artefatos para sincronização...");
 		List<RepositoryItem> items = connection.getConnection().getAllProjectItens(project);
 		
-		notifyObservers("ARTEFATOS PARA SINCRONIZAÇÃO: " + items.size());
+		notifyObservers("[1-3] Sincronizando artefatos: " + items.size());
 		
 		for(RepositoryItem repositoryItem : items)
 			getSyncItem(project, repositoryItem);
 		
-		notifyObservers("ARTEFATOS SINCRONIZADOS!!!");
+		notifyObservers("[1-3] Artefatos Sincronizados!");
 		
 		return items;
 	}
@@ -172,12 +175,12 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		getConfig().setSyncStartRevision(revisionStartSync);
 		getConfig().setSyncEndRevision(connection.getConnection().getLastRevisionNumber(project));
 		
-		notifyObservers("CARREGANDO REVISÕES PARA SINCRONIZAÇÃO...");
+		notifyObservers("[2-3] Carregando revisões para sincronização...");
 		
 		List<RepositoryRevisionItem> repositoryItens = connection.getConnection().
 				getRevisionItensInProjectRange(project, getConfig());
 		
-		notifyObservers("ITENS COM REVISÃO PARA SINCRONIZAÇÃO: " + repositoryItens.size());
+		notifyObservers("[2-3] Associação de artefatos com revisões: " + repositoryItens.size());
 		
 		for(RepositoryRevisionItem item : repositoryItens){
 			if(item.getRepositoryItem() == null || item.getRepositoryRevision() == null)
@@ -190,7 +193,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			revisionItemRepository.save(item);
 		}
 		
-		notifyObservers("ITENS COM REVISÃO SINCRONIZADOS!!!");
+		notifyObservers("[2-3] Revisões sincronizadas!");
 		
 		return repositoryItens;
 	}
@@ -226,8 +229,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param revisionItem
 	 */
 	private void processRepositoryItemChanges(List<RepositoryRevisionItem> revisionRevisionItensInDatabase) {
-		notifyObservers("SINCRONIZANDO ITEM CHANGE...");
-		notifyObservers("ITENS CHANGE PARA SINCRONIZAÇÃO: " + revisionRevisionItensInDatabase.size());
+		notifyObservers("[3-3] Carregando histórico de mudanças...");
+		notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + revisionRevisionItensInDatabase.size());
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryRevisionItem revisionItem : revisionRevisionItensInDatabase){
@@ -253,10 +256,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			syncAssets(assetsToSync, revisionItem);
 			itemChangeProcessed++;
-			notifyObservers("SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + revisionRevisionItensInDatabase.size() );
+			notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itemChangeProcessed + "/" + revisionRevisionItensInDatabase.size() );
 		}
 		
-		notifyObservers("ITEM CHANGE SINCRONIZADO!!!");
+		notifyObservers("[3-3] Modificações sincronizadas!");
 	}
 	
 	/**
@@ -264,9 +267,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 * @param itensInDatabase
 	 */
 	private void processSimpleRepositoryItemChanges(List<RepositoryItem> itensInDatabase){
-		notifyObservers("SINCRONIZANDO ITEM CHANGE...");
-		
-		notifyObservers("ITENS CHANGE PARA SINCRONIZAÇÃO: " + itensInDatabase.size());
+		notifyObservers("[3-3] Carregando histórico de mudanças...");
+		notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itensInDatabase.size());
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryItem item : itensInDatabase){
@@ -279,9 +281,9 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			
 			syncAssets(assetsToSync, new RepositoryRevisionItem(item));
 			itemChangeProcessed++;
-			notifyObservers("SINCRONIZANDO ITEM CHANGE: " + itemChangeProcessed + "/" + itensInDatabase.size() );
+			notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itemChangeProcessed + "/" + itensInDatabase.size() );
 		}
-		notifyObservers("ITEM CHANGE SINCRONIZADO!!!");
+		notifyObservers("[3-3] Modificações sincronizadas!");
 	}
 	
 	private List<ItemAsset> getActualAssetsByItem(RepositoryItem item){

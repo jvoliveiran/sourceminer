@@ -61,7 +61,9 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		this.observer = observer;
 		this.observer.startSync();
 		
+		notifyObservers("Iniciando sincronização de grafo");
 		synchronizeGraphUsingConfiguration(project);
+		notifyObservers("Finalizando sincronização de grafo");
 		
 		this.observer.closeSync();
 	}
@@ -162,7 +164,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(itemCalled, true,AssetType.METHOD);
 		for (ItemAsset asset : dependencies) {
 			ClassNode nodeCalled = new ClassNode(itemCalled);
-			if(!isExistsMethodCall(classNode,nodeCalled,asset,methodsCall)){
+			if(!isExistsMethodCall(classNode,nodeCalled,asset,methodsCall) && methodCalledInClass.equals(asset.getName())){
 				MethodCall relation = new MethodCall(classNode, nodeCalled);
 				relation.setItemAssetId(asset.getId());
 				relation.setMethodName(asset.getName());
@@ -183,6 +185,11 @@ public class SyncGraphService extends AbstractArqService<Project>{
 				return true;
 		}
 		return false;
+	}
+	
+	public void notifyObservers(String mensagem){
+		if(observer != null)
+			observer.getNotification(mensagem);
 	}
 
 	@Autowired
