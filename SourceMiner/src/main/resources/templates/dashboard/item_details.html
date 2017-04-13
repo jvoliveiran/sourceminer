@@ -1,7 +1,6 @@
 <html layout:decorator="layouts/layout">
 	<head>
 		<meta charset="UTF-8"/>
-		
 		<script type="text/javascript">
 		
 		function getFileContentInRevision(path){
@@ -24,8 +23,61 @@
 		function changeFileContentRevision(data, status){
 			$('#fileContentBox').text(data);
 		}
-		</script>
 		
+		function loadGraph(nodeName, projectId){
+			console.log("nodeName:" + nodeName);
+			console.log("projectId:" + projectId);
+			var width = 200, height = 200;
+			
+		    var force = d3.layout.force()
+		            .charge(-200).linkDistance(30).size([width, height]);
+		    
+		    var svg = d3.select("#graph").append("svg")
+		            .attr("width", "100%").attr("height", "100%")
+		            .attr("pointer-events", "all");
+		    
+		    var rest_service = "/SourceMiner/graph/search/findGenericDependecyGraphCallFrom?"+("nodeName="+nodeName);
+		    console.log(rest_service);
+		    console.log("nodeName='"+nodeName+"'");
+		    
+		    d3.json(rest_service)
+		      .header("Content-Type", "application/json") 
+		      .send("get",
+		    	function(error, graph) {
+		        if (error) return;
+		        console.log(graph);
+		        
+		        force
+		        	.nodes(graph._embedded.classNode)
+		        	//.links(graph.links)
+		        	.start();
+		        
+		       /*  var link = svg.selectAll(".link")
+		                .data(graph.links).enter()
+		                .append("line").attr("class", "link"); */
+		        
+		        var node = svg.selectAll(".node")
+		                .data(graph._embedded.classNode).enter()
+		                .append("circle")
+		                .attr("class", function (d) { return "node "+d.label })
+		                .attr("r", 10)
+		                .call(force.drag);
+		        // html title attribute
+		        node.append("name")
+		                .text(function (d) { return d.name; })
+		                
+		        // force feed algo ticks
+		        force.on("tick", function() {
+		           /*  link.attr("x1", function(d) { return d.source.x; })
+		                    .attr("y1", function(d) { return d.source.y; })
+		                    .attr("x2", function(d) { return d.target.x; })
+		                    .attr("y2", function(d) { return d.target.y; }); */
+		            node.attr("cx", function(d) { return d.x; })
+		                    .attr("cy", function(d) { return d.y; });
+		        });
+		    });
+		}
+</script>
 	</head>
 	
 	<div layout:fragment="content">
@@ -237,6 +289,7 @@
 					<div class="panel-body">
 						<ul class="nav nav-tabs">
 							<li class="active"><a data-toggle="tab" href="#analise_estatisticas">Estatísticas</a></li>
+							<li><a data-toggle="tab" href="#grafo" th:onclick="'loadGraph(\'' + ${item.name} + '\',' + ${project.id} + ');'">Grafo</a></li>
 							<li><a data-toggle="tab" href="#analise_dependencias">Dependências</a></li>
 							<li><a data-toggle="tab" href="#analise_metodos">Métodos</a></li>
 							<li><a data-toggle="tab" href="#analise_atributos">Atributos</a></li>
@@ -254,6 +307,11 @@
 						    		</table>
 						    	</p>
 						  	</div>
+						  	<div id="grafo" class="tab-pane fade">
+								<h3>Grafo</h3>
+								<div id="graph">
+								</div>
+							</div>
 						  	<div id="analise_dependencias" class="tab-pane fade">
 						    	<h3>Dependências</h3>
 						    	<p>
@@ -337,6 +395,5 @@
 		</div>
 		
 	</div>
-	
 
 </html>
