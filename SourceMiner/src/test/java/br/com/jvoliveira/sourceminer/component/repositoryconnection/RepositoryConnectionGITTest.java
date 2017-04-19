@@ -3,8 +3,9 @@
  */
 package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.util.List;
 

@@ -38,9 +38,6 @@ public class ClassNode {
 	@Relationship(type = "CALLS", direction = Relationship.OUTGOING)
 	private List<ClassNode> dependencies = new ArrayList<>();
 	
-	@Relationship(type = "CALLS", direction = Relationship.INCOMING)
-	private List<ClassNode> dependents = new ArrayList<>();
-	
 	public ClassNode(){
 		
 	}
@@ -96,14 +93,6 @@ public class ClassNode {
 
 	public void setDependencies(List<ClassNode> dependencies) {
 		this.dependencies = dependencies;
-	}
-
-	public List<ClassNode> getDependents() {
-		return dependents;
-	}
-
-	public void setDependents(List<ClassNode> dependents) {
-		this.dependents = dependents;
 	}
 
 	public Long getProjectId() {
