@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.Project;
@@ -34,15 +35,19 @@ public class DashboardController extends AbstractArqController<Project>{
 	}
 	
 	@RequestMapping(value="/project_dashboard", method=RequestMethod.POST)
-	public String projectDashBoard(@RequestParam Long idProject, Model model){
+	public String projectDashBoard(@RequestParam Long idProject, Model model, RedirectAttributes redirectAttributes){
 		obj = service.getOneById(idProject);
+		if(obj.getLastSync() == null){
+			addErrorMessage(model, "A primeira sincronização deve ser realizada na área administrativa.");
+			redirectAttributes.addFlashAttribute("arqError", getErrorMessages(model));
+			return redirectController("/home/index_redirect");
+		}
 		
-		((DashboardService)service).setItemFilter(new RepositoryItemFilter());
-		((DashboardService)service).setRevisionFilter(new RepositoryRevisionFilter());
+		getService().setItemFilter(new RepositoryItemFilter());
+		getService().setRevisionFilter(new RepositoryRevisionFilter());
 		
-		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
-		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
-		
+		model.addAttribute("itemFilter", getService().getItemFilter());
+		model.addAttribute("revisionFilter", getService().getRevisionFilter());
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
@@ -53,8 +58,6 @@ public class DashboardController extends AbstractArqController<Project>{
 		obj = service.getOneById(idProject);
 		model.addAttribute("project", obj);
 		
-		model.addAttribute("chartData", new Integer[]{300,100,200});
-		
 		return forward("project_details");
 	}
 	
@@ -62,11 +65,9 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String searchItem(@Validated RepositoryItemFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);
 		
-		((DashboardService)service).searchRepositoryItem(obj, filter);
-		
+		getService().searchRepositoryItem(obj, filter);
 		model.addAttribute("itemFilter", filter);
-		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
-		
+		model.addAttribute("revisionFilter", getService().getRevisionFilter());
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
@@ -76,10 +77,9 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String clearSearchItem(@Validated RepositoryItemFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);
 		
-		((DashboardService)service).clearSearchRepositoryItem();
+		getService().clearSearchRepositoryItem();
 		model.addAttribute("itemFilter", filter);
-		model.addAttribute("revisionFilter", ((DashboardService)service).getRevisionFilter());
-		
+		model.addAttribute("revisionFilter", getService().getRevisionFilter());
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
@@ -89,10 +89,9 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String searchRevision(@Validated RepositoryRevisionFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);
 		
-		((DashboardService)service).searchRepositoryRevision(obj, filter);
+		getService().searchRepositoryRevision(obj, filter);
 		model.addAttribute("revisionFilter", filter);
-		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
-		
+		model.addAttribute("itemFilter", getService().getItemFilter());
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
@@ -102,21 +101,24 @@ public class DashboardController extends AbstractArqController<Project>{
 	public String clearSearchRevision(@Validated RepositoryRevisionFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);
 		
-		((DashboardService)service).clearSearchRepositoryRevision();
+		getService().clearSearchRepositoryRevision();
 		model.addAttribute("revisionFilter", filter);
-		model.addAttribute("itemFilter", ((DashboardService)service).getItemFilter());
-		
+		model.addAttribute("itemFilter", getService().getItemFilter());
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
 	}
 	
 	private void loadDefaultModel(Model model){
-		model.addAttribute("revisions", ((DashboardService)service).getAllRevisionsInProject(obj));
-		model.addAttribute("itens", ((DashboardService)service).getAllItensInProject(obj));
-		model.addAttribute("totalItens", ((DashboardService)service).getTotalItensInProject(obj));
-		model.addAttribute("totalRevisions", ((DashboardService)service).getTotalRevisionsInProject(obj));
-		model.addAttribute("lastSync", ((DashboardService)service).getLastSync(obj));
+		model.addAttribute("revisions", getService().getAllRevisionsInProject(obj));
+		model.addAttribute("itens", getService().getAllItensInProject(obj));
+		model.addAttribute("totalItens", getService().getTotalItensInProject(obj));
+		model.addAttribute("totalRevisions", getService().getTotalRevisionsInProject(obj));
+		model.addAttribute("lastSync", getService().getLastSync(obj));
 		model.addAttribute("project", obj);
+	}
+	
+	private DashboardService getService(){
+		return (DashboardService) this.service;
 	}
 }

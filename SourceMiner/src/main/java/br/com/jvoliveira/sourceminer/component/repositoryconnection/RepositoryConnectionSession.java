@@ -27,7 +27,7 @@ public class RepositoryConnectionSession {
 	}
 	
 	public boolean isConnectionOpened(){
-		return connection != null;
+		return connection != null && connection.isConnectionOpened();
 	}
 	
 	public String getConnectionName(){

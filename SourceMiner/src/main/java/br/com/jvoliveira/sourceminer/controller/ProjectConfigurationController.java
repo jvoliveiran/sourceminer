@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.jvoliveira.arq.controller.AbstractArqController;
 import br.com.jvoliveira.sourceminer.domain.MetricCase;
@@ -68,10 +69,13 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 	}
 	
 	@RequestMapping(value="/sync", method=RequestMethod.POST)
-	public String synchronize(@RequestParam("idObj") Long idProject, Model model){
+	public String synchronize(@RequestParam("idObj") Long idProject, Model model, RedirectAttributes redirectAttributes){
 		
 		//((ProjectConfigurationService)this.service).syncProjectUsingConfiguration(getRepositoryConnectionSession(),idProject);
-		((ProjectConfigurationService)this.service).asyncProjectUsingConfiguration(idProject, getRepositoryConnectionSession().getConnection());
+		if(!getRepositoryConnectionSession().isConnectionOpened())
+			addErrorMessageRedirect(redirectAttributes, model, "Necessário estabelecer conexão com repositório para iniciar sincronização");
+		else
+			getService().asyncProjectUsingConfiguration(idProject, getRepositoryConnectionSession().getConnection());
 		
 		return redirectController("project/index");
 	}
@@ -89,5 +93,9 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 	@ModelAttribute("metricCases")
 	public List<MetricCase> getAllMetricCase(){
 		return metricCaseService.getAll();
+	}
+	
+	public ProjectConfigurationService getService(){
+		return (ProjectConfigurationService)this.service;
 	}
 }

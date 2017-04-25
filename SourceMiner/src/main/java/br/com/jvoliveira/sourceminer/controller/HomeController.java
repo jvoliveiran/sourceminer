@@ -3,6 +3,8 @@
  */
 package br.com.jvoliveira.sourceminer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +38,8 @@ public class HomeController extends AbstractArqController<User>{
 	@RequestMapping(value = {"/index_redirect"})
 	public String getIndexRedirection(Model model, 
 			@ModelAttribute("arqError") final Object arqError){
-		model.addAttribute("arqErros",arqError);
+		if(arqError instanceof List)
+			model.addAttribute("arqErros",arqError);
 		model.addAttribute("listConnectors",connectorService.getAllByUser());
 		model.addAttribute("listProject",projectService.getAllByRepositoryLocation());
 		return "index";

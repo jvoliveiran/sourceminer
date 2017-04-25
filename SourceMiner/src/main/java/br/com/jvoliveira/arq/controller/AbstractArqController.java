@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.service.AbstractArqService;
@@ -146,6 +147,11 @@ public abstract class AbstractArqController<T extends ObjectDB> {
 			arqErros.add(message);
 			model.addAttribute("arqErros", arqErros);
 		}
+	}
+	
+	protected void addErrorMessageRedirect(RedirectAttributes redirectAttributes, Model model, String message){
+		addErrorMessage(model, message);
+		redirectAttributes.addFlashAttribute("arqErros", getErrorMessages(model));
 	}
 	
 	protected List<String> getErrorMessages(Model model){

@@ -101,6 +101,10 @@ public class DashboardService extends AbstractArqService<Project>{
 		return syncLogRepository.findFirstByProjectOrderByIdDesc(project);
 	}
 	
+	public Boolean isFirstSync(Project project){
+		return syncLogRepository.findFirstByProjectOrderByIdDesc(project) != null;
+	}
+	
 	public String getFileContentInRevision(String path, String revision){
 		return this.connection.getConnection().getFileContent(path, revision);
 	}
