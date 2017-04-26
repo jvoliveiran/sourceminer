@@ -101,8 +101,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(Project project, List<RepositoryItem> itemWithouNode) {
 		Map<RepositoryItem,ClassNode> result = new HashMap<>();
 		for(RepositoryItem item : itemWithouNode){
-			ClassNode newClassNode = new ClassNode(item);
-			newClassNode.setProjectId(project.getId());
+			ClassNode newClassNode = new ClassNode(item,project);
 			nodeRepository.save(newClassNode);
 			
 			item.setGraphNodeId(newClassNode.getId());
@@ -163,7 +162,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		List<MethodCall> methodsCalled = new ArrayList<>();
 		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(itemCalled, true,AssetType.METHOD);
 		for (ItemAsset asset : dependencies) {
-			ClassNode nodeCalled = new ClassNode(itemCalled);
+			ClassNode nodeCalled = new ClassNode(itemCalled,project);
 			if(!isExistsMethodCall(classNode,nodeCalled,asset,methodsCall) && methodCalledInClass.equals(asset.getName())){
 				MethodCall relation = new MethodCall(classNode, nodeCalled);
 				relation.setItemAssetId(asset.getId());

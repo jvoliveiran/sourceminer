@@ -10,6 +10,7 @@ import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 
 /**
@@ -47,12 +48,13 @@ public class ClassNode {
 		this.name = name;
 	}
 	
-	public ClassNode(RepositoryItem item){
+	public ClassNode(RepositoryItem item, Project project){
 		this.repositoryItemId = item.getId();
 		this.name = item.getName();
 		this.fullPath = item.getFullPath();
 		if(item.getGraphNodeId() != null)
 			this.id = item.getGraphNodeId();
+		this.projectId = project.getId();
 	}
 
 	public Long getId() {
