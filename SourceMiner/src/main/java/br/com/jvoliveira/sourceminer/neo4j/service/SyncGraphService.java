@@ -5,6 +5,7 @@ package br.com.jvoliveira.sourceminer.neo4j.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 import br.com.jvoliveira.sourceminer.neo4j.domain.ClassNode;
 import br.com.jvoliveira.sourceminer.neo4j.domain.MethodCall;
@@ -48,6 +50,11 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	private MethodCallRepository methodCallRepository;
 	private SyncLogRepositoryImpl syncLogRepository;
 	
+	@Autowired
+	public SyncGraphService(RepositoryConnectionSession connection){
+		this.connection = connection;
+	}
+	
 	public void syncGraphUsingConfigurationObserver(Project project, SyncRepositoryObserver observer, RepositoryConnection connection){
 		if(observer.isInSync())
 			return;
@@ -72,15 +79,19 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	//TODO: Passo 4: Criar método como serviço para remover ClassNode e respectivos methodCalls para classes removidas.
 	public void synchronizeGraphUsingConfiguration(Project project) {
 		itemsForFirstSync(project);
-		if(!isFirstSync(project)){
+		boolean firstSync = isFirstSync(project);
+		if(firstSync && project.isGraphOutOfSync())
+			refreshSyncLog(project);
+		else if(!firstSync && project.isGraphOutOfSync()){
 			Map<RepositoryItem,ClassNode> itemNode = getItensChangedAfterLastSync(project);
 			createRelationshipInGraph(project,itemNode,true);
+			refreshSyncLog(project);
 		}
 	}
 	
 	private Map<RepositoryItem, ClassNode> getItensChangedAfterLastSync(Project project) {
 		List<String> twoLastRevisions = syncLogRepository.findTwoMostRecentRevisions(project);
-		List<RepositoryRevision> revisions = connection.getConnection().getRevisionsInRange(project, twoLastRevisions.get(0), twoLastRevisions.get(1));
+		List<RepositoryRevision> revisions = connection.getConnection().getRevisionsInRange(project, twoLastRevisions.get(1), twoLastRevisions.get(0));
 		List<String> revisionsHash = (List<String>) RepositoryRevisionItemHelper.getRevisions(revisions);
 		
 		List<RepositoryItem> itemsChangeInRevisions = itemRepository.findItemsChangedInRevisions(project, revisionsHash);
@@ -93,9 +104,10 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	
 	private void itemsForFirstSync(Project project){
 		List<RepositoryItem> itemWithoutNode = itemRepository.findItemWithoutNode(project);
-		Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(project,itemWithoutNode);
-		
-		createRelationshipInGraph(project, itemNode, false);
+		if(!itemWithoutNode.isEmpty()){
+			Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(project,itemWithoutNode);
+			createRelationshipInGraph(project, itemNode, false);
+		}
 	}
 
 	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(Project project, List<RepositoryItem> itemWithouNode) {
@@ -119,9 +131,11 @@ public class SyncGraphService extends AbstractArqService<Project>{
 			ClassNode classNode = itemNode.get(item);
 			
 			Collection<MethodCall> methodsCall = new ArrayList<>();
-			if(searchForMethodsCall)
-				methodsCall.addAll(methodCallRepository.findAllMethodsCallFromNode(item.getId()));
-			
+			if(searchForMethodsCall){
+				List<MethodCall> queryResult = nodeRepository.getAllMethodsCallFromNode(item.getId());
+				if(queryResult != null)
+					methodsCall.addAll(queryResult);
+			}
 			processCallGraph(classNode,item,methodsCall);
 		}
 		
@@ -185,6 +199,13 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		}
 		return false;
 	}
+	
+	private void refreshSyncLog(Project project) {
+		RepositorySyncLog syncLog = project.getLastSync();
+		syncLog.setGraphSyncDate(new Date());
+		getDAO().update(syncLog);
+	}
+
 	
 	public void notifyObservers(String mensagem){
 		if(observer != null)

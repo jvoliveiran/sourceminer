@@ -26,7 +26,7 @@ public class RepositoryRevisionItemHelper {
 		Collection<String> revisionsHash = new HashSet<>();
 		for(RepositoryRevision rev : revisions)
 			revisionsHash.add(rev.getRevision());
-		return revisionsHash;
+		return new ArrayList<String>(revisionsHash);
 	}
 	
 	public static Map<RepositoryItem, ClassNode> loadRepositoryItemWithClassNode(List<RepositoryItem> items, ClassNodeRepository repository){

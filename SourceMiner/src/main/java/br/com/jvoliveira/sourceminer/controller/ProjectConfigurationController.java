@@ -70,8 +70,6 @@ public class ProjectConfigurationController extends AbstractArqController<Projec
 	
 	@RequestMapping(value="/sync", method=RequestMethod.POST)
 	public String synchronize(@RequestParam("idObj") Long idProject, Model model, RedirectAttributes redirectAttributes){
-		
-		//((ProjectConfigurationService)this.service).syncProjectUsingConfiguration(getRepositoryConnectionSession(),idProject);
 		if(!getRepositoryConnectionSession().isConnectionOpened())
 			addErrorMessageRedirect(redirectAttributes, model, "Necessário estabelecer conexão com repositório para iniciar sincronização");
 		else

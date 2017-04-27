@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.repository.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -48,7 +49,7 @@ public class SyncLogRepositoryImpl implements SyncLogRepositoryCustom{
 		String sql = "SELECT count(*) FROM repository_sync_log WHERE id_project = :idProject";
 		Query query = manager.createNativeQuery(sql);
 		query.setParameter("idProject", project.getId());
-		return query.getFirstResult();
+		return ((BigInteger) query.getSingleResult()).intValue();
 	}
 
 }

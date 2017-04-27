@@ -111,6 +111,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	private void sincronyzeRepositoryDatabase(Project project){
 		syncService.synchronizeRepositoryUsingConfiguration(project);
+		//Criar método no repository para saber se a ultima sincronização do projeto sincronizou o grafo.
 		graphService.synchronizeGraphUsingConfiguration(project);
 	}
 	

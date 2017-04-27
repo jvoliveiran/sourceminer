@@ -94,7 +94,7 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 				+ " JOIN repRevItem.repositoryRevision repoRev "
 				+ " JOIN repRevItem.repositoryItem repoItem "
 				+ " WHERE repoItem.project.id = :idProject "
-				+ " AND repoRev.headRevision IN (:revisions) ";
+				+ " AND repoRev.revision IN (:revisions) ";
 		
 		Query query = entityManager.createQuery(hql);
 		query.setParameter("idProject", project.getId());

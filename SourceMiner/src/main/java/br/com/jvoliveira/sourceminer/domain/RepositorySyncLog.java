@@ -42,6 +42,10 @@ public class RepositorySyncLog implements ObjectDB{
 	@JoinColumn(name="id_project")
 	private Project project;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="graph_sync_date")
+	private Date graphSyncDate;
+	
 	@Override
 	public void setId(Long id) {
 		this.id = id;
@@ -88,4 +92,16 @@ public class RepositorySyncLog implements ObjectDB{
 		this.project = project;
 	}
 
+	public boolean isGraphOutOfSync(){
+		return this.getGraphSyncDate() == null;
+	}
+
+	public Date getGraphSyncDate() {
+		return graphSyncDate;
+	}
+
+	public void setGraphSyncDate(Date graphSyncDate) {
+		this.graphSyncDate = graphSyncDate;
+	}
+	
 }

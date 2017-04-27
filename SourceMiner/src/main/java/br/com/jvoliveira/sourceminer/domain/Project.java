@@ -132,4 +132,8 @@ public class Project implements ObjectDB{
 	public boolean isSVN(){
 		return this.repositoryLocation.getVersionManager().isSVNManager();
 	}
+	
+	public boolean isGraphOutOfSync(){
+		return lastSync.isGraphOutOfSync();
+	}
 }

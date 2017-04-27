@@ -37,7 +37,7 @@ public class ClassNode {
 	 * Classes da qual a classe representada por esse nó dependem 
 	 */
 	@Relationship(type = "CALLS", direction = Relationship.OUTGOING)
-	private List<ClassNode> dependencies = new ArrayList<>();
+	private List<MethodCall> dependencies = new ArrayList<>();
 	
 	public ClassNode(){
 		
@@ -89,11 +89,11 @@ public class ClassNode {
 		this.fullPath = fullPath;
 	}
 
-	public List<ClassNode> getDependencies() {
+	public List<MethodCall> getDependencies() {
 		return dependencies;
 	}
 
-	public void setDependencies(List<ClassNode> dependencies) {
+	public void setDependencies(List<MethodCall> dependencies) {
 		this.dependencies = dependencies;
 	}
 

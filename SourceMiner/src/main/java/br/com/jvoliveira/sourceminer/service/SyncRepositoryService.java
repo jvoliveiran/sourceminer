@@ -404,7 +404,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	private void refreshSyncLog(RepositorySyncLog lastSyncLog, Project project) {
-		if(lastSyncLog != null && lastSyncLog.getHeadRevision() == connection.getConnection().getLastRevisionNumber(project))
+		if(lastSyncLog != null && lastSyncLog.getHeadRevision().equals(connection.getConnection().getLastRevisionNumber(project)))
 			return;
 		
 		lastSyncLog = new RepositorySyncLog();
