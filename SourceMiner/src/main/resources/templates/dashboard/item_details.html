@@ -1,83 +1,33 @@
 <html layout:decorator="layouts/layout">
 	<head>
 		<meta charset="UTF-8"/>
-		<script type="text/javascript">
-		
-		function getFileContentInRevision(path){
-			var revisionNumber = $("#revisionFile").val();
-			
-			$.ajax({
-	            type: "POST",
-	            url: "/SourceMiner/dashboard/repository_item/file_content_revision",
-	            data: { 'revisionNumber': revisionNumber, 'path': path  },
-	            success: changeFileContentRevision,
-	            error : function(e) {
-					console.log("ERROR: ", e);
-				},
-				done : function(e) {
-					console.log("DONE");
-				}
-	            });
+		<script th:src="@{/js/item_details.js}"></script>
+		<style type="text/css">
+		path.link {
+		  fill: none;
+		  stroke: #666;
+		  stroke-width: 1.5px;
 		}
 		
-		function changeFileContentRevision(data, status){
-			$('#fileContentBox').text(data);
+		.node text {
+		stroke:#333;
+		cursos:pointer;
 		}
 		
-		function loadGraph(nodeName, projectId){
-			console.log("nodeName:" + nodeName);
-			console.log("projectId:" + projectId);
-			var width = 200, height = 200;
-			
-		    var force = d3.layout.force()
-		            .charge(-200).linkDistance(30).size([width, height]);
-		    
-		    var svg = d3.select("#graph").append("svg")
-		            .attr("width", "100%").attr("height", "100%")
-		            .attr("pointer-events", "all");
-		    
-		    var rest_service = "/SourceMiner/graph/search/findGenericDependecyGraphCallFrom?"+("nodeName="+nodeName);
-		    console.log(rest_service);
-		    console.log("nodeName='"+nodeName+"'");
-		    
-		    d3.json(rest_service)
-		      .header("Content-Type", "application/json") 
-		      .send("get",
-		    	function(error, graph) {
-		        if (error) return;
-		        console.log(graph);
-		        
-		        force
-		        	.nodes(graph._embedded.classNode)
-		        	//.links(graph.links)
-		        	.start();
-		        
-		       /*  var link = svg.selectAll(".link")
-		                .data(graph.links).enter()
-		                .append("line").attr("class", "link"); */
-		        
-		        var node = svg.selectAll(".node")
-		                .data(graph._embedded.classNode).enter()
-		                .append("circle")
-		                .attr("class", function (d) { return "node "+d.label })
-		                .attr("r", 10)
-		                .call(force.drag);
-		        // html title attribute
-		        node.append("name")
-		                .text(function (d) { return d.name; })
-		                
-		        // force feed algo ticks
-		        force.on("tick", function() {
-		           /*  link.attr("x1", function(d) { return d.source.x; })
-		                    .attr("y1", function(d) { return d.source.y; })
-		                    .attr("x2", function(d) { return d.target.x; })
-		                    .attr("y2", function(d) { return d.target.y; }); */
-		            node.attr("cx", function(d) { return d.x; })
-		                    .attr("cy", function(d) { return d.y; });
-		        });
-		    });
+		.node circle{
+		cx: 0;
+	    cy: 0;
+	    r: 25;
+	    fill: rgb(104, 189, 246);
+	    stroke: rgb(92, 168, 219);
+	    stroke-width: 2px;
 		}
-</script>
+		
+		.graph{
+		height: 800px;
+		width: 100%;
+		}
+		</style>
 	</head>
 	
 	<div layout:fragment="content">
@@ -309,7 +259,7 @@
 						  	</div>
 						  	<div id="grafo" class="tab-pane fade">
 								<h3>Grafo</h3>
-								<div id="graph">
+								<div id="graph" class="graph">
 								</div>
 							</div>
 						  	<div id="analise_dependencias" class="tab-pane fade">
