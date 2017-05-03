@@ -22,43 +22,24 @@ function changeFileContentRevision(data, status) {
 	$('#fileContentBox').text(data);
 }
 
-function recursiveGraphParse(nodeGraph, nodeArray, linkArray) {
-	var node = {
-		name : nodeGraph.name
-	}
-	nodeArray.push(node);
-	var calls = nodeGraph.calls
-	for ( var call in calls) {
-		var target = calls[call];
-		var increment = 0;
-		if (target.calls != null)
-			increment = 1;
-		var link = {
-			source : nodeArray.indexOf(node),
-			target : (nodeArray.length + increment)
-		}
-		linkArray.push(link);
-		recursiveGraphParse(target, nodeArray, linkArray);
-	}
-}
-
 function loadGraph(nodeName, projectId) {
 	var width = 200, height = 400;
-	var rest_service = "/SourceMiner/graph/findJSONDependecyGraphCallFrom?"
+	var rest_service = "/SourceMiner/graph/findPlainJSONDependecyGraphCallFrom?"
 			+ ("nodeName=" + nodeName) + ("&projectId=" + projectId);
 
 	d3.json(rest_service).header("Content-Type", "application/json").send("get",
 		function(error, graph) {
 			if (error)	return;
-			var nodeArray = [];
-			var linkArray = [];
-			recursiveGraphParse(graph, nodeArray, linkArray);
-
+			var nodeArray = graph.nodes;
+			var linkArray = graph.links;
+			console.log(graph);
+			
 			var force = d3.layout.force().gravity(.0)
 				.distance(100)
 				.charge(-100)
 				.size([ width, height ])
-				.nodes(nodeArray).links(linkArray).start();
+				.nodes(graph.nodes)
+				.links(graph.links).start();
 				
 			var svg = d3.select("#graph").append("svg")
 				.attr("width", "100%")
@@ -94,7 +75,7 @@ function loadGraph(nodeName, projectId) {
 				    .attr("class", "node")
 				    .call(force.drag);
 
-				node.append("circle").attr("r", "5");
+				node.append("circle").attr("r", "25");
 
 				node.append("text")
 					.attr("dx", 12)

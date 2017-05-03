@@ -33,11 +33,8 @@ public class ClassNode {
 	
 	private String fullPath;
 	
-	/*
-	 * Classes da qual a classe representada por esse nó dependem 
-	 */
 	@Relationship(type = "CALLS", direction = Relationship.OUTGOING)
-	private List<MethodCall> dependencies = new ArrayList<>();
+	private List<MethodCall> methodsCalled = new ArrayList<>();
 	
 	public ClassNode(){
 		
@@ -89,20 +86,20 @@ public class ClassNode {
 		this.fullPath = fullPath;
 	}
 
-	public List<MethodCall> getDependencies() {
-		return dependencies;
-	}
-
-	public void setDependencies(List<MethodCall> dependencies) {
-		this.dependencies = dependencies;
-	}
-
 	public Long getProjectId() {
 		return projectId;
 	}
 
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+
+	public List<MethodCall> getMethodsCalled() {
+		return methodsCalled;
+	}
+
+	public void setMethodsCalled(List<MethodCall> methodsCalled) {
+		this.methodsCalled = methodsCalled;
 	}
 	
 }
