@@ -76,6 +76,7 @@ public class Task implements ObjectDB{
 	public Task(String number, RepositoryRevision revision){
 		this.setNumber(Long.valueOf(number));
 		setRevisions(new HashSet<>());
+		this.features = new HashSet<>();
 		this.project = revision.getProject();
 	}
 
