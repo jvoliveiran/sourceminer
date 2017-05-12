@@ -4,6 +4,7 @@
 package br.com.jvoliveira.sourceminer.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,15 +37,18 @@ public class Task implements ObjectDB{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name="id_repository_revision")
-	private RepositoryRevision repositoryRevision;
+	@OneToMany(mappedBy="task")
+	private Set<RepositoryRevision> revisions;
 	
 	@Column(name="number")
 	private Long number;
 	
 	@Column(name="title")
 	private String title;
+	
+	@ManyToOne
+	@JoinColumn(name="id_project")
+	private Project project;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name="feature_task",
@@ -60,11 +65,18 @@ public class Task implements ObjectDB{
 	private Date updateAt;
 	
 	public Task(){
-		
+		setRevisions(new HashSet<>());
 	}
 	
 	public Task(String number){
-		this.number = Long.valueOf(number);
+		this.setNumber(Long.valueOf(number));
+		setRevisions(new HashSet<>());
+	}
+	
+	public Task(String number, RepositoryRevision revision){
+		this.setNumber(Long.valueOf(number));
+		setRevisions(new HashSet<>());
+		this.project = revision.getProject();
 	}
 
 	public Long getId() {
@@ -97,6 +109,30 @@ public class Task implements ObjectDB{
 
 	public void setFeatures(Set<Feature> features) {
 		this.features = features;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
+	public Set<RepositoryRevision> getRevisions() {
+		return revisions;
+	}
+
+	public void setRevisions(Set<RepositoryRevision> revisions) {
+		this.revisions = revisions;
+	}
+
+	public Long getNumber() {
+		return number;
+	}
+
+	public void setNumber(Long number) {
+		this.number = number;
 	}
 	
 }

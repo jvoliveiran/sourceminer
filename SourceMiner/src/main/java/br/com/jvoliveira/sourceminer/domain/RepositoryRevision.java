@@ -21,12 +21,12 @@ import javax.persistence.TemporalType;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 
 /**
- * @author Joao Victor
+ * @author João Victor
  *
  */
 @Entity
 @Table(name="repository_revision")
-public class RepositoryRevision implements ObjectDB{
+public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevision>{
 
 	@Id
 	@Column(name="id_repository_revision")
@@ -52,6 +52,10 @@ public class RepositoryRevision implements ObjectDB{
 	@ManyToOne
 	@JoinColumn(name="id_project")
 	private Project project;
+	
+	@ManyToOne
+	@JoinColumn(name="id_task")
+	private Task task;
 	
 	//TODO: RevisionCause
 	
@@ -143,5 +147,20 @@ public class RepositoryRevision implements ObjectDB{
 
 	public void setRevisionItem(List<RepositoryRevisionItem> revisionItem) {
 		this.revisionItem = revisionItem;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
+	}
+
+	@Override
+	public int compareTo(RepositoryRevision o) {
+		if(this.id.longValue() == o.id.longValue())
+			return 0;
+		return -1;
 	}
 }

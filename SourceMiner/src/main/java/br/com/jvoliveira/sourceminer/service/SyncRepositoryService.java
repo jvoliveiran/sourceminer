@@ -43,6 +43,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	private RepositoryConnectionSession connection;
 	
 	private RevisionItemMetricService revisionItemMetricService;
+	private TaskService taskService;
 	
 	private SyncLogRepository syncLogRepository;
 	private RepositoryRevisionRepository revisionRepository;
@@ -268,7 +269,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	 */
 	private void processSimpleRepositoryItemChanges(List<RepositoryItem> itensInDatabase){
 		notifyObservers("[3-3] Carregando histórico de mudanças...");
-		notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itensInDatabase.size());
+		notifyObservers("[3-3] Modificações em artefatos para sincronização: " + itensInDatabase.size());
 		
 		Integer itemChangeProcessed = 0;
 		for(RepositoryItem item : itensInDatabase){
@@ -380,6 +381,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			revision.setCreateAt(DateUtils.now());
 			try{
 				revision = revisionRepository.save(revision);
+				taskService.createTaskFromRevision(revision);
 			}catch(Exception hsqlException){
 				revision.setComment("Rev " + revision.getRevision());
 				revision = revisionRepository.save(revision);
@@ -461,6 +463,11 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	@Autowired
 	public void setRevisionItemMetricService(RevisionItemMetricService service){
 		this.revisionItemMetricService = service;
+	}
+	
+	@Autowired
+	public void setTaskService(TaskService taskService){
+		this.taskService = taskService;
 	}
 	
 	public void notifyObservers(String mensagem){

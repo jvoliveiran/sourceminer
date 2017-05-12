@@ -27,7 +27,7 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
  */
 @Entity
 @Table(name="feature")
-public class Feature implements ObjectDB{
+public class Feature implements ObjectDB, Comparable<Feature>{
 
 	@Id
 	@Column(name="id_feature")
@@ -63,7 +63,12 @@ public class Feature implements ObjectDB{
 	}
 
 	public Feature(String path){
-		this.path = path;
+		this.setPath(path);
+	}
+	
+	public Feature(String path, Project project){
+		this.setPath(path);
+		this.project = project;
 	}
 	
 	public Long getId() {
@@ -112,5 +117,22 @@ public class Feature implements ObjectDB{
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+
+	@Override
+	public int compareTo(Feature o) {
+		if(this.id.longValue() == o.getId().longValue())
+			return 0;
+		else if(this.getPath().equals(o.getPath()) && project.getId().longValue() == o.getProject().getId().longValue())
+			return 0;
+		return -1;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }
