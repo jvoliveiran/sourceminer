@@ -79,10 +79,10 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	//TODO: Passo 4: Criar método como serviço para remover ClassNode e respectivos methodCalls para classes removidas.
 	public void synchronizeGraphUsingConfiguration(Project project) {
 		itemsForFirstSync(project);
-		boolean firstSync = isFirstSync(project);
-		if(firstSync && project.isGraphOutOfSync())
+		boolean isFirstSync = isFirstSync(project);
+		if(isFirstSync && project.isGraphOutOfSync())
 			refreshSyncLog(project);
-		else if(!firstSync && project.isGraphOutOfSync()){
+		else if(!isFirstSync && project.isGraphOutOfSync()){
 			Map<RepositoryItem,ClassNode> itemNode = getItensChangedAfterLastSync(project);
 			createRelationshipInGraph(project,itemNode,true);
 			refreshSyncLog(project);

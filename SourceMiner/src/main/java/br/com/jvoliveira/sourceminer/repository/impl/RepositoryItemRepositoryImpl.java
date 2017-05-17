@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.repository.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Repository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.repository.custom.RepositoryItemRepositoryCustom;
 
 /**
@@ -99,6 +102,31 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		Query query = entityManager.createQuery(hql);
 		query.setParameter("idProject", project.getId());
 		query.setParameter("revisions",revisions);
+		
+		return query.getResultList();
+	}
+
+	@Override
+	public List<RepositoryRevisionItem> findItemsModifiedPreviouslyIn(Collection<Long> ids, RepositoryRevision revision) {
+		String hql = "SELECT repRevItem "
+				+ " FROM RepositoryRevisionItem repRevItem "
+				+ " JOIN repRevItem.repositoryRevision repoRev "
+				+ " JOIN repRevItem.repositoryItem repoItem "
+				+ " WHERE repoItem.project.id = :idProject "
+				+ " AND repoItem.id IN (:ids) "
+				+ " AND repoRev.id <> :idRevision "
+				+ " AND repoRev.dateRevision < :dateRevision ";
+		if(revision.getTask() != null)
+			hql += " AND (repoRev.task.id <> :idTask OR repoRev.task IS NULL )";
+		hql += " ORDER BY repRevItem.repositoryRevision.dateRevision DESC ";
+		
+		Query query = entityManager.createQuery(hql);
+		query.setParameter("ids",ids);
+		query.setParameter("idProject", revision.getProject().getId());
+		query.setParameter("idRevision", revision.getId());
+		query.setParameter("dateRevision", revision.getDateRevision());
+		if(revision.getTask() != null)
+			query.setParameter("idTask", revision.getTask().getId());
 		
 		return query.getResultList();
 	}

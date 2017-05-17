@@ -13,7 +13,7 @@ import br.com.jvoliveira.sourceminer.domain.Project;
 public class RepositoryRevisionFilter implements ArqFilter{
 	
 	private Boolean checkRevision;
-	private Long revision;
+	private String revision;
 	
 	private Boolean checkAuthor;
 	private String author;
@@ -40,7 +40,7 @@ public class RepositoryRevisionFilter implements ArqFilter{
 	
 	public boolean isValidRevision(){
 		if(checkRevision != null && checkRevision
-				&& revision != null && revision > 0L)
+				&& revision != null && !revision.equals(""))
 			return true;
 		return false;
 	}
@@ -67,11 +67,11 @@ public class RepositoryRevisionFilter implements ArqFilter{
 		this.checkRevision = checkRevision;
 	}
 
-	public Long getRevision() {
+	public String getRevision() {
 		return revision;
 	}
 
-	public void setRevision(Long revision) {
+	public void setRevision(String revision) {
 		this.revision = revision;
 	}
 

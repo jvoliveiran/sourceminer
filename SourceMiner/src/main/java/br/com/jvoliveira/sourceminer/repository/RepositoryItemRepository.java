@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,6 @@ public interface RepositoryItemRepository extends CrudRepository<RepositoryItem,
 	
 	@Query("SELECT count(ri) FROM RepositoryItem ri WHERE ri.project = ?1")
 	Integer countTotalItensByProject(Project project);
+	
+	Collection<RepositoryItem> findByIdIn(Collection<Long> ids);
 }

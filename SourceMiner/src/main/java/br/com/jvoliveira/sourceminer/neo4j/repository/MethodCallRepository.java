@@ -19,5 +19,5 @@ public interface MethodCallRepository extends Neo4jRepository<MethodCall, Long>{
 
 	@Query("MATCH (n:ClassNode)-[k:CALLS]->(m:ClassNode) WHERE n.repositoryItemId = {idItem} RETURN k")
 	List<MethodCall> getAllMethodsCallFromNode(@Param("idItem") Long idItem);
-	
+		
 }

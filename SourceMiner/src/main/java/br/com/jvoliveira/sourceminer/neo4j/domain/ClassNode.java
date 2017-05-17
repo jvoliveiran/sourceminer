@@ -4,12 +4,14 @@
 package br.com.jvoliveira.sourceminer.neo4j.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 
@@ -20,7 +22,7 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
  *
  */
 @NodeEntity
-public class ClassNode {
+public class ClassNode implements ObjectDB{
 
 	@GraphId
 	private Long id;
@@ -100,6 +102,30 @@ public class ClassNode {
 
 	public void setMethodsCalled(List<MethodCall> methodsCalled) {
 		this.methodsCalled = methodsCalled;
+	}
+
+	@Override
+	public void setCreateAt(Date date) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getCreateAt() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUpdateAt(Date date) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getUpdateAt() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
