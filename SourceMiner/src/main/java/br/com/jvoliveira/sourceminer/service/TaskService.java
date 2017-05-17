@@ -51,6 +51,8 @@ public class TaskService extends AbstractArqService<Task>{
 			task.getRevisions().add(revision);
 			task.getFeatures().addAll(features);
 			getRepository().save(task);
+			revision.setTask(task);
+			getDAO().update(revision);
 		}
 		
 		return tasks;
