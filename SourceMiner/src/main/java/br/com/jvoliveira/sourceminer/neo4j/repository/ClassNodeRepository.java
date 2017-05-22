@@ -24,6 +24,6 @@ public interface ClassNodeRepository extends GraphRepository<ClassNode>{
 	@Query("MATCH (n:ClassNode)-[k:CALLS]->(m:ClassNode) WHERE n.repositoryItemId = {idItem} RETURN n as graphNode, k as methodCall, m as graphNodeDestiny")
 	List<MethodCall> getAllMethodsCallFromNode(@Param("idItem") Long idItem);
 	
-	@Query("MATCH (n:ClassNode)-[k:CALLS]->(m:ClassNode) WHERE k.itemAssetId = {itemAssetId} RETURN n")
+	@Query("MATCH (n2)-[k2:CALLS*]->(n:ClassNode)-[k:CALLS]->(m:ClassNode) WHERE k.itemAssetId = {itemAssetId} RETURN n, n2")
 	List<ClassNode> getNodesCallingMethod(@Param("itemAssetId") Long itemAssetId);
 }

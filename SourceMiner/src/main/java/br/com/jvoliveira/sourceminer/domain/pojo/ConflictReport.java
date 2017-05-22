@@ -41,7 +41,7 @@ public class ConflictReport {
 			message.append("Última revisão " + revItem.getRepositoryRevision().getRevision());
 			message.append(" Em: " + revItem.getRepositoryRevision().getDateRevision());
 			if(revItem.getRepositoryRevision().getTask() != null)
-				message.append(" (Tarefa "+revItem.getRepositoryRevision().getTask().getNumber()+")");
+				message.append(" (Tarefa #"+revItem.getRepositoryRevision().getTask().getNumber()+")");
 			message.append("</li>");
 		}
 		message.append("</ul>");
