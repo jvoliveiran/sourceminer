@@ -40,7 +40,11 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		query.setParameter("filePath", filePath);
 		query.setParameter("idProject", idProject);
 		
-		return (String) query.getSingleResult();
+		try{
+			return (String) query.getSingleResult();
+		}catch(NoResultException noResultExp){
+			return "-1";
+		}
 	}
 	
 	@Override

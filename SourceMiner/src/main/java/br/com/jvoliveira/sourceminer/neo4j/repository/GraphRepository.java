@@ -23,7 +23,8 @@ public interface GraphRepository extends Neo4jRepository<ClassNode,	Long> {
 	@Query("MATCH (a:ClassNode)-[r1]->(b:ClassNode)-[r2]->(c:ClassNode) WHERE a.name = {nodeName} RETURN a,r1,b,r2,c")
 	Collection<ClassNode> findGenericDependecyGraphCallFrom(@Param("nodeName") String nodeName);
 	
-	@Query("MATCH (a:ClassNode)-[r1]->(b:ClassNode)-[r2]->(c:ClassNode) WHERE a.name = {nodeName} AND a.projectId = {projectId} RETURN a,r1,b,r2,c")
+	//@Query("MATCH (a:ClassNode)-[r1]->(b:ClassNode)-[r2]->(c:ClassNode) WHERE a.name = {nodeName} AND a.projectId = {projectId} RETURN a,r1,b,r2,c")
+	@Query("MATCH (c:ClassNode)-[r1:CALLS*0..2]->(b:ClassNode)-[r2:CALLS*0..2]->(a:ClassNode) WHERE b.name = {nodeName} AND b.projectId = {projectId} RETURN b,r1,c,r2,a")
 	Collection<ClassNode> findDependecyGraphCallFrom(@Param("nodeName") String nodeName, @Param("projectId") Long projectId);
 	
 	@Query("MATCH (a:ClassNode)-[r1]->(b:ClassNode)-[r2]->(c:ClassNode) WHERE c.name = {nodeName} AND c.projectId = {projectId} RETURN a,r1,b,r2,c")
