@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -30,7 +31,8 @@ public class Project implements ObjectDB{
 
 	@Id
 	@Column(name="id_project")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@SequenceGenerator(name="project_seq", sequenceName="project_seq", allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="project_seq")
 	private Long id;
 	
 	@Column(name="name")

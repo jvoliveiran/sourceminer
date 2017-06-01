@@ -103,6 +103,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	}
 	
 	private void itemsForFirstSync(Project project){
+		notifyObservers("Criando novos nós do grafo...");
 		List<RepositoryItem> itemWithoutNode = itemRepository.findItemWithoutNode(project);
 		if(!itemWithoutNode.isEmpty()){
 			Map<RepositoryItem,ClassNode> itemNode = createNodeForRepositoryItem(project,itemWithoutNode);
@@ -112,6 +113,8 @@ public class SyncGraphService extends AbstractArqService<Project>{
 
 	private Map<RepositoryItem,ClassNode> createNodeForRepositoryItem(Project project, List<RepositoryItem> itemWithouNode) {
 		Map<RepositoryItem,ClassNode> result = new HashMap<>();
+		Integer totalNos = itemWithouNode.size();
+		Integer noAtual = 1;
 		for(RepositoryItem item : itemWithouNode){
 			ClassNode newClassNode = new ClassNode(item,project);
 			nodeRepository.save(newClassNode);
@@ -119,14 +122,18 @@ public class SyncGraphService extends AbstractArqService<Project>{
 			item.setGraphNodeId(newClassNode.getId());
 			getDAO().update(item);
 			result.put(item,newClassNode);
+			notifyObservers("Criando nó "+noAtual+"/"+totalNos);
+			noAtual++;
 		}
 		return result;
 	}
 	
 	private void createRelationshipInGraph(Project project, Map<RepositoryItem,ClassNode> itemNode, boolean searchForMethodsCall) {
 		Iterator<RepositoryItem> repositoryItems = itemNode.keySet().iterator();
-		
+		Integer totalItens = itemNode.keySet().size();
+		Integer index = 1;
 		while(repositoryItems.hasNext()){
+			notifyCompleteObservers("Criando chamadas de métodos para " + index + "/" + totalItens + " artefatos","");
 			RepositoryItem item = repositoryItems.next();
 			ClassNode classNode = itemNode.get(item);
 			
@@ -137,6 +144,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 					methodsCall.addAll(queryResult);
 			}
 			processCallGraph(classNode,item,methodsCall);
+			index++;
 		}
 		
 	}
@@ -153,23 +161,29 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		List<MethodCall> result = new ArrayList<>();
 		
 		Iterator<String> iteratorResultMap = resultMap.keySet().iterator();
+		Integer nodeIndex = 1;
 		while(iteratorResultMap.hasNext()){
 			String className = iteratorResultMap.next();
 			Collection<String> methodsCalledInClass = resultMap.get(className);
+			Integer methodIndex = 1;
 			for(String methodCalledInClass : methodsCalledInClass){
+				notifySubLabelObservers("Nó ["+nodeIndex+"/"+resultMap.size()+"] - Método ["+methodIndex+"/"+methodsCalledInClass.size()+"]");
 				List<MethodCall> methodsCalled = createAndPersistMethodCall(item.getProject(), className, methodCalledInClass,classNode,methodsCall);
 				if(methodsCalled != null)
 					result.addAll(methodsCalled);
+				methodIndex++;
 			}
+			nodeIndex++;
 		}
 		
 		return result;
 	}
 
+	//FIXME: GARGALO! PROJETAR CONSULTAS!
 	private List<MethodCall> createAndPersistMethodCall(Project project, String className, String methodCalledInClass, ClassNode classNode,
 			Collection<MethodCall> methodsCall) {
 		//TODO: Refatorar concatenação de extensão. Sugestão: Selecionar extensão de arquivos para sincronização nas configurações do projeto.
-		RepositoryItem itemCalled = itemRepository.findFirstByName(className+".java");
+		RepositoryItem itemCalled = itemRepository.findFirstByNameAndProject(className+".java",project);
 		if(itemCalled == null)
 			return null;
 		
@@ -182,6 +196,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 				relation.setItemAssetId(asset.getId());
 				relation.setMethodName(asset.getName());
 				relation.setMethodSignature(asset.getSignature());
+				relation.setProjectId(project.getId());
 				methodCallRepository.save(relation);
 				methodsCalled.add(relation);
 			}
@@ -210,6 +225,18 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	public void notifyObservers(String mensagem){
 		if(observer != null)
 			observer.getNotification(mensagem);
+	}
+	
+	public void notifyCompleteObservers(String mensagem, String subMensagem){
+		if(observer != null){
+			observer.getNotification(mensagem);
+			observer.getSubNotification(subMensagem);
+		}
+	}
+	
+	public void notifySubLabelObservers(String mensagem){
+		if(observer != null)
+			observer.getSubNotification(mensagem);
 	}
 
 	@Autowired

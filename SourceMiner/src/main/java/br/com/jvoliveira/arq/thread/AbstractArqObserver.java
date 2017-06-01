@@ -3,6 +3,9 @@
  */
 package br.com.jvoliveira.arq.thread;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.service.AbstractArqService;
 
@@ -13,15 +16,21 @@ import br.com.jvoliveira.arq.service.AbstractArqService;
 public abstract class AbstractArqObserver {
 
 	private String label;
+	private String subLabel;
 	
 	private boolean inSync = false;
 	
 	public abstract void getNotification(AbstractArqThread thread);
 	public abstract void getNotification(AbstractArqService<? extends ObjectDB> service);
 	public abstract void getNotification(String mensagem);
+	public abstract void getNotification(String mensagem, String subMensagem);
+	
+	private Date beginSync;
+	private Date finishSync;
 	
 	public AbstractArqObserver(){
 		label = "";
+		subLabel = "";
 	}
 
 	public String getLabel() {
@@ -39,6 +48,7 @@ public abstract class AbstractArqObserver {
 	
 	public void startSync(){
 		this.inSync = true;
+		this.beginSync = Calendar.getInstance().getTime();
 	}
 	
 	public void closeSync(){
@@ -47,5 +57,23 @@ public abstract class AbstractArqObserver {
 	
 	public boolean isInSync(){
 		return inSync;
+	}
+	public Date getBeginSync() {
+		return beginSync;
+	}
+	public void setBeginSync(Date beginSync) {
+		this.beginSync = beginSync;
+	}
+	public Date getFinishSync() {
+		return finishSync;
+	}
+	public void setFinishSync(Date finishSync) {
+		this.finishSync = finishSync;
+	}
+	public String getSubLabel() {
+		return subLabel;
+	}
+	public void setSubLabel(String subLabel) {
+		this.subLabel = subLabel;
 	}
 }

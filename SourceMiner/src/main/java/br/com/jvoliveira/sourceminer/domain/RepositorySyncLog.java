@@ -35,6 +35,14 @@ public class RepositorySyncLog implements ObjectDB{
 	@Column(name="create_at")
 	private Date createAt;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="begin_sync")
+	private Date beginSync;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="finish_sync")
+	private Date finishSync;
+	
 	@Column(name="head_revision")
 	private String headRevision;
 	
@@ -102,6 +110,22 @@ public class RepositorySyncLog implements ObjectDB{
 
 	public void setGraphSyncDate(Date graphSyncDate) {
 		this.graphSyncDate = graphSyncDate;
+	}
+
+	public Date getBeginSync() {
+		return beginSync;
+	}
+
+	public void setBeginSync(Date beginSync) {
+		this.beginSync = beginSync;
+	}
+
+	public Date getFinishSync() {
+		return finishSync;
+	}
+
+	public void setFinishSync(Date finishSync) {
+		this.finishSync = finishSync;
 	}
 	
 }

@@ -45,10 +45,8 @@ public class FieldDeclarationVisitor extends VoidVisitorAdapter<Object> implemen
 	
 	public void visit(FieldDeclaration fieldDeclaration, Object arg) {
 		for (VariableDeclarator variableDeclaration : fieldDeclaration.getVariables()) {
-			if(JavaParserUtils.isCustomClassType(fieldDeclaration.getType().toString())){
+			if(JavaParserUtils.isCustomClassType(fieldDeclaration.getType().toString()))
 				this.resultMap.put("FieldDeclaration_"+variableDeclaration.getId().getName(), fieldDeclaration.getType().toString());
-				System.out.println("Variable Name: " + variableDeclaration.getId().getName() + " | type: " + fieldDeclaration.getType());
-			}
 		}
 	}
 }

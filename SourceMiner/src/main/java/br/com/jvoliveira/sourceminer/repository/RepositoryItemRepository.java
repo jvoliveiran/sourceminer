@@ -23,9 +23,9 @@ public interface RepositoryItemRepository extends CrudRepository<RepositoryItem,
 	
 	List<RepositoryItem> findTop10ByProjectOrderByIdDesc(Project project);
 	
-	RepositoryItem findByPathAndName(String path, String name);
+	RepositoryItem findByPathAndNameAndProject(String path, String name, Project project);
 	
-	RepositoryItem findFirstByName(String name);
+	RepositoryItem findFirstByNameAndProject(String name,Project project);
 	
 	@Query("SELECT count(ri) FROM RepositoryItem ri WHERE ri.project = ?1")
 	Integer countTotalItensByProject(Project project);

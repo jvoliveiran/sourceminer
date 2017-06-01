@@ -256,7 +256,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			List<ItemAsset> actualItemAssets = getActualAssetsByItem(item);
 			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
-			//FIXME: GARGALO! UTILIZAR INSERÇÃO EM BATCH
 			syncAssets(assetsToSync, revisionItem);
 			itemChangeProcessed++;
 			notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itemChangeProcessed + "/" + revisionRevisionItensInDatabase.size() );
@@ -290,8 +289,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	private List<ItemAsset> getActualAssetsByItem(RepositoryItem item){
-		if(item.getId() == null || item.getId() == 0L)
-			System.out.println(item.getName());
 		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnable(item,true);
 		actualItemAssets.stream().forEach(asset -> asset.setNewAsset(true));
 		return actualItemAssets;
@@ -397,7 +394,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	private RepositoryItem getSyncItem(Project project, RepositoryItem item){
 		String itemPath = item.getPath();
 		String itemName = item.getName();
-		RepositoryItem itemFromDB = itemRepository.findByPathAndNameAndProject(itemPath, itemName, project);
+		RepositoryItem itemFromDB = itemRepository.findByPathAndName(itemPath, itemName);
 		
 		if(itemFromDB != null)
 			return itemFromDB;

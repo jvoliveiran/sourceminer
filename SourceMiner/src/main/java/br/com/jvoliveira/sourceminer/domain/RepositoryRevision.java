@@ -33,7 +33,7 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="revision", unique=true)
+	@Column(name="revision")
 	private String revision;
 	
 	@Column(name="comment", length=3000)

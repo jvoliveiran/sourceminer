@@ -27,7 +27,7 @@ public class CallGraphVisitorExecutorTest {
 	
 	@Before
 	public void setUp() throws IOException, IllegalAccessException, InstantiationException{
-		filePath = "src/main/resources/test/nova_classe_teste2.txt";
+		filePath = "src/main/resources/test/nova_classe_teste3.txt";
 		File fileTXT = new File(filePath);
 		fileContent = new String(Files.readAllBytes(Paths.get(fileTXT.getAbsolutePath())));
 	}

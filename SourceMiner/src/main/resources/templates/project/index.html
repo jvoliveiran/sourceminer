@@ -33,11 +33,15 @@
 			}
 			
 			function showSyncStatus(data, status){
-				$('#response_sync_status').text(data);
+				console.log(data)
+				console.log(data.label);
+				console.log(data.subLabel);
+				$('#response_sync_status').text(data.label);
+				$('#response_sync_substatus').text(data.subLabel);
 			}
 			
 			$( document ).ready(function() {
-				setInterval(refreshSyncStatus, 5000);
+				setInterval(refreshSyncStatus, 3000);
 			});
 		</script>
 	</head>
@@ -65,6 +69,7 @@
 				  	<div class="row">
 						<div class="col-lg-12">
 							<p id="response_sync_status" th:text="${syncStatus}"></p>
+							<p id="response_sync_substatus" ></p>
 						</div>
 					</div>
 				  	
