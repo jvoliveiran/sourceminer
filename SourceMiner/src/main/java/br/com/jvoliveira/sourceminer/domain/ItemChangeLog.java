@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,7 +32,8 @@ public class ItemChangeLog implements ObjectDB{
 
 	@Id
 	@Column(name="id_item_change_log")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@SequenceGenerator(name="item_change_log_seq",sequenceName="item_change_log_seq",allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="item_change_log_seq")
 	private Long id;
 	
 	@ManyToOne

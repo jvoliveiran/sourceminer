@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,7 +32,8 @@ public class Feature implements ObjectDB, Comparable<Feature>{
 
 	@Id
 	@Column(name="id_feature")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@SequenceGenerator(name="feature_seq",sequenceName="feature_seq",allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="feature_seq")
 	private Long id;
 	
 	@Column(name="path")

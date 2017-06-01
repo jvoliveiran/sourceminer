@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,7 +32,8 @@ public class ItemAsset implements GenericAsset{
 	
 	@Id
 	@Column(name = "id_item_asset")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name="item_asset_seq",sequenceName="item_asset_seq",allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator="item_asset_seq")
 	private Long id;
 	
 	@Column(name="name")

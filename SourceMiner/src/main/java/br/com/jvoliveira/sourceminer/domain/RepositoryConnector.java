@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,9 +26,11 @@ import br.com.jvoliveira.arq.domain.ObjectDB;
 @Entity
 @Table(name="repository_connector")
 public class RepositoryConnector implements ObjectDB {
+	
 	@Id
 	@Column(name = "id_repository_connector")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name="repository_connector_seq",sequenceName="repository_connector_seq",allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator="repository_connector_seq")
 	private Long id;
 	
 	@Column(name="name")

@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -30,7 +31,8 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 
 	@Id
 	@Column(name="id_repository_revision")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@SequenceGenerator(name="repository_revision_seq", sequenceName="repository_revision_seq", allocationSize=1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="repository_revision_seq")
 	private Long id;
 	
 	@Column(name="revision")
