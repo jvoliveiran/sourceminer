@@ -77,6 +77,16 @@ public class ItemAsset implements GenericAsset{
 	public ItemAsset(){
 		newAsset = true;
 	}
+	
+	public ItemAsset(Long id, String name, String signature, AssetType assetType, String value, Boolean enable){
+		newAsset = true;
+		this.id = id;
+		this.name = name;
+		this.signature = signature;
+		this.assetType = assetType;
+		this.value = value;
+		this.enable = enable;
+	}
 
 	@Override
 	public void setId(Long id) {

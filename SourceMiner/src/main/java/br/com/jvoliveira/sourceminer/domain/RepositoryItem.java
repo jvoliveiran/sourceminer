@@ -65,6 +65,15 @@ public class RepositoryItem implements ObjectDB{
 	@Column(name="update_at")
 	private Date updateAt;
 	
+	public RepositoryItem(){
+		
+	}
+	
+	public RepositoryItem(Long id, String path){
+		this.id = id;
+		this.path = path;
+	}
+	
 	@Override
 	public void setId(Long id) {
 		this.id = id;

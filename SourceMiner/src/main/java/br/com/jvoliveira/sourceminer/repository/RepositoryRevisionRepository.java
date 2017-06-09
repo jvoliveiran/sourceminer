@@ -10,12 +10,13 @@ import org.springframework.data.repository.CrudRepository;
 
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
+import br.com.jvoliveira.sourceminer.repository.custom.RepositoryRevisionRepositoryCustom;
 
 /**
  * @author Joao Victor
  *
  */
-public interface RepositoryRevisionRepository extends CrudRepository<RepositoryRevision, Long>{
+public interface RepositoryRevisionRepository extends CrudRepository<RepositoryRevision, Long>, RepositoryRevisionRepositoryCustom{
 	
 	List<RepositoryRevision> findByProject(Project project);
 	

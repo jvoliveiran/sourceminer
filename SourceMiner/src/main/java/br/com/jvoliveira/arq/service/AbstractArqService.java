@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import br.com.jvoliveira.arq.dao.BatchDAO;
 import br.com.jvoliveira.arq.dao.GenericDAO;
 import br.com.jvoliveira.arq.domain.ObjectDB;
 import br.com.jvoliveira.arq.utils.DateUtils;
@@ -25,8 +26,15 @@ public class AbstractArqService<T extends ObjectDB> {
 	@Autowired
 	private GenericDAO dao;
 	
+	@Autowired
+	private BatchDAO batchDAO;
+	
 	protected GenericDAO getDAO(){
 		return this.dao;
+	}
+	
+	protected BatchDAO getBatchDAO(){
+		return this.batchDAO;
 	}
 	
 	/**

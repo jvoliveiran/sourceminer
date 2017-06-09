@@ -42,8 +42,7 @@ import br.com.jvoliveira.sourceminer.sync.SyncRepositoryObserver;
 public class SyncRepositoryService extends AbstractArqService<Project> {
 
 	private RepositoryConnectionSession connection;
-	
-	private RevisionItemMetricService revisionItemMetricService;
+
 	private TaskService taskService;
 	
 	private SyncLogRepository syncLogRepository;
@@ -59,6 +58,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	private ProjectConfiguration config;
 	
 	private SyncRepositoryObserver observer;
+	
+	private int saveCounter = 0;
 	
 	@Autowired
 	public SyncRepositoryService(RepositoryConnectionSession connection,
@@ -86,6 +87,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		
 		this.observer = observer;
 		this.observer.startSync();
+		saveCounter = 0;
 		notifyObservers("Iniciando sincronização de repositório");
 		
 		synchronizeRepositoryUsingConfiguration(project);
@@ -189,10 +191,14 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				continue;
 			item.setCreateAt(DateUtils.now());
 			item.setProject(project);
+			
 			item.setRepositoryRevision(getSyncRevision(project,item.getRepositoryRevision()));
 			item.setRepositoryItem(getSyncItem(project, item.getRepositoryItem()));
-			
+
+			//TODO:ESCOLHER
+			//getBatchDAO().batchSave(item,saveCounter);
 			revisionItemRepository.save(item);
+			saveCounter++;
 		}
 		
 		notifyObservers("[2-3] Revisões sincronizadas!");
@@ -247,12 +253,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				e.printStackTrace();
 			}
 			
-			if(revisionItem.getCommitType() == null)
-				System.out.println(revisionItem.getId());
-				
-			if(revisionItem.existFileInRepository())
-				revisionItemMetricService.generateSingleRevisionItemMetric(fileContent, revisionItem, this.config);
-			
 			List<ItemAsset> actualItemAssets = getActualAssetsByItem(item);
 			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
@@ -290,9 +290,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	private List<ItemAsset> getActualAssetsByItem(RepositoryItem item){
-		if(item.getId() == null || item.getId() == 0L)
-			System.out.println(item.getName());
-		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnable(item,true);
+		List<ItemAsset> actualItemAssets = itemAssetRepository.findByRepositoryItemAndEnableOptimized(item,true);
 		actualItemAssets.stream().forEach(asset -> asset.setNewAsset(true));
 		return actualItemAssets;
 	}
@@ -319,7 +317,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				if(asset.isAbleToSetImportRepositoryItem())
 					setImportRepositoryItem(asset, revisionItem);
 				try{
-					itemAssetRepository.save(asset);
+					//TODO: ESCOLHER
+					getBatchDAO().batchSave(asset,saveCounter);
+					//itemAssetRepository.save(asset);
+					saveCounter++;
 				}catch(Exception e){
 					e.printStackTrace();
 					continue;
@@ -327,10 +328,16 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			}else if(asset.getItemChageLog().getChangeType().isDelete()){
 				asset.setUpdateAt(DateUtils.now());
 				asset.setEnable(false);
-				itemAssetRepository.save(asset);
+				//TODO: ESCOLHER
+				getBatchDAO().batchSave(asset,saveCounter);
+				//itemAssetRepository.save(asset);
+				saveCounter++;
 			}else if(asset.getItemChageLog().getChangeType().isUpdate()){
 				asset.setUpdateAt(DateUtils.now());
-				itemAssetRepository.save(asset);
+				//TODO: ESCOLHER
+				getBatchDAO().batchSave(asset,saveCounter);
+				//itemAssetRepository.save(asset);
+				saveCounter++;
 			}
 			
 			if(getConfig().isSyncChangeLog() && revisionItem.getId() != null){
@@ -342,7 +349,10 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 					itemChange.setCreateAt(DateUtils.now());
 					itemChange.setRevisionItem(revisionItem);
 					
-					itemChangeLogRepository.save(itemChange);
+					//TODO: ESCOLHER
+					//itemChangeLogRepository.save(itemChange);
+					getBatchDAO().batchSave(itemChange,saveCounter);
+					saveCounter++;
 				}
 			}
 			
@@ -376,7 +386,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 
 	private RepositoryRevision getSyncRevision(Project project, RepositoryRevision revision){
 		String revisionNumber = revision.getRevision();
-		RepositoryRevision revisionFromDB = revisionRepository.findByProjectAndRevision(project,revisionNumber);
+		RepositoryRevision revisionFromDB = revisionRepository.findByProjectAndRevisionOptimized(project,revisionNumber);
 		
 		if(revisionFromDB != null)
 			return revisionFromDB;
@@ -388,6 +398,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				taskService.createTaskFromRevision(revision);
 			}catch(Exception hsqlException){
 				revision.setComment("Rev " + revision.getRevision());
+				
 				revision = revisionRepository.save(revision);
 			}
 			return revision;
@@ -397,7 +408,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	private RepositoryItem getSyncItem(Project project, RepositoryItem item){
 		String itemPath = item.getPath();
 		String itemName = item.getName();
-		RepositoryItem itemFromDB = itemRepository.findByPathAndNameAndProject(itemPath, itemName, project);
+		RepositoryItem itemFromDB = itemRepository.findByPathAndNameAndProjectOptimized(itemPath, itemName, project);
 		
 		if(itemFromDB != null)
 			return itemFromDB;
@@ -405,6 +416,7 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			item.setProject(project);
 			item.setCreateAt(DateUtils.now());
 			item = itemRepository.save(item);
+			saveCounter++;
 			return item;
 		}
 	}
@@ -464,11 +476,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	@Autowired
 	public void setProjectConfigurationRepository(ProjectConfigurationRepository repository){
 		this.projectConfigurationRepository = repository;
-	}
-	
-	@Autowired
-	public void setRevisionItemMetricService(RevisionItemMetricService service){
-		this.revisionItemMetricService = service;
 	}
 	
 	@Autowired

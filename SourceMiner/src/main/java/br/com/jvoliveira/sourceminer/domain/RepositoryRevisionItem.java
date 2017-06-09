@@ -134,6 +134,8 @@ public class RepositoryRevisionItem implements ObjectDB{
 	}
 	
 	public boolean existFileInRepository(){
+		if(this.commitType == null)
+			return false;
 		return this.commitType.isAdded() || this.commitType.isModified();
 	}
 }

@@ -23,4 +23,6 @@ public interface RepositoryItemRepositoryCustom {
 	public List<RepositoryItem> findItemsChangedInRevisions(Project project, List<String> revisions);
 	
 	public List<RepositoryRevisionItem> findItemsModifiedPreviouslyIn(Collection<Long> ids, RepositoryRevision revision);
+	
+	public RepositoryItem findByPathAndNameAndProjectOptimized(String path, String name, Project project);
 }

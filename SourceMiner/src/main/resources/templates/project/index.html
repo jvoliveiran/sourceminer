@@ -81,12 +81,12 @@
 				  	
 				  	<table class="table table-striped" th:if="!${#lists.isEmpty(list)}">
 				  		<tr>
-							<th>Nome</th>
-							<th>Caminho</th>
-							<th>Repositório</th>
-							<th>Última Sincronização</th>
-							<th>Configurações</th>
-							<th>Sincronizar</th>
+							<th width="15%">Nome</th>
+							<th width="30%">Caminho</th>
+							<th width="15%">Repositório</th>
+							<th width="30%">Última Sincronização</th>
+							<th width="5%">Configurações</th>
+							<th width="5%">Sincronizar</th>
 						</tr>
 						<tr th:each="item : ${list}">
 							<td th:text="${item.name}"></td>

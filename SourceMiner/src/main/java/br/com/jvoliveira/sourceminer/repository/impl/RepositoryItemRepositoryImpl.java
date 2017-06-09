@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -29,6 +30,24 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 
 	private EntityManager entityManager;
 	
+	public RepositoryItem findByPathAndNameAndProjectOptimized(String path, String name, Project project){
+		String hql = " SELECT NEW RepositoryItem(id, path) "
+				+ " FROM RepositoryItem repositoryItem "
+				+ " WHERE repositoryItem.path = :path "
+				+ " AND repositoryItem.name = :name "
+				+ " AND repositoryItem.project.id = :idProject ";
+		try{
+			TypedQuery<RepositoryItem> query = entityManager.createQuery(hql, RepositoryItem.class).setFirstResult(0).setMaxResults(1);
+			query.setParameter("path", path);
+			query.setParameter("name", name);
+			query.setParameter("idProject", project.getId());
+		
+			return query.getSingleResult();
+		}catch (NoResultException e) {
+			return null;
+		}
+	}
+	
 	@Override
 	public String findLastRevisionInFile(String filePath, Long idProject){
 		String hql = "SELECT repositoryRevision.revision FROM RepositoryRevisionItem repositoryRevisionItem "
@@ -36,11 +55,11 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 				+ " INNER JOIN repositoryRevisionItem.repositoryItem AS repositoryItem"
 				+ " WHERE  repositoryItem.path LIKE :filePath AND repositoryRevisionItem.project.id = :idProject ";
 		
-		Query query = entityManager.createQuery(hql).setFirstResult(0).setMaxResults(1);
-		query.setParameter("filePath", filePath);
-		query.setParameter("idProject", idProject);
-		
 		try{
+			Query query = entityManager.createQuery(hql).setFirstResult(0).setMaxResults(1);
+			query.setParameter("filePath", filePath);
+			query.setParameter("idProject", idProject);
+			
 			return (String) query.getSingleResult();
 		}catch(NoResultException noResultExp){
 			return "-1";
@@ -52,15 +71,15 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		try{
 			importPath = generateImportPath(importPath, project, extension);
 			
-			String hql = " FROM RepositoryItem "
+			String hql = "SELECT NEW RepositoryItem(id,path) FROM RepositoryItem "
 					+ " WHERE path LIKE :path AND project.id = :idProject ";
 			
-			Query query = entityManager.createQuery(hql).setFirstResult(0).setMaxResults(1);
+			TypedQuery<RepositoryItem> query = entityManager.createQuery(hql,RepositoryItem.class).setFirstResult(0).setMaxResults(1);
 			
 			query.setParameter("path", importPath);
 			query.setParameter("idProject", project.getId());
 			
-			return (RepositoryItem) query.getSingleResult();
+			return query.getSingleResult();
 		}catch(EmptyResultDataAccessException e){
 			return null;
 		}catch (NoResultException e) {

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -65,6 +66,20 @@ public class ItemAssetRepositoryImpl implements ItemAssetRepositoryCustom{
 			asset.getRepositoryItem().setName((String) resultItem[3]);
 			output.add(asset);
 		}
+	}
+
+	@Override
+	public List<ItemAsset> findByRepositoryItemAndEnableOptimized(RepositoryItem repositoryItem, Boolean enable) {
+		String hql = "SELECT NEW ItemAsset(id, name, signature, assetType, value, enable) "
+				+ " FROM ItemAsset itemAsset"
+				+ " WHERE itemAsset.repositoryItem.id = :idRepositoryItem "
+				+ " AND itemAsset.enable = :isEnable ";
+		
+		TypedQuery<ItemAsset> query = manager.createQuery(hql, ItemAsset.class);
+		query.setParameter("idRepositoryItem", repositoryItem.getId());
+		query.setParameter("isEnable", enable);
+		
+		return query.getResultList();
 	}
 
 }

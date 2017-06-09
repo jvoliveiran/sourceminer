@@ -156,11 +156,11 @@
 					<div th:if="!${#lists.isEmpty(revisions)}">
 						<table class="table table-striped">
 					  		<thead>
-					  			<th>Revisão</th>
-					  			<th>Comentário</th>
-					  			<th>Autor</th>
-					  			<th>Data</th>
-					  			<th>Detalhes</th>
+					  			<th width="30%">Revisão</th>
+					  			<th width="50%">Comentário</th>
+					  			<th width="10%">Autor</th>
+					  			<th width="5%">Data</th>
+					  			<th width="5%">Detalhes</th>
 					  		</thead>
 					  		<tr th:each="revision : ${revisions}">
 					  			<td th:text="${revision.revision}"></td>

@@ -9,6 +9,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
@@ -31,7 +33,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  */
 @Configuration
-@EnableJpaRepositories(basePackages = {"br.com.jvoliveira.sourceminer.repository"},
+@EnableJpaRepositories(basePackages = {"br.com.jvoliveira.sourceminer.repository","br.com.jvoliveira.arq.dao"},
 entityManagerFactoryRef = "entityManagerFactory",
 transactionManagerRef = "transactionManager")
 @EnableTransactionManagement
@@ -89,9 +91,11 @@ public class JpaConfiguration {
         properties.put("hibernate.show_sql", environment.getRequiredProperty("spring.jpa.show-sql"));
         properties.put("hibernate.format_sql", environment.getRequiredProperty("spring.jpa.format-sql"));
         properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("spring.jpa.hibernate.ddl-auto"));
+        properties.put("hibernate.current_session_context_class", environment.getRequiredProperty("spring.jpa.properties.hibernate.current_session_context_class"));
         return properties;
     }
  
+    @Primary
     @Bean
     @Autowired
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
@@ -99,4 +103,9 @@ public class JpaConfiguration {
         txManager.setEntityManagerFactory(emf);
         return txManager;
     }
+    
+    @Bean(name="jpaSessionFactory")
+    public SessionFactory sessionFactory(HibernateEntityManagerFactory hemf){  
+        return hemf.getSessionFactory();  
+    } 
 }

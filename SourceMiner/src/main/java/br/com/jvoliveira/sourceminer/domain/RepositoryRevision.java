@@ -59,8 +59,6 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 	@JoinColumn(name="id_task")
 	private Task task;
 	
-	//TODO: RevisionCause
-	
 	@Temporal(TemporalType.DATE)
 	@Column(name="create_at")
 	private Date createAt;
@@ -68,6 +66,15 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 	@Temporal(TemporalType.DATE)
 	@Column(name="update_at")
 	private Date updateAt;
+	
+	public RepositoryRevision(){
+		
+	}
+	
+	public RepositoryRevision(Long id, String revision){
+		this.id = id;
+		this.revision = revision;
+	}
 	
 	@Override
 	public void setId(Long id) {
