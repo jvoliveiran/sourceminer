@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,20 @@ public class GenericDAOImpl implements GenericDAO{
 	@Override
 	public <T extends ObjectDB> T update(T obj){
 		return entityManager.merge(obj);
+	}
+	
+	@Transactional("transactionManager")
+	@Override
+	public <T extends ObjectDB> T updateField(T obj,String field, Object value){
+		String className = obj.getClass().getName();
+		String hql = "UPDATE " + className + " SET " + field + " = :newValue WHERE id = :objId ";
+		Query query = entityManager.createQuery(hql);
+		
+		query.setParameter("newValue", value);
+		query.setParameter("objId", obj.getId());
+		
+		query.executeUpdate();
+		return obj;
 	}
 	
 	public void setEntityManager(EntityManager em) {

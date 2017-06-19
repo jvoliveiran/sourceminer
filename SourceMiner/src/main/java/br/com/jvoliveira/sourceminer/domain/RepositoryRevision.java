@@ -44,7 +44,7 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 	@Column(name="author")
 	private String author;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="date_revision")
 	private Date dateRevision;
 	

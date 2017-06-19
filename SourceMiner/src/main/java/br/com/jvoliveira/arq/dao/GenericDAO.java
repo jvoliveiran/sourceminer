@@ -17,5 +17,7 @@ public interface GenericDAO {
 	<T extends ObjectDB> T findByPrimaryKey(Long id, Class<T> entityClass);
 	
 	<T extends ObjectDB> T update(T obj);
+
+	<T extends ObjectDB> T updateField(T obj, String field, Object value);
 	
 }

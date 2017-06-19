@@ -3,6 +3,9 @@
  */
 package br.com.jvoliveira.sourceminer.component.repositoryconnection;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
@@ -47,7 +50,7 @@ public class RepositoryParseSVN implements RepositoryParse{
 		RepositoryRevision repositoryRevision = new RepositoryRevision();
 		
 		repositoryRevision.setRevision(String.valueOf(logEntry.getRevision()));
-		repositoryRevision.setDateRevision(logEntry.getDate());
+		repositoryRevision.setDateRevision(new Date(logEntry.getDate().getTime()));
 		repositoryRevision.setComment(logEntry.getMessage());
 		repositoryRevision.setAuthor(logEntry.getAuthor());
 		

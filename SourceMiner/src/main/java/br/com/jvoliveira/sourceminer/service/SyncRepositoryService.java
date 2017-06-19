@@ -98,11 +98,22 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 	}
 	
 	/**
+	 * Método utilizado para sincronização contínua de um projeto
+	 * @param project
+	 */
+	public void synchronizeRepositoryUsingConfigurationObserver(Project project){
+		this.observer = new SyncRepositoryObserver();
+		this.observer.startSync();
+		synchronizeRepositoryUsingConfiguration(project);
+		this.observer.closeSync();
+	}
+	
+	/**
 	 * Método de sincronização principal. Considera as configurações de sincronização
 	 * definidas para o projeto.
 	 * @param project
 	 */
-	public void synchronizeRepositoryUsingConfiguration(Project project){
+	private void synchronizeRepositoryUsingConfiguration(Project project){
 		
 		this.config = projectConfigurationRepository.findOneByProject(project);
 		RepositorySyncLog lastSyncLog = getLastSync(project);
@@ -201,11 +212,27 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			saveCounter++;
 		}
 		
+		repositoryItens.sort((RepositoryRevisionItem item1, RepositoryRevisionItem item2)->compareRevisionsDates(item1,item2));
 		notifyObservers("[2-3] Revisões sincronizadas!");
 		
 		return repositoryItens;
 	}
 	
+	private int compareRevisionsDates(RepositoryRevisionItem item1, RepositoryRevisionItem item2) {
+		try{
+			if(item1.getRepositoryRevision().getDateRevision() == null && item2.getRepositoryRevision().getDateRevision() != null)
+				return -1;
+			else if(item1.getRepositoryRevision().getDateRevision() != null && item2.getRepositoryRevision().getDateRevision() == null)
+				return 1;
+			else if(item1.getRepositoryRevision().getDateRevision() == null && item2.getRepositoryRevision().getDateRevision() == null)
+				return 0;
+			return item1.getRepositoryRevision().getDateRevision().compareTo(item2.getRepositoryRevision().getDateRevision());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 	/**
 	 * Identifica a primeira revisão do repositório que não está sincronizada com o SourceMiner
 	 * @param project
@@ -256,7 +283,6 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 			List<ItemAsset> actualItemAssets = getActualAssetsByItem(item);
 			List<ItemAsset> assetsToSync = classParserHelper.generateActualClassAssets(actualItemAssets, fileContent, item.getFullPath());
 			
-			//FIXME: GARGALO! UTILIZAR INSERÇÃO EM BATCH
 			syncAssets(assetsToSync, revisionItem);
 			itemChangeProcessed++;
 			notifyObservers("[3-3] Modificações em aterfatos para sincronização: " + itemChangeProcessed + "/" + revisionRevisionItensInDatabase.size() );
@@ -318,8 +344,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 					setImportRepositoryItem(asset, revisionItem);
 				try{
 					//TODO: ESCOLHER
-					getBatchDAO().batchSave(asset,saveCounter);
-					//itemAssetRepository.save(asset);
+					//getBatchDAO().batchSave(asset,saveCounter);
+					itemAssetRepository.save(asset);
 					saveCounter++;
 				}catch(Exception e){
 					e.printStackTrace();
@@ -329,13 +355,17 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 				asset.setUpdateAt(DateUtils.now());
 				asset.setEnable(false);
 				//TODO: ESCOLHER
-				getBatchDAO().batchSave(asset,saveCounter);
+				//getBatchDAO().batchSave(asset,saveCounter);
+				getDAO().updateField(asset, "enable", asset.isEnable());
 				//itemAssetRepository.save(asset);
 				saveCounter++;
 			}else if(asset.getItemChageLog().getChangeType().isUpdate()){
 				asset.setUpdateAt(DateUtils.now());
+				asset.setEnable(true);
 				//TODO: ESCOLHER
-				getBatchDAO().batchSave(asset,saveCounter);
+				getDAO().updateField(asset, "value", asset.getValue());
+				getDAO().updateField(asset, "enable", asset.isEnable());
+				//getBatchDAO().batchSave(asset,saveCounter);
 				//itemAssetRepository.save(asset);
 				saveCounter++;
 			}
@@ -429,7 +459,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 		lastSyncLog.setCreateAt(DateUtils.now());
 		lastSyncLog.setProject(project);
 		lastSyncLog.setHeadRevision(connection.getConnection().getLastRevisionNumber(project));
-		lastSyncLog.setBeginSync(this.observer.getBeginSync());
+		if(observer != null)
+			lastSyncLog.setBeginSync(this.observer.getBeginSync());
 		lastSyncLog.setFinishSync(Calendar.getInstance().getTime());
 		
 		syncLogRepository.save(lastSyncLog);

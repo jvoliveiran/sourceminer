@@ -110,7 +110,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	private void sincronyzeRepositoryDatabase(Project project){
-		syncService.synchronizeRepositoryUsingConfiguration(project);
+		syncService.synchronizeRepositoryUsingConfigurationObserver(project);
 		graphService.synchronizeGraphUsingConfiguration(project);
 	}
 	
