@@ -48,6 +48,7 @@ public class DashboardController extends AbstractArqController<Project>{
 		
 		model.addAttribute("itemFilter", getService().getItemFilter());
 		model.addAttribute("revisionFilter", getService().getRevisionFilter());
+		
 		loadDefaultModel(model);
 		
 		return forward("project_dashboard");
@@ -116,6 +117,7 @@ public class DashboardController extends AbstractArqController<Project>{
 		model.addAttribute("totalRevisions", getService().getTotalRevisionsInProject(obj));
 		model.addAttribute("lastSync", getService().getLastSync(obj));
 		model.addAttribute("project", obj);
+		model.addAttribute("synchronizations", getService().getAllSyncByProject(obj));
 	}
 	
 	private DashboardService getService(){

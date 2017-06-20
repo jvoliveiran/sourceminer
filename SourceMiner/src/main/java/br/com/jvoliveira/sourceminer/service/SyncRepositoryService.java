@@ -380,8 +380,8 @@ public class SyncRepositoryService extends AbstractArqService<Project> {
 					itemChange.setRevisionItem(revisionItem);
 					
 					//TODO: ESCOLHER
-					//itemChangeLogRepository.save(itemChange);
-					getBatchDAO().batchSave(itemChange,saveCounter);
+					itemChangeLogRepository.save(itemChange);
+					//getBatchDAO().batchSave(itemChange,saveCounter);
 					saveCounter++;
 				}
 			}

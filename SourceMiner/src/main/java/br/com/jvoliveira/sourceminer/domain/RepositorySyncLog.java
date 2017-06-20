@@ -3,6 +3,9 @@
  */
 package br.com.jvoliveira.sourceminer.domain;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -130,4 +133,7 @@ public class RepositorySyncLog implements ObjectDB{
 		this.finishSync = finishSync;
 	}
 	
+	public long getTimeElapsedInMinutes(){
+		return Duration.between(this.beginSync.toInstant(), this.graphSyncDate.toInstant()).toMinutes();
+	}
 }

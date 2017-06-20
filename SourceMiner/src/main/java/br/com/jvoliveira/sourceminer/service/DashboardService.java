@@ -3,6 +3,7 @@
  */
 package br.com.jvoliveira.sourceminer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,10 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	public RepositorySyncLog getLastSync(Project project){
 		return syncLogRepository.findFirstByProjectOrderByIdDesc(project);
+	}
+	
+	public Collection<RepositorySyncLog> getAllSyncByProject(Project project){
+		return syncLogRepository.findByProjectOrderByIdDesc(project);
 	}
 	
 	public Boolean isFirstSync(Project project){
