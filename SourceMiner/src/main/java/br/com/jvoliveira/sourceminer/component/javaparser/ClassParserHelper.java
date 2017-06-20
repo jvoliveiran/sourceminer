@@ -93,7 +93,7 @@ public class ClassParserHelper {
 		List<ChangeLogGroupModel> modelList = new ArrayList<ChangeLogGroupModel>();
 		
 		itemChangeLogs = itemChangeLogs.stream()
-				.sorted((item1, item2) -> (-1)*(item1.getId().compareTo(item2.getId())))
+				.sorted((item1, item2) -> (-1)*(item1.getRevisionItem().getRepositoryRevision().getDateRevision().compareTo(item2.getRevisionItem().getRepositoryRevision().getDateRevision())))
 				.collect(Collectors.toList());
 		
 		String revisionGroup = "0";
