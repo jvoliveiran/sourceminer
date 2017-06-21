@@ -18,12 +18,14 @@ public class CallGraphVisitorExecutor {
 	private static VisitorExecutor visitorExecutor;
 	private static Map<String,String> fields;
 	private static Map<String,String> variables;
+	private static Map<String,String> methodsASvariables;
 	
 	private static void init(){
 		try {
 			visitorExecutor = new VisitorExecutor();
 			visitorExecutor.addVisitorByClass(FieldDeclarationVisitor.class);
 			visitorExecutor.addVisitorByClass(VariableDeclaratorVisitor.class);
+			visitorExecutor.addVisitorByClass(MethodDeclaratorVisitor.class);
 			visitorExecutor.addVisitorByClass(MethodCallVisitor.class);
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -45,6 +47,7 @@ public class CallGraphVisitorExecutor {
 		Map<String,Collection<String>> output = new HashMap<>();
 		includeFieldVariables();
 		includeTempVariables();
+		includeClassMethodsASVariables();
 		processMethodCall(output);
 		return output;
 	}	
@@ -52,8 +55,14 @@ public class CallGraphVisitorExecutor {
 	private static void initMappers() {
 		fields = new HashMap<>();
 		variables = new HashMap<>();
+		methodsASvariables = new HashMap<>();
 	}
 
+	private static void includeClassMethodsASVariables() {
+		String prefixKeys = "ClassMethodDeclaration_";
+		extractVariablesFromResultMap(prefixKeys,methodsASvariables);
+	}
+	
 	private static void includeFieldVariables() {
 		String prefixKeys = "FieldDeclaration_";
 		extractVariablesFromResultMap(prefixKeys,fields);
@@ -77,6 +86,8 @@ public class CallGraphVisitorExecutor {
 				String className = variables.get(variableName.replaceAll("this.", ""));
 				if(className == null)
 					className = fields.get(variableName.replaceAll("this.", ""));
+				if(className == null)
+					className = methodsASvariables.get(variableName.replaceAll("this.", "").replace("()",""));
 				if(className == null)
 					continue;
 				
