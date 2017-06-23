@@ -210,7 +210,10 @@ public class RepositoryConnectionSVN implements RepositoryConnection{
 	   	 else if(entryPath.getType() == 'M')
 	   		 revisionItemLog.setCommitType(CommitType.MOD);
 	   	 else if(entryPath.getType() == 'D')
-	   		 revisionItemLog.setCommitType(CommitType.DEL);	  
+	   		 revisionItemLog.setCommitType(CommitType.DEL);
+	   	 else if(entryPath.getType() == 'R')
+	   		 revisionItemLog.setCommitType(CommitType.DEL);
+	   		 
 	}
 
 	private boolean isJavaFile(SVNLogEntryPath entryPath){

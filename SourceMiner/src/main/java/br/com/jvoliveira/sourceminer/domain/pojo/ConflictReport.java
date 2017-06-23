@@ -6,6 +6,8 @@ package br.com.jvoliveira.sourceminer.domain.pojo;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.web.util.HtmlUtils;
+
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
@@ -27,8 +29,8 @@ public class ConflictReport {
 			return null;
 		
 		StringBuilder message = new StringBuilder();
-		message.append("O método <b>" + asset.getSignature() + "</b>");
-		message.append(" da classe <b>" + item.getName() + "</b>");
+		message.append("O método <b>" + HtmlUtils.htmlEscape(asset.getSignature())+ " </b>");
+		message.append(" da classe <b>" + item.getName() + " </b>");
 		message.append(" foi modificado e pode causar impacto nas seguintes classes: ");
 		
 		message.append(" <br /><br /> ");
