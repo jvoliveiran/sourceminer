@@ -110,4 +110,8 @@ public class StringUtils {
 	public static boolean isNotEmpty(String str){
 		return !isEmpty(str);
 	}
+	
+	public static boolean isFirstUpperCase(String str){
+		return Character.isUpperCase(str.charAt(0));
+	}
 }

@@ -3,13 +3,10 @@
  */
 package br.com.jvoliveira.sourceminer.component.javaparser.visitor;
 
-import java.util.List;
 import java.util.Map;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import br.com.jvoliveira.sourceminer.component.javaparser.JavaParserUtils;

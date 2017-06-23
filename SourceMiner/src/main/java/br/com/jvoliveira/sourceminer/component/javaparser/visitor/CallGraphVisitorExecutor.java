@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import br.com.jvoliveira.sourceminer.component.javaparser.JavaParserUtils;
+
 /**
  * @author João Victor
  *
@@ -88,6 +90,8 @@ public class CallGraphVisitorExecutor {
 					className = fields.get(variableName.replaceAll("this.", ""));
 				if(className == null)
 					className = methodsASvariables.get(variableName.replaceAll("this.", "").replace("()",""));
+				if(className == null && JavaParserUtils.isJavaStaticCall(variableName))
+					className = variableName;
 				if(className == null)
 					continue;
 				

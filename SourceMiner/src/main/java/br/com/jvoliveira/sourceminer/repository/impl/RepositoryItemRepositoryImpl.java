@@ -53,7 +53,8 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 		String hql = "SELECT repositoryRevision.revision FROM RepositoryRevisionItem repositoryRevisionItem "
 				+ " INNER JOIN repositoryRevisionItem.repositoryRevision AS repositoryRevision"
 				+ " INNER JOIN repositoryRevisionItem.repositoryItem AS repositoryItem"
-				+ " WHERE  repositoryItem.path LIKE :filePath AND repositoryRevisionItem.project.id = :idProject ";
+				+ " WHERE  repositoryItem.path LIKE :filePath AND repositoryRevisionItem.project.id = :idProject "
+				+ " ORDER BY repositoryRevision.dateRevision DESC";
 		
 		try{
 			Query query = entityManager.createQuery(hql).setFirstResult(0).setMaxResults(1);
