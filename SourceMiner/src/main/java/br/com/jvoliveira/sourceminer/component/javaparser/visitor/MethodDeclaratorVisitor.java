@@ -3,10 +3,13 @@
  */
 package br.com.jvoliveira.sourceminer.component.javaparser.visitor;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import br.com.jvoliveira.sourceminer.component.javaparser.JavaParserUtils;
@@ -39,8 +42,19 @@ public class MethodDeclaratorVisitor extends VoidVisitorAdapter<Object> implemen
 	
 	@Override
 	public void visit(MethodDeclaration n, Object arg) {
-		if(JavaParserUtils.isCustomClassType(n.getType().toString()))
+		if(JavaParserUtils.isCustomClassType(n.getType().toString())){
 			this.resultMap.put("ClassMethodDeclaration_"+n.getName(), n.getType().toString());
+			if(!n.getParameters().isEmpty())
+				identifyArgASVariable(n.getParameters());
+		}
+	}
+
+	private void identifyArgASVariable(List<Parameter> parameters) {
+		Iterator<Parameter> parametersIterator = parameters.iterator();
+		while(parametersIterator.hasNext()){
+			Parameter param = parametersIterator.next();
+			this.resultMap.put("VariableDeclaration_"+param.getId().toString(), param.getType().toString());
+		}
 	}
 
 }

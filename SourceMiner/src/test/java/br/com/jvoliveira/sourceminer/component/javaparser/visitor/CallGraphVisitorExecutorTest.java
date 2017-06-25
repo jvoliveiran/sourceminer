@@ -26,12 +26,11 @@ public class CallGraphVisitorExecutorTest {
 	private String filePath;
 	
 	@Before
-	public void setUp() throws IOException, IllegalAccessException, InstantiationException{
+	public void setUp() throws IOException{
 		filePath = "src/main/resources/test/nova_classe_teste3.txt";
-		File fileTXT = new File(filePath);
-		fileContent = new String(Files.readAllBytes(Paths.get(fileTXT.getAbsolutePath())));
+		loadFileContent(filePath);
 	}
-	
+
 	@After
 	public void tearDown(){
 		
@@ -41,6 +40,19 @@ public class CallGraphVisitorExecutorTest {
 	public void processCallGraphTest(){
 		Map<String,Collection<String>> output = CallGraphVisitorExecutor.processCallGraph(fileContent, filePath);
 		printMapItens(output);
+	}
+	
+	@Test
+	public void processCallGraphSIGTest() throws IOException{
+		filePath = "src/main/resources/test/sigaa_teste1";
+		loadFileContent(filePath);
+		Map<String,Collection<String>> output = CallGraphVisitorExecutor.processCallGraph(fileContent, filePath);
+		printMapItens(output);
+	}
+	
+	private void loadFileContent(String filePath2) throws IOException {
+		File fileTXT = new File(filePath);
+		fileContent = new String(Files.readAllBytes(Paths.get(fileTXT.getAbsolutePath())));
 	}
 	
 	private void printMapItens(Map<String,Collection<String>> output){

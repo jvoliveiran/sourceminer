@@ -20,6 +20,7 @@ public class CallGraphVisitorExecutor {
 	private static VisitorExecutor visitorExecutor;
 	private static Map<String,String> fields;
 	private static Map<String,String> variables;
+	private static Map<String,String> externalConstants;
 	private static Map<String,String> methodsASvariables;
 	
 	private static void init(){
@@ -28,6 +29,7 @@ public class CallGraphVisitorExecutor {
 			visitorExecutor.addVisitorByClass(FieldDeclarationVisitor.class);
 			visitorExecutor.addVisitorByClass(VariableDeclaratorVisitor.class);
 			visitorExecutor.addVisitorByClass(MethodDeclaratorVisitor.class);
+			visitorExecutor.addVisitorByClass(FieldAccessVisitor.class);
 			visitorExecutor.addVisitorByClass(MethodCallVisitor.class);
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -50,6 +52,7 @@ public class CallGraphVisitorExecutor {
 		includeFieldVariables();
 		includeTempVariables();
 		includeClassMethodsASVariables();
+		includeExternalConstants(output);
 		processMethodCall(output);
 		return output;
 	}	
@@ -58,6 +61,7 @@ public class CallGraphVisitorExecutor {
 		fields = new HashMap<>();
 		variables = new HashMap<>();
 		methodsASvariables = new HashMap<>();
+		externalConstants = new HashMap<>();
 	}
 
 	private static void includeClassMethodsASVariables() {
@@ -74,6 +78,23 @@ public class CallGraphVisitorExecutor {
 		String prefixKeys = "VariableDeclaration_";
 		extractVariablesFromResultMap(prefixKeys,variables);
 	}
+	
+
+	private static void includeExternalConstants(Map<String,Collection<String>> output) {
+		String prefixKeys = "FieldAccessExpr_";
+		extractVariablesFromResultMap(prefixKeys, externalConstants);
+		Iterator<String> externalConstIterator = externalConstants.keySet().iterator();
+		while(externalConstIterator.hasNext()){
+			String key = externalConstIterator.next();
+			String className = externalConstants.get(key);
+		
+			if(output.get(className) == null)
+				output.put(className, new ArrayList<>());
+			
+			output.get(className).add(key);
+		}
+	}
+
 	
 	private static void processMethodCall(Map<String,Collection<String>> output) {
 		Map<String,Object> visitorResult = visitorExecutor.getResultMap();
@@ -115,8 +136,10 @@ public class CallGraphVisitorExecutor {
 	}
 	
 	private static String removeKeyPrefix(String key) {
-		String[] piecesOfKey = key.split("_");
-		return piecesOfKey[1];
+		int indexOfSeparator = key.indexOf("_");
+		return key.substring(indexOfSeparator+1, key.length());
+//		String[] piecesOfKey = key.split("_");
+//		return piecesOfKey[1];
 	}
 
 	public static Map<String,Object> getMapResult(){
