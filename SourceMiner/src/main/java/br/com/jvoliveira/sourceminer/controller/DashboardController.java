@@ -98,6 +98,18 @@ public class DashboardController extends AbstractArqController<Project>{
 		return forward("project_dashboard");
 	}
 	
+	@RequestMapping(value = "/more_revision", method = RequestMethod.POST)
+	public String showMoreRevision(@RequestParam Long idProject, Model model){
+		this.obj = service.getOneById(idProject);
+		
+		getService().showMoreRevisions();
+		model.addAttribute("revisionFilter", getService().getRevisionFilter());
+		model.addAttribute("itemFilter", getService().getItemFilter());
+		loadDefaultModel(model);
+		
+		return forward("project_dashboard");
+	}
+	
 	@RequestMapping(value = "/clear_search_revision", method = RequestMethod.POST)
 	public String clearSearchRevision(@Validated RepositoryRevisionFilter filter, @RequestParam Long idProject, Model model){
 		this.obj = service.getOneById(idProject);

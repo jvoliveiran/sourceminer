@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
@@ -74,8 +76,15 @@ public class DashboardService extends AbstractArqService<Project>{
 		
 		if(revisionSearch.hasResult())
 			return revisionSearch.getResult();
-		else
+		else if(revisionSearch.isShowMoreRevisions()){
+			Pageable pageLimit = new PageRequest(0, revisionSearch.getPageLimit());
+			return revisionRepository.findByProjectOrderByDateRevisionDesc(project, pageLimit);
+		}else
 			return revisionRepository.findTop10ByProjectOrderByDateRevisionDesc(project);
+	}
+	
+	public void showMoreRevisions(){
+		revisionSearch.incrementPageLimit();
 	}
 	
 	public void searchRepositoryItem(Project project, RepositoryItemFilter filter){
@@ -85,6 +94,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	}
 	
 	public void searchRepositoryRevision(Project project, RepositoryRevisionFilter filter){
+		revisionSearch.resetPageLimit();
 		filter.setProject(project);
 		revisionSearch.setFilter(filter);
 		revisionSearch.searchWithFilter();
@@ -96,6 +106,7 @@ public class DashboardService extends AbstractArqService<Project>{
 	
 	public void clearSearchRepositoryRevision(){
 		revisionSearch.init();
+		revisionSearch.resetPageLimit();
 	}
 	
 	public RepositorySyncLog getLastSync(Project project){

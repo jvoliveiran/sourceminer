@@ -97,15 +97,6 @@
 						</div>
 					</div>
 				    
-				    <div class="row">
-				    	<div class="col-lg-2 col-lg-offset-10">
-				    		<form action="#" th:action="@{/dashboard/project_dashboard_details}" method="post" >
-							    <input type="hidden" name="idProject" th:value="${project.id}" />
-								<input type="submit" class="btn btn-primary btn-sm" value="Ver Detalhes" />
-							</form>
-				    	</div>
-				    </div>
-				    
 				  </div>
 				</div>
 				
@@ -210,6 +201,14 @@
 					  			</td>
 					  		</tr>
 					  	</table>
+					  	<div class="row">
+					    	<div class="col-lg-2 col-lg-offset-10">
+					    		<form action="#" th:action="@{/dashboard/more_revision}" method="post" >
+								    <input type="hidden" name="idProject" th:value="${project.id}" />
+									<input type="submit" class="btn btn-primary btn-sm" value="Ver mais" />
+								</form>
+					    	</div>
+					    </div>
 					</div>
 					
 				  </div>

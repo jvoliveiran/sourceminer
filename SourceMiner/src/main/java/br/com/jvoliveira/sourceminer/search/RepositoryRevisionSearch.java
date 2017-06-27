@@ -20,6 +20,8 @@ import br.com.jvoliveira.sourceminer.search.filter.RepositoryRevisionFilter;
 @Repository
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RepositoryRevisionSearch extends AbstractArqSearch<RepositoryRevision>{
+	
+	private Integer pageLimit = 10;
 
 	@Override
 	public void createSearchQuery(StringBuilder sql) {
@@ -54,5 +56,23 @@ public class RepositoryRevisionSearch extends AbstractArqSearch<RepositoryRevisi
 			q.setParameter("project", ((RepositoryRevisionFilter)filter).getProject());
 		
 	}
+	
+	public boolean isShowMoreRevisions(){
+		return pageLimit > 10;
+	}
 
+	public Integer incrementPageLimit(){
+		this.pageLimit = pageLimit + 10;
+		return pageLimit;
+	}
+	
+	public Integer getPageLimit(){
+		return this.pageLimit;
+	}
+	
+	public Integer resetPageLimit(){
+		this.pageLimit = 10;
+		return pageLimit;
+	}
+	
 }

@@ -5,6 +5,7 @@ package br.com.jvoliveira.sourceminer.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -21,6 +22,8 @@ public interface RepositoryRevisionRepository extends CrudRepository<RepositoryR
 	List<RepositoryRevision> findByProject(Project project);
 	
 	List<RepositoryRevision> findTop10ByProjectOrderByDateRevisionDesc(Project project);
+	
+	List<RepositoryRevision> findByProjectOrderByDateRevisionDesc(Project project, Pageable pageable);
 	
 	RepositoryRevision findByProjectAndRevision(Project project, String revision);
 	
