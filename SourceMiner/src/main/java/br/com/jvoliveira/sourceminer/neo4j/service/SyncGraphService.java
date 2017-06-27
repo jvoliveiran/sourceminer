@@ -4,6 +4,7 @@
 package br.com.jvoliveira.sourceminer.neo4j.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.component.javaparser.visitor.CallGraphVisitorExecutor;
+import br.com.jvoliveira.sourceminer.component.javaparser.visitor.GraphElementDTO;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnection;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryConnectionSession;
 import br.com.jvoliveira.sourceminer.component.repositoryconnection.RepositoryRevisionItemHelper;
@@ -26,8 +28,11 @@ import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
 import br.com.jvoliveira.sourceminer.domain.RepositorySyncLog;
 import br.com.jvoliveira.sourceminer.domain.enums.AssetType;
 import br.com.jvoliveira.sourceminer.neo4j.domain.ClassNode;
+import br.com.jvoliveira.sourceminer.neo4j.domain.FieldAccess;
 import br.com.jvoliveira.sourceminer.neo4j.domain.MethodCall;
+import br.com.jvoliveira.sourceminer.neo4j.domain.RelationshipGraphElement;
 import br.com.jvoliveira.sourceminer.neo4j.repository.ClassNodeRepository;
+import br.com.jvoliveira.sourceminer.neo4j.repository.FieldAccessRepository;
 import br.com.jvoliveira.sourceminer.neo4j.repository.MethodCallRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
 import br.com.jvoliveira.sourceminer.repository.RepositoryItemRepository;
@@ -48,6 +53,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	private ItemAssetRepository itemAssetRepository;
 	private ClassNodeRepository nodeRepository;
 	private MethodCallRepository methodCallRepository;
+	private FieldAccessRepository fieldAccessRepository;
 	private SyncLogRepositoryImpl syncLogRepository;
 	
 	@Autowired
@@ -137,7 +143,7 @@ public class SyncGraphService extends AbstractArqService<Project>{
 			RepositoryItem item = repositoryItems.next();
 			ClassNode classNode = itemNode.get(item);
 			
-			Collection<MethodCall> methodsCall = new ArrayList<>();
+			Collection<RelationshipGraphElement> methodsCall = new ArrayList<>();
 			if(searchForMethodsCall){
 				List<MethodCall> queryResult = nodeRepository.getAllMethodsCallFromNode(item.getId());
 				if(queryResult != null)
@@ -149,26 +155,26 @@ public class SyncGraphService extends AbstractArqService<Project>{
 		
 	}
 	
-	private List<MethodCall> processCallGraph(ClassNode classNode, RepositoryItem item, Collection<MethodCall> methodsCall) {
+	private List<RelationshipGraphElement> processCallGraph(ClassNode classNode, RepositoryItem item, Collection<RelationshipGraphElement> methodsCall) {
 		String headRevision = "-1";
 		String fileContent = this.connection.getConnection().getFileContent(item.getFullPath(), headRevision);
-		Map<String,Collection<String>> resultMap = CallGraphVisitorExecutor.processCallGraph(fileContent, item.getPath());
+		Map<String,Collection<GraphElementDTO>> resultMap = CallGraphVisitorExecutor.processCallGraph(fileContent, item.getPath());
 		return identifyRelationWithMethodCall(classNode,item,resultMap,methodsCall);
 	}
 	
-	private List<MethodCall> identifyRelationWithMethodCall(ClassNode classNode, RepositoryItem item, Map<String,Collection<String>> resultMap,
-			Collection<MethodCall> methodsCall) {
-		List<MethodCall> result = new ArrayList<>();
+	private List<RelationshipGraphElement> identifyRelationWithMethodCall(ClassNode classNode, RepositoryItem item, Map<String,Collection<GraphElementDTO>> resultMap,
+			Collection<RelationshipGraphElement> methodsCall) {
+		List<RelationshipGraphElement> result = new ArrayList<>();
 		
 		Iterator<String> iteratorResultMap = resultMap.keySet().iterator();
 		Integer nodeIndex = 1;
 		while(iteratorResultMap.hasNext()){
 			String className = iteratorResultMap.next();
-			Collection<String> methodsCalledInClass = resultMap.get(className);
+			Collection<GraphElementDTO> methodsCalledInClass = resultMap.get(className);
 			Integer methodIndex = 1;
-			for(String methodCalledInClass : methodsCalledInClass){
+			for(GraphElementDTO methodCalledInClass : methodsCalledInClass){
 				notifySubLabelObservers("Nó ["+nodeIndex+"/"+resultMap.size()+"] - Método ["+methodIndex+"/"+methodsCalledInClass.size()+"]");
-				List<MethodCall> methodsCalled = createAndPersistMethodCall(item.getProject(), className, methodCalledInClass,classNode,methodsCall);
+				List<RelationshipGraphElement> methodsCalled = createAndPersistMethodCall(item.getProject(), className, methodCalledInClass,classNode,methodsCall);
 				if(methodsCalled != null)
 					result.addAll(methodsCalled);
 				methodIndex++;
@@ -180,37 +186,68 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	}
 
 	//FIXME: GARGALO! PROJETAR CONSULTAS!
-	private List<MethodCall> createAndPersistMethodCall(Project project, String className, String methodCalledInClass, ClassNode classNode,
-			Collection<MethodCall> methodsCall) {
+	private List<RelationshipGraphElement> createAndPersistMethodCall(Project project, String className, GraphElementDTO methodCalledInClass, ClassNode classNode,
+			Collection<RelationshipGraphElement> methodsCall) {
 		//TODO: Refatorar concatenação de extensão. Sugestão: Selecionar extensão de arquivos para sincronização nas configurações do projeto.
 		RepositoryItem itemCalled = itemRepository.findFirstByNameAndProject(className+".java",project);
 		if(itemCalled == null)
 			return null;
 		
-		List<MethodCall> methodsCalled = new ArrayList<>();
-		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetType(itemCalled, true,AssetType.METHOD);
+		List<RelationshipGraphElement> methodsCalled = new ArrayList<>();
+		List<ItemAsset> dependencies = itemAssetRepository.findByRepositoryItemAndEnableAndAssetTypeIn(itemCalled, true, Arrays.asList(AssetType.METHOD, AssetType.FIELD));
 		for (ItemAsset asset : dependencies) {
 			ClassNode nodeCalled = new ClassNode(itemCalled,project);
-			if(!isExistsMethodCall(classNode,nodeCalled,asset,methodsCall) && methodCalledInClass.equals(asset.getName())){
-				MethodCall relation = new MethodCall(classNode, nodeCalled);
-				relation.setItemAssetId(asset.getId());
-				relation.setMethodName(asset.getName());
-				relation.setMethodSignature(asset.getSignature());
-				relation.setProjectId(project.getId());
-				methodCallRepository.save(relation);
+			if(methodCalledInClass.isMethodCall() && !isExistsMethodCall(classNode,nodeCalled,asset,methodsCall) && methodCalledInClass.getElementName().equals(asset.getName())){
+				MethodCall relation = buildMethodCall(project, classNode, asset, nodeCalled);
 				methodsCalled.add(relation);
+			}else if(methodCalledInClass.isAccessField() && methodCalledInClass.getElementName().equals(asset.getName())){
+				FieldAccess fieldAccess = buildAccessField(project, classNode, asset, nodeCalled, methodCalledInClass);
+				methodsCalled.add(fieldAccess);
 			}
 		}
 		return methodsCalled;
 	}
 
+	private FieldAccess buildAccessField(Project project, ClassNode classNode, ItemAsset asset, ClassNode nodeCalled, GraphElementDTO methodCalledInClass) {
+		FieldAccess relation = new FieldAccess(classNode, nodeCalled);
+		relation.setFieldId(asset.getId());
+		relation.setProjectId(project.getId());
+		RepositoryItem item = new RepositoryItem(classNode.getRepositoryItemId());
+		List<ItemAsset> methodWhichAccessField = itemAssetRepository.findByRepositoryItemAndEnableAndAssetTypeAndName(item, true, AssetType.METHOD, methodCalledInClass.getAuxiliarElementName());
+		if(methodWhichAccessField != null && methodWhichAccessField.size() > 0){
+			relation.setMethodId(methodWhichAccessField.iterator().next().getId());
+			fieldAccessRepository.save(relation);
+			return relation;
+		}
+		return null;
+	}
+
+	private MethodCall buildMethodCall(Project project, ClassNode classNode, ItemAsset asset, ClassNode nodeCalled) {
+		MethodCall relation = new MethodCall(classNode, nodeCalled);
+		relation.setItemAssetId(asset.getId());
+		relation.setMethodName(asset.getName());
+		relation.setMethodSignature(asset.getSignature());
+		relation.setProjectId(project.getId());
+		methodCallRepository.save(relation);
+		return relation;
+	}
+
 	private boolean isExistsMethodCall(ClassNode classNode, ClassNode nodeCalled, ItemAsset asset,
-			Collection<MethodCall> methodsCall) {
-		for(MethodCall method : methodsCall){
-			if(method.getCalled().getId() == nodeCalled.getId()
-					&& method.getCaller().getId() == classNode.getId()
-					&& method.getItemAssetId() == asset.getId())
-				return true;
+			Collection<RelationshipGraphElement> methodsCall) {
+		for(RelationshipGraphElement method : methodsCall){
+			if(method instanceof MethodCall){
+				MethodCall methodCall = (MethodCall) method;
+				if(methodCall.getCalled().getId() == nodeCalled.getId()
+						&& methodCall.getCaller().getId() == classNode.getId()
+						&& methodCall.getItemAssetId() == asset.getId())
+					return true;
+			}else if(method instanceof FieldAccess){
+				FieldAccess fieldAccess = (FieldAccess) method;
+				if(fieldAccess.getCalled().getId() == nodeCalled.getId()
+						&& fieldAccess.getCaller().getId() == classNode.getId()
+						&& fieldAccess.getFieldId() == asset.getId())
+					return true;
+			}
 		}
 		return false;
 	}
@@ -262,5 +299,10 @@ public class SyncGraphService extends AbstractArqService<Project>{
 	@Autowired
 	public void setSyncLogRepository(SyncLogRepositoryImpl syncLogRepository){
 		this.syncLogRepository = syncLogRepository;
+	}
+	
+	@Autowired
+	public void setFieldAccessRepository(FieldAccessRepository fieldRepository){
+		this.fieldAccessRepository = fieldRepository;
 	}
 }

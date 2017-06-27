@@ -38,6 +38,9 @@ public class ClassNode implements ObjectDB{
 	@Relationship(type = "CALLS", direction = Relationship.OUTGOING)
 	private List<MethodCall> methodsCalled = new ArrayList<>();
 	
+	@Relationship(type = "ACCESS", direction = Relationship.UNDIRECTED)
+	private List<FieldAccess> fieldAccess = new ArrayList<>();
+	
 	public ClassNode(){
 		
 	}
@@ -126,6 +129,14 @@ public class ClassNode implements ObjectDB{
 	public Date getUpdateAt() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public List<FieldAccess> getFieldAccess() {
+		return fieldAccess;
+	}
+
+	public void setFieldAccess(List<FieldAccess> fieldAccess) {
+		this.fieldAccess = fieldAccess;
 	}
 	
 }

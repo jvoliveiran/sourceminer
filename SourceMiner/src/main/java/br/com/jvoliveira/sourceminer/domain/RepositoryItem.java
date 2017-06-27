@@ -74,6 +74,10 @@ public class RepositoryItem implements ObjectDB{
 		this.path = path;
 	}
 	
+	public RepositoryItem(Long repositoryItemId) {
+		this.id = repositoryItemId;
+	}
+
 	@Override
 	public void setId(Long id) {
 		this.id = id;

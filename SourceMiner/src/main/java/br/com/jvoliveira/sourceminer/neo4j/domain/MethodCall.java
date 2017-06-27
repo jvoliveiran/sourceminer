@@ -13,7 +13,7 @@ import org.neo4j.ogm.annotation.StartNode;
  *
  */
 @RelationshipEntity(type = "CALLS")
-public class MethodCall {
+public class MethodCall implements RelationshipGraphElement{
 
 	@GraphId
 	private Long id;

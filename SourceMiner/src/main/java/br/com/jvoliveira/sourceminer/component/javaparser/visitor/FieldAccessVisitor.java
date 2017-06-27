@@ -6,6 +6,8 @@ package br.com.jvoliveira.sourceminer.component.javaparser.visitor;
 import java.util.Map;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -28,6 +30,7 @@ public class FieldAccessVisitor extends VoidVisitorAdapter<Object> implements Ge
 	public boolean isReady() {
 		return ready;
 	}
+	
 	@Override
 	public void execute(CompilationUnit compUnit, Object arg, Map<String, Object> resultMap) {
 		this.resultMap = resultMap;
@@ -38,7 +41,20 @@ public class FieldAccessVisitor extends VoidVisitorAdapter<Object> implements Ge
 	
 	@Override
 	public void visit(FieldAccessExpr fieldAccess, Object arg) {
-		resultMap.put(mapKeyPrefix+fieldAccess.getFieldExpr().toString(), fieldAccess.getScope().toString());
+		MethodDeclaration methodWhichAccessField = getMethodWhichAccessField(fieldAccess.getParentNode());
+		String fieldName = fieldAccess.getFieldExpr().toString();
+		if(methodWhichAccessField != null)
+			fieldName = fieldName + ">>" + methodWhichAccessField.getName();
+		resultMap.put(mapKeyPrefix+fieldName, fieldAccess.getScope().toString());
+	}
+
+	private MethodDeclaration getMethodWhichAccessField(Node parentNode) {
+		if(parentNode instanceof MethodDeclaration){
+			return (MethodDeclaration) parentNode;
+		}else if(parentNode.getParentNode() != null)
+			return getMethodWhichAccessField(parentNode.getParentNode());
+		else
+			return null;
 	}
 	
 }

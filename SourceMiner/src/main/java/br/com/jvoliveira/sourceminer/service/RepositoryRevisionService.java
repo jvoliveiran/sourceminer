@@ -5,8 +5,10 @@ package br.com.jvoliveira.sourceminer.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,9 +59,10 @@ public class RepositoryRevisionService extends AbstractArqService<RepositoryRevi
 	
 	private ConflictReport analyzeCallGraphConflictForAsset(ItemAsset asset, RepositoryRevision revision) {
 		Collection<ClassNode> corelatedNodes = classNodeRepository.getNodesCallingMethod(asset.getId());
+		corelatedNodes.addAll(classNodeRepository.getNodesCallingMethodThroughtField(asset.getId()));
 		if(corelatedNodes.isEmpty())
 			return null;
-		Collection<Long> ids = new ArrayList<>();
+		Set<Long> ids = new HashSet<>();
 		corelatedNodes.stream().forEach(classNode -> ids.add(classNode.getRepositoryItemId()));
 		Collection<RepositoryRevisionItem> items = itemRepository.findItemsModifiedPreviouslyIn(ids,revision);
 		

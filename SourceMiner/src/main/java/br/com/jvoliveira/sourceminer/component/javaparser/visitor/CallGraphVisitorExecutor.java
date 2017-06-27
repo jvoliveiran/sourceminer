@@ -36,19 +36,19 @@ public class CallGraphVisitorExecutor {
 		}
 	}
 	
-	public static Map<String,Collection<String>> processCallGraph(String fileContent, String filePath){
+	public static Map<String,Collection<GraphElementDTO>> processCallGraph(String fileContent, String filePath){
 		return processCallGraph(fileContent, filePath,null);
 	}
 	
-	public static Map<String,Collection<String>> processCallGraph(String fileContent, String filePath, Object arg){
+	public static Map<String,Collection<GraphElementDTO>> processCallGraph(String fileContent, String filePath, Object arg){
 		init();
 		visitorExecutor.executeVisitorChain(fileContent, filePath, arg);
 		return processOutput();
 	}
 	
-	private static Map<String,Collection<String>> processOutput() {
+	private static Map<String,Collection<GraphElementDTO>> processOutput() {
 		initMappers();
-		Map<String,Collection<String>> output = new HashMap<>();
+		Map<String,Collection<GraphElementDTO>> output = new HashMap<>();
 		includeFieldVariables();
 		includeTempVariables();
 		includeClassMethodsASVariables();
@@ -80,7 +80,7 @@ public class CallGraphVisitorExecutor {
 	}
 	
 
-	private static void includeExternalConstants(Map<String,Collection<String>> output) {
+	private static void includeExternalConstants(Map<String,Collection<GraphElementDTO>> output) {
 		String prefixKeys = "FieldAccessExpr_";
 		extractVariablesFromResultMap(prefixKeys, externalConstants);
 		Iterator<String> externalConstIterator = externalConstants.keySet().iterator();
@@ -91,12 +91,12 @@ public class CallGraphVisitorExecutor {
 			if(output.get(className) == null)
 				output.put(className, new ArrayList<>());
 			
-			output.get(className).add(key);
+			output.get(className).add(new GraphElementDTO(key, GraphElementType.ACCESS_FIELD));
 		}
 	}
 
 	
-	private static void processMethodCall(Map<String,Collection<String>> output) {
+	private static void processMethodCall(Map<String,Collection<GraphElementDTO>> output) {
 		Map<String,Object> visitorResult = visitorExecutor.getResultMap();
 		Iterator<String> keySet = visitorResult.keySet().iterator();
 		String prefixKey = "MethodCallExpr_";
@@ -119,7 +119,7 @@ public class CallGraphVisitorExecutor {
 				if(output.get(className) == null)
 					output.put(className, new ArrayList<>());
 				
-				output.get(className).add(methodName);
+				output.get(className).add(new GraphElementDTO(methodName, GraphElementType.METHOD_CALL));
 			}
 		}
 	}
@@ -138,8 +138,6 @@ public class CallGraphVisitorExecutor {
 	private static String removeKeyPrefix(String key) {
 		int indexOfSeparator = key.indexOf("_");
 		return key.substring(indexOfSeparator+1, key.length());
-//		String[] piecesOfKey = key.split("_");
-//		return piecesOfKey[1];
 	}
 
 	public static Map<String,Object> getMapResult(){
