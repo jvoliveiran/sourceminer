@@ -38,7 +38,7 @@ public class RepositoryRevision implements ObjectDB,Comparable<RepositoryRevisio
 	@Column(name="revision")
 	private String revision;
 	
-	@Column(name="comment", length=3000)
+	@Column(name="comment", length=5000)
 	private String comment;
 	
 	@Column(name="author")

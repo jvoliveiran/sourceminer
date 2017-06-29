@@ -5,10 +5,12 @@ package br.com.jvoliveira.sourceminer.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,8 @@ import org.springframework.stereotype.Service;
 import br.com.jvoliveira.arq.service.AbstractArqService;
 import br.com.jvoliveira.sourceminer.domain.ItemAsset;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
-import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
 import br.com.jvoliveira.sourceminer.domain.pojo.ConflictReport;
+import br.com.jvoliveira.sourceminer.domain.pojo.RepositoryRevisionItemDTO;
 import br.com.jvoliveira.sourceminer.neo4j.domain.ClassNode;
 import br.com.jvoliveira.sourceminer.neo4j.repository.ClassNodeRepository;
 import br.com.jvoliveira.sourceminer.repository.ItemAssetRepository;
@@ -64,23 +66,26 @@ public class RepositoryRevisionService extends AbstractArqService<RepositoryRevi
 			return null;
 		Set<Long> ids = new HashSet<>();
 		corelatedNodes.stream().forEach(classNode -> ids.add(classNode.getRepositoryItemId()));
-		Collection<RepositoryRevisionItem> items = itemRepository.findItemsModifiedPreviouslyIn(ids,revision);
+		Collection<RepositoryRevisionItemDTO> items = itemRepository.findItemsModifiedPreviouslyIn(ids,revision);
 		
 		if(items.isEmpty())
 			return null;
+		items = items.stream().sorted((item1, item2) -> (-1)*(item1.getAssetsChanged().compareTo(item2.getAssetsChanged())))
+			.collect(Collectors.toList());
+		
 		return buildConflictReportItem(asset, items);
 	}
 
-	private ConflictReport buildConflictReportItem(ItemAsset asset, Collection<RepositoryRevisionItem> items) {
+	private ConflictReport buildConflictReportItem(ItemAsset asset, Collection<RepositoryRevisionItemDTO> items) {
 		Collection<Long> itensIncluded = new ArrayList<>();
 		ConflictReport conflictReport = new ConflictReport();
 		conflictReport.setAsset(asset);
 		conflictReport.setItem(asset.getRepositoryItem());
 		conflictReport.setOtherCallers(new ArrayList<>());
 		items.stream().forEach(revItem -> {
-			if(!itensIncluded.contains(revItem.getRepositoryItem().getId())){
-				itensIncluded.add(revItem.getRepositoryItem().getId());
-				conflictReport.getOtherCallers().add(revItem);
+			if(!itensIncluded.contains(revItem.getRevItem().getRepositoryItem().getId())){
+				itensIncluded.add(revItem.getRevItem().getRepositoryItem().getId());
+				conflictReport.getOtherCallers().add(revItem.getRevItem());
 			}
 		});
 		return conflictReport;

@@ -4,6 +4,7 @@
 package br.com.jvoliveira.sourceminer.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -50,6 +51,7 @@ public class TaskService extends AbstractArqService<Task>{
 		for(Task task : tasks){
 			task.getRevisions().add(revision);
 			task.getFeatures().addAll(features);
+			task.setCreateAt(Calendar.getInstance().getTime());
 			getRepository().save(task);
 			revision.setTask(task);
 			getDAO().update(revision);

@@ -33,4 +33,6 @@ public interface GraphRepository extends Neo4jRepository<ClassNode,	Long> {
 	@Query("MATCH result=(a:ClassNode {name: {nodeName}, projectId: {projectId} })-[r1:CALLS]->(b:ClassNode)-[r2:CALLS]->(c:ClassNode) WITH COLLECT(result) AS results CALL apoc.convert.toTree(results) yield value RETURN value")
 	Map<String,Object> findJSONDependecyGraphCallFrom(@Param("nodeName") String nodeName, @Param("projectId") Long projectId);
 	
+	@Query("MATCH (a:ClassNode) OPTIONAL MATCH (a)-[r]->() WHERE a.projectId = {idProject} AND r.projectId = {idProject} DELETE a,r")
+	void deleteDataFromProject(@Param("idProject") Integer idProject);
 }

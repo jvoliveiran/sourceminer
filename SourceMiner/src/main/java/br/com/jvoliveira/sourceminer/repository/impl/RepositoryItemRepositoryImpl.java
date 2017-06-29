@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 import br.com.jvoliveira.sourceminer.domain.Project;
 import br.com.jvoliveira.sourceminer.domain.RepositoryItem;
 import br.com.jvoliveira.sourceminer.domain.RepositoryRevision;
-import br.com.jvoliveira.sourceminer.domain.RepositoryRevisionItem;
+import br.com.jvoliveira.sourceminer.domain.pojo.RepositoryRevisionItemDTO;
 import br.com.jvoliveira.sourceminer.repository.custom.RepositoryItemRepositoryCustom;
 
 /**
@@ -131,12 +131,14 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 	}
 
 	@Override
-	public List<RepositoryRevisionItem> findItemsModifiedPreviouslyIn(Collection<Long> ids, RepositoryRevision revision) {
-		String hql = "SELECT repRevItem "
+	public List<RepositoryRevisionItemDTO> findItemsModifiedPreviouslyIn(Collection<Long> ids, RepositoryRevision revision) {
+		String hql = "SELECT NEW br.com.jvoliveira.sourceminer.domain.pojo.RepositoryRevisionItemDTO(repRevItem, " 
+				+ getItemChangeCounter("repoItem.id","repoRev.dateRevision","project.id") +") "
 				+ " FROM RepositoryRevisionItem repRevItem "
 				+ " JOIN repRevItem.repositoryRevision repoRev "
 				+ " JOIN repRevItem.repositoryItem repoItem "
-				+ " WHERE repoItem.project.id = :idProject "
+				+ " JOIN repoItem.project project "
+				+ " WHERE project.id = :idProject "
 				+ " AND repoItem.id IN (:ids) "
 				+ " AND repoRev.id <> :idRevision "
 				+ " AND repoRev.dateRevision < :dateRevision ";
@@ -153,6 +155,17 @@ public class RepositoryItemRepositoryImpl implements RepositoryItemRepositoryCus
 			query.setParameter("idTask", revision.getTask().getId());
 		
 		return query.getResultList();
+	}
+
+	private String getItemChangeCounter(String itemAlias, String dateAlias, String projectAlias) {
+		return "( "
+				+ " SELECT count(itemChange.id) FROM ItemChangeLog itemChange "
+				+ " JOIN itemChange.asset itemAsset "
+				+ " JOIN itemAsset.repositoryItem repItemForAsset "
+				+ " JOIN repItemForAsset.project pj "
+				+ " WHERE repItemForAsset.id = " + itemAlias
+				+ " AND pj.id = " + projectAlias
+				+ " ) ";
 	}
 	
 }
