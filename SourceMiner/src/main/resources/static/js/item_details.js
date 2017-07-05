@@ -3,7 +3,7 @@ function getFileContentInRevision(path) {
 
 	$.ajax({
 		type : "POST",
-		url : "/SourceMiner/dashboard/repository_item/file_content_revision",
+		url : "/Codyzer/dashboard/repository_item/file_content_revision",
 		data : {
 			'revisionNumber' : revisionNumber,
 			'path' : path
@@ -24,7 +24,7 @@ function changeFileContentRevision(data, status) {
 
 function loadGraph(nodeName, projectId) {
 	var width = 200, height = 400;
-	var rest_service = "/SourceMiner/graph/findPlainJSONDependecyGraphCallFrom?"
+	var rest_service = "/Codyzer/graph/findPlainJSONDependecyGraphCallFrom?"
 			+ ("nodeName=" + nodeName) + ("&projectId=" + projectId);
 
 	d3.json(rest_service).header("Content-Type", "application/json").send("get",
